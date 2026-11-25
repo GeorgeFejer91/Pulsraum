@@ -9,13 +9,20 @@
   <meta property="og:description" content="Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.">
   <meta property="og:type" content="website">
   <title>Pulsraum · Offene Biosensorik</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="site.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#projekt">Zum Inhalt</a>
   <header class="site-header wrap">
-    <a class="wordmark" href="#projekt" aria-label="Pulsraum, zum Projektanfang"><svg aria-hidden="true" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M2 16h7l3-6 5 12 4-6h9"/></svg><span data-measure>Pulsraum</span></a>
+    <div class="header-brand">
+      <a class="wordmark" href="#projekt" aria-label="Pulsraum, zum Projektanfang"><svg aria-hidden="true" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M2 16h7l3-6 5 12 4-6h9"/></svg><span data-measure>Pulsraum</span></a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" hidden>
+        <span class="theme-icon" aria-hidden="true"></span>
+        <span data-measure>Dunkelmodus</span>
+      </button>
+    </div>
     <nav aria-label="Hauptnavigation">
       <a href="#projekt" data-measure>Projekt</a>
       <a href="#anwendungen" data-measure>Anwendungen</a>
@@ -30,42 +37,54 @@
         <h1 id="project-title" data-measure>Pulsraum</h1>
         <p class="hero-statement" data-measure>Deine Körpersignale.<br>Deine Daten.</p>
         <p class="lead" data-measure>Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
-        <p class="intro">Pulsraum soll Herz- und Atemmessung sowie individuelles Biofeedback direkt im Browser zugänglich machen. Mit Smartphone und Polar H10. Die Gesundheitsdaten werden auf dem eigenen Gerät verarbeitet und gespeichert, ohne Anbieterbindung oder Weitergabe.</p>
+        <p class="intro">Pulsraum soll <span class="signal-ecg">EKG</span>, <span class="signal-resp">Atemmessung</span> und individuelles Biofeedback direkt im Browser zugänglich machen. Mit Smartphone und Polar H10. Die Gesundheitsdaten werden auf dem eigenen Gerät verarbeitet und gespeichert, ohne Anbieterbindung oder Weitergabe.</p>
         <a class="text-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure>Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
         <p class="project-status">Das Projekt befindet sich im Aufbau.</p>
       </div>
-      <figure class="signal-figure">
-        <div class="figure-heading"><span data-measure>Herzschlag &amp; Atmung</span><span aria-hidden="true">↘</span></div>
-        <svg class="signal-drawing" viewBox="0 0 440 370" aria-hidden="true">
-          <defs><pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="currentColor" stroke-opacity=".09"/></pattern></defs>
-          <rect width="440" height="370" fill="url(#grid)"/>
-          <circle cx="220" cy="185" r="145" class="ring outer"/>
-          <circle cx="220" cy="185" r="111" class="ring"/>
-          <circle cx="220" cy="185" r="76" class="ring inner"/>
-          <path class="breath" d="M20 185C70 185 78 100 124 100S177 270 222 270 275 100 320 100 372 185 420 185"/>
-          <path class="pulse" d="M20 185H116l13-15 16 30 22-73 25 117 22-59h32l16-12 17 25 15-13h126"/>
-          <circle cx="220" cy="185" r="5" fill="currentColor"/>
-        </svg>
+      <figure class="signal-figure" aria-labelledby="signal-title">
+        <div class="figure-heading" id="signal-title" data-measure>Herzschlag &amp; Atmung</div>
+        <div class="signal-channels">
+          <div class="signal-channel signal-resp">
+            <div class="channel-label">
+              <strong data-measure>Atemsignal</strong>
+              <span data-measure>Atembewegung per Smartphone</span>
+            </div>
+            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+              <path class="signal-baseline" d="M0 52H440"/>
+              <path class="signal-trace" d="M12 52C49 52 65 18 108 18S166 85 219 85 282 18 326 18 382 52 428 52"/>
+            </svg>
+          </div>
+          <div class="signal-channel signal-ecg">
+            <div class="channel-label">
+              <strong data-measure>EKG</strong>
+              <span data-measure>Herzsignal vom Polar H10</span>
+            </div>
+            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+              <path class="signal-baseline" d="M0 52H440"/>
+              <path class="signal-trace" d="M12 52H70q8-9 17 0h10l7 8 10-43 9 57 9-22h13q16-19 32 0h101q8-9 17 0h10l7 8 10-43 9 57 9-22h13q16-19 32 0h43"/>
+            </svg>
+          </div>
+        </div>
         <figcaption>
           <span class="figure-label" data-measure>Auf deinem Gerät.</span>
-          <span>Smartphone + Polar H10<br>Lokale Verarbeitung im Browser</span>
+          <span data-measure>Lokale Verarbeitung im Browser</span>
+          <span class="figure-note" data-measure>Schematische Darstellung, keine Live-Messung.</span>
         </figcaption>
-        <p class="figure-note">Schematische Darstellung, keine Live-Messung.</p>
       </figure>
     </section>
     <section class="section wrap" id="anwendungen" aria-labelledby="applications-title">
       <div class="section-heading"><p class="section-number">01 / Anwendungen</p><h2 id="applications-title" data-measure>Eine offene Grundlage.<br>Drei Anwendungsbereiche.</h2></div>
       <div class="applications">
-        <article><span class="item-number" aria-hidden="true">01</span><h3 data-measure>Persönliche Gesundheit</h3><p>Körpersignale beobachten, Atemübungen begleiten und eigene Formen der Stressregulation erkunden. Verständliche Rückmeldungen und selbst verwaltete Aufzeichnungen stehen im Mittelpunkt.</p></article>
-        <article><span class="item-number" aria-hidden="true">02</span><h3 data-measure>Medizinische Messverfahren</h3><p>Geplant sind Vergleiche mit medizinischen Herz- und Atemreferenzen. Dazu gehört die Frage, wie zuverlässig sich Atmung mit einem am Bauch befestigten Smartphone erfassen lässt.</p></article>
-        <article><span class="item-number" aria-hidden="true">03</span><h3 data-measure>Kreative Medien</h3><p>Die Atmung bewegt Blätter in einem Wald. Eine Blase wächst und schrumpft im eigenen Rhythmus. Offene Schnittstellen sollen individuelle Spiele, Visualisierungen und immersive Anwendungen ermöglichen.</p></article>
+        <article><span class="item-number" aria-hidden="true">01</span><h3 data-measure>Persönliche Gesundheit</h3><p>Körpersignale beobachten, <span class="signal-resp">Atemübungen</span> begleiten und eigene Formen der Stressregulation erkunden. Verständliche Rückmeldungen und selbst verwaltete Aufzeichnungen stehen im Mittelpunkt.</p></article>
+        <article><span class="item-number" aria-hidden="true">02</span><h3 data-measure>Medizinische Messverfahren</h3><p>Geplant sind Vergleiche mit medizinischen <span class="signal-ecg">Herzreferenzen</span> und <span class="signal-resp">Atemreferenzen</span>. Dazu gehört die Frage, wie zuverlässig sich <span class="signal-resp">Atmung</span> mit einem am Bauch befestigten Smartphone erfassen lässt.</p></article>
+        <article><span class="item-number" aria-hidden="true">03</span><h3 data-measure>Kreative Medien</h3><p>Die <span class="signal-resp">Atmung</span> bewegt Blätter in einem Wald. Eine Blase wächst und schrumpft im eigenen <span class="signal-resp">Atemrhythmus</span>. Offene Schnittstellen sollen individuelle Spiele, Visualisierungen und immersive Anwendungen ermöglichen.</p></article>
       </div>
       <p class="section-note">Messqualität und Geräteeignung werden gesondert geprüft. Medizinische Vergleichsstudien sind geplant; eine klinische Validierung liegt für den geplanten Browserbaukasten noch nicht vor.</p>
     </section>
     <section class="section wrap" id="team" aria-labelledby="team-title">
       <div class="section-heading"><p class="section-number">02 / Team</p><h2 id="team-title" data-measure>Forschung trifft Gestaltung.</h2></div>
       <div class="team-list">
-        <article class="person"><span class="initials" aria-hidden="true">GF</span><div><h3 data-measure>George Fejer</h3><p class="person-role">HCI &amp; kognitive Neurowissenschaft</p><p>Verbindet die Forschung zu Atmung und Körperwahrnehmung mit physiologischer Signalverarbeitung und interaktiven Anwendungen.</p><a class="inline-link" href="https://github.com/GeorgeFejer91">GitHub-Profil <span aria-hidden="true">↗</span></a></div></article>
+        <article class="person"><span class="initials" aria-hidden="true">GF</span><div><h3 data-measure>George Fejer</h3><p class="person-role">HCI &amp; kognitive Neurowissenschaft</p><p>Verbindet die Forschung zu <span class="signal-resp">Atmung</span> und Körperwahrnehmung mit physiologischer Signalverarbeitung und interaktiven Anwendungen.</p><a class="inline-link" href="https://github.com/GeorgeFejer91">GitHub-Profil <span aria-hidden="true">↗</span></a></div></article>
         <article class="person"><span class="initials" aria-hidden="true">A</span><div><h3 data-measure>Alex</h3><p class="person-role">Zen Specs · Projektpartner</p><p>Gemeinsam arbeiten wir an der Ausrichtung von Pulsraum und der Verbindung von Biosensorik, selbstbestimmter Datennutzung und kreativen Anwendungen.</p></div></article>
       </div>
       <p class="section-note">Der Ansatz knüpft an Vorarbeiten zu Biosensorik und interaktivem Feedback an, darunter <a href="https://github.com/GeorgeFejer91/Polar-Stream">Polar Stream</a> und <a href="https://github.com/GeorgeFejer91/ECGaming">EC Gaming</a>.</p>

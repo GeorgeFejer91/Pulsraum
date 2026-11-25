@@ -50,7 +50,7 @@ The site is static HTML/CSS with a small locally served JavaScript text-measurem
 
 Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
 
-Visual direction: restrained warm background, deep green type, generous document flow and four anchor-linked sections. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. The site is German; no em dashes in its project copy.
+The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. The site is German; no em dashes in its project copy.
 
 ## Current verified state
 
