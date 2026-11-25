@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "build": "node scripts/build.mjs", "check": "node --check site.js && node --check theme.js" },
-  "dependencies": { "@chenglou/pretext": "1.0.0" }
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node --check site.js && node --check theme.js",
+    "check:visual": "node scripts/check-visual.mjs"
+  },
+  "dependencies": {
+    "@chenglou/pretext": "1.0.0"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
 }

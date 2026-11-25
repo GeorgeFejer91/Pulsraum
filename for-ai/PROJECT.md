@@ -18,10 +18,10 @@ Until an execution workflow owns the state, use this small active checklist:
 
 - [x] Create the separate public repository GeorgeFejer91/Pulsraum and verify its control plane.
 - [x] Publish four sections: project description, application domains, team, participation/contact.
-- [x] Verify desktop/phone reflow at 320, 390, 844 and 1440 px, skip-link keyboard focus, team anchor, 21 measured text regions, four sections and no observed clipping. Full assistive-technology and 200% text-spacing matrices remain untested.
-- [x] Verify GitHub Pages built commit f14dd760f84508c52eb8ced424b56e72a9621c70 successfully; default HTTPS Pages URL redirects to the configured custom domain.
-- [ ] Verify rendered live page after apex DNS resolves.
-- [ ] Connect pulsraum.eu and www through Namecheap DNS; verify HTTPS or name the exact pending external condition.
+- [x] Verify the stretch accordion in desktop and smartphone browser renderings, including 320 to 1440 CSS px, touch, keyboard, dark mode, enlarged text, text spacing and JavaScript disabled.
+- [x] Connect pulsraum.eu and www through Namecheap DNS. GitHub's health check validates both names, and live HTTP serves the page and www redirect.
+- [ ] Verify the GitHub Actions deployment of the visually checked artifact.
+- [ ] Verify the rendered site and www redirect over HTTPS with enforcement enabled.
 
 Replace these bootstrap tasks with the agreed product tasks. Before a session
 ends, record the next concrete action, blockers, evidence, and last-observed
@@ -39,14 +39,13 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 
 ## Product/control-plane boundary
 
-- Product source and deliverables: outside `for-ai/`; exact roots are
-  **Undecided until the first deliverable selects them**.
+- Product source: root HTML, CSS, JavaScript, and `assets/`.
 - Agent orchestration and durable project memory: `for-ai/`.
 - Local generated diagnostics and scratch evidence: `.for-ai-local/` (ignored).
 
 ## Architecture and ownership
 
-The site is static HTML/CSS with a small locally served JavaScript text-measurement module. Pretext is pinned; its browser files and license are copied locally by a standard-library build script. GitHub Pages serves the repository root. No application framework, server, analytics, forms, sensor permissions or health-data collection are needed for this project page.
+The site uses static HTML and CSS with locally served JavaScript. The build script copies the pinned Pretext browser modules and license. The applications section uses a native stretch accordion with Pretext measurement and document reflow for enlarged text. The Pages workflow stages only public website files and requires rendered verification of that artifact before deployment.
 
 Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
 
@@ -54,15 +53,10 @@ The visual direction uses warm light surfaces, deep green type, generous documen
 
 ## Current verified state
 
-- Public repository and four-section static site created on 25 November 2026. Bootstrap and context checker passed; npm build/syntax and four-section/local-asset checks passed.
-- GitHub Pages built exact product commit f14dd760f84508c52eb8ced424b56e72a9621c70. Source: main, repository root. CNAME is pulsraum.eu. Local main and remote main matched at that commit when checked.
-- Namecheap www CNAME saved to GeorgeFejer91.github.io; verified after refresh and through public resolver 1.1.1.1.
-- The old default apex URL redirect is absent in the latest observed panel. Public lookup currently returns no apex A record. Root ALIAS/A configuration remains unfinished.
-- Browser input from another activity interrupted the domain edit. A request to leave the Namecheap DNS tab available is pending; do not fight concurrent input or use stale window/element geometry.
-- HTTPS certificate is not yet provisioned; enforce-HTTPS is false. Do not describe the custom domain as live or secure until observed. No SSL purchase is necessary for GitHub Pages.
-- Native UI selection requires fresh state after window-size or user-input changes. Scope edits to this domain's website records; preserve mail, SPF, account and security settings.
+- The legacy Pages pipeline served commit `7b007bd` on 25 November 2026. The apex returned HTTP 200 and www returned a 301 to the apex. GitHub reported both domains eligible for HTTPS and no provisioned certificate. HTTPS enforcement was off.
+- Locally staged content passed 12 rendered cases in Chromium and WebKit. Desktop, narrow and landscape phone, both themes, and enlarged-text screenshots were inspected. Physical phones and screen readers were outside the tested matrix.
 
-Next action: when the domain tab is available, set apex ALIAS @ to GeorgeFejer91.github.io (or all four official GitHub A records), verify authoritative/public DNS, then verify live content and HTTPS availability. User authorized this DNS connection and public website launch. Record any remaining propagation condition explicitly. No further team member, company identity or medical capability was invented.
+Next action: verify the Pages workflow run for the published revision. Check certificate provisioning and enable HTTPS when available, then verify the live page and redirects.
 
 Git and runnable checks are the authority for branch, revision, and behavior.
 Do not turn this section into a second status ledger.

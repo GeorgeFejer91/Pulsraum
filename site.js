@@ -7,18 +7,19 @@ const cache = new WeakMap();
 const elements = [...document.querySelectorAll('[data-measure]')];
 function measure() {
   for (const element of elements) {
+    const width = element.getBoundingClientRect().width;
+    if (width <= 0) continue;
     const css = getComputedStyle(element);
     const font = `${css.fontStyle} ${css.fontWeight} ${css.fontSize} ${css.fontFamily}`;
     const text = element.innerText;
     const spacing = Number.parseFloat(css.letterSpacing) || 0;
-    const key = `${font}|${spacing}|${text}`;
+    const whiteSpace = element.querySelector('br') ? 'pre-wrap' : 'normal';
+    const key = `${font}|${spacing}|${whiteSpace}|${text}`;
     let entry = cache.get(element);
     if (entry?.key !== key) {
-      entry = { key, prepared: prepare(text, font, { letterSpacing: spacing, whiteSpace: 'pre-wrap' }) };
+      entry = { key, prepared: prepare(text, font, { letterSpacing: spacing, whiteSpace }) };
       cache.set(element, entry);
     }
-    const width = element.getBoundingClientRect().width;
-    if (width <= 0) continue;
     const stats = measureLineStats(entry.prepared, width);
     const lineHeight = Number.parseFloat(css.lineHeight);
     // Natural flow and wrapping take priority; never shrink user-enlarged text.

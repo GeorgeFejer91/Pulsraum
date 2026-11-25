@@ -38,7 +38,20 @@ Before implementation, name:
 
 ## Gate 2: focused change
 
-For this static website run `npm ci --ignore-scripts`, `npm run build`, and `npm run check`. Inspect the German document at desktop and phone sizes, keyboard anchors, text measurement, 320px reflow and enlarged text. Confirm exactly four main sections and no external runtime asset requests. The site must remain readable with JavaScript unavailable. Record unsupported assistive-technology or cross-browser checks without inventing conformance.
+Every website change requires rendered visual verification before commit and
+publication, including copy, CSS, scripts, markup, and assets. Run
+`npm ci --ignore-scripts`, `npm run build`, `npm run check`, and
+`npm run check:visual`. Install the locked browsers when needed with
+`npx playwright install chromium webkit`.
+
+Open the desktop and phone screenshots in `.for-ai-local/visual/` and inspect
+the affected area in light and dark themes where relevant. Check the rendered
+layout, labels, wrapping, spacing, focus and expanded states. Keep the four
+main sections readable at 320 CSS px and without JavaScript. The accordion must
+expand without internal scrolling and preserve touch and keyboard access.
+The browser check also covers landscape, 480 CSS px, doubled text, text
+spacing, and local asset loading. Record the renderings reviewed, checks run,
+and untested device or assistive-technology scope.
 
 For launch, verify the exact GitHub Pages build SHA, HTTP content, domain A/CNAME answers and certificate status. DNS or certificate propagation may remain an external pending condition; distinguish configured settings from live verified HTTPS.
 
@@ -57,10 +70,14 @@ or irrelevant full matrix for a documentation-only edit.
 
 1. Review status and diff; preserve unrelated changes.
 2. Confirm only intended paths are staged.
-3. Confirm all required gates passed or are honestly reported.
+3. Confirm all required gates passed. Website changes require a completed visual
+   review. A missing rendering or failed check blocks publication.
 4. Create one coherent commit under normal repository policy.
 5. Push without force and without bypassing protection or secret scanning.
 6. Verify the remote commit and required CI/deployment for that exact SHA.
+   The Pages workflow verifies its staged artifact in Chromium and WebKit
+   and publishes only after the rendered checks pass. The workflow keeps the
+   screenshots as the `website-screenshots` artifact.
 
 ## Handoff evidence
 

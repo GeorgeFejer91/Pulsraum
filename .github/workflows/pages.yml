@@ -1,0 +1,67 @@
+name: Verify and deploy website
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify rendered website
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm run check
+      - name: Stage public website
+        run: |
+          mkdir "$RUNNER_TEMP/site"
+          cp index.html styles.css site.js theme.js "$RUNNER_TEMP/site/"
+          cp -R assets "$RUNNER_TEMP/site/"
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Check desktop and phone renderings
+        run: npm run check:visual -- "$RUNNER_TEMP/site"
+      - name: Upload screenshots for visual review
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: website-screenshots
+          path: .for-ai-local/visual/*.png
+          include-hidden-files: true
+          retention-days: 14
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy:
+    name: Publish verified website
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

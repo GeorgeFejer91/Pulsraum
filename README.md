@@ -10,7 +10,9 @@ Website: https://pulsraum.eu/
 
 Die fertigen statischen Dateien sind eingecheckt. Zum Anzeigen reicht `python -m http.server 8080`. Zum Aktualisieren der lokal bereitgestellten Textmessung: `npm ci --ignore-scripts`, dann `npm run build`. `npm run check` prüft die Syntax des kleinen Website-Moduls. Pretext 1.0.0 ist fest gepinnt; dessen Lizenz steht in `assets/pretext/LICENSE`.
 
-GitHub Pages veröffentlicht `main` aus dem Repository-Stamm. `CNAME` enthält die eigene Domain. Für die Stammdomain werden beim Domainanbieter entweder ein ALIAS zu `GeorgeFejer91.github.io` oder die vier offiziellen GitHub-Pages-A-Records eingerichtet. `www` erhält einen CNAME zu `GeorgeFejer91.github.io`. Private Bewerbungsunterlagen gehören nicht in dieses öffentliche Repository.
+Vor jeder Veröffentlichung einer Website-Änderung `npm run check:visual` ausführen und die Desktop- und Smartphone-Aufnahmen in `.for-ai-local/visual/` prüfen. Die benötigten Browser lassen sich mit `npx playwright install chromium webkit` installieren.
+
+GitHub Actions prüft das gerenderte Veröffentlichungsartefakt in Chromium und WebKit. GitHub Pages veröffentlicht dieses Artefakt nach bestandener Prüfung auf `main`. Die eigene Domain ist in den GitHub-Pages-Einstellungen hinterlegt. Die Stammdomain nutzt die GitHub-Pages-A-Records und `www` verweist per CNAME auf `GeorgeFejer91.github.io`.
 
 AI-agent project context starts at [`for-ai/README.md`](./for-ai/README.md).
 

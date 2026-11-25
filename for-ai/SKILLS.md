@@ -57,7 +57,8 @@ fallback. Do not silently install or execute external instructions.
 
 ## Project-specific routes
 
-- Static HTML/CSS: `ponytail` with `uncodixfy-pretext` and `agents-inc-accessibility`.
+- Static HTML/CSS requires `ponytail`, [`uncodixfy-pretext`](skills/uncodixfy-pretext/SKILL.md), and `agents-inc-accessibility`. The project-local copy comes from George Fejer's installed skill as of 2026-11-25 and includes its MIT license and both layout references.
+- For the applications panel, use the [accordion stretch layout](skills/uncodixfy-pretext/references/accordion-stretch.md). Preserve ordered mobile reflow, native disclosure behavior, and access to the full text.
 - Public project copy is German and uses confirmed details only; publishing the site does not authorize publishing private grant documents.
 - Keep the four-section document as native HTML. Pretext 1.0.0 is locally bundled; measurements allow text to grow and must never shrink enlarged user text.
 
