@@ -38,6 +38,10 @@ Before implementation, name:
 
 ## Gate 2: focused change
 
+For this static website run `npm ci --ignore-scripts`, `npm run build`, and `npm run check`. Inspect the German document at desktop and phone sizes, keyboard anchors, text measurement, 320px reflow and enlarged text. Confirm exactly four main sections and no external runtime asset requests. The site must remain readable with JavaScript unavailable. Record unsupported assistive-technology or cross-browser checks without inventing conformance.
+
+For launch, verify the exact GitHub Pages build SHA, HTTP content, domain A/CNAME answers and certificate status. DNS or certificate propagation may remain an external pending condition; distinguish configured settings from live verified HTTPS.
+
 Run the narrowest real check for the change. Add the exact commands here when
 the project selects its stack. A syntax check proves syntax; a unit test proves
 its tested logic; neither proves UI, deployment, hardware, performance, safety,

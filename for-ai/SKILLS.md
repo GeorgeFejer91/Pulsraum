@@ -57,6 +57,10 @@ fallback. Do not silently install or execute external instructions.
 
 ## Project-specific routes
 
+- Static HTML/CSS: `ponytail` with `uncodixfy-pretext` and `agents-inc-accessibility`.
+- Public project copy is German and uses confirmed details only; publishing the site does not authorize publishing private grant documents.
+- Keep the four-section document as native HTML. Pretext 1.0.0 is locally bundled; measurements allow text to grow and must never shrink enlarged user text.
+
 Add exact identifiers only for the selected product and task. Preserve the
 shared baseline. Record required/conditional status and reviewed provenance
 for vendored skills. Read selected instructions completely before acting.

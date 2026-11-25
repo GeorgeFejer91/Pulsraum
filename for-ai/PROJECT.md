@@ -11,14 +11,16 @@ can be verified at its real output surface.
 
 ## Goal and session continuity
 
-Overall goal: the purpose above. Product acceptance criteria are **Undecided**
-until the first product task defines observable outcomes.
+Overall goal: publish a German one-page project website named Pulsraum on GitHub Pages and connect the user-owned domain pulsraum.eu. The user explicitly authorized launch and domain configuration on 25 November 2026.
 
 Resume existing GSD `.planning/` state or the established project checklist.
 Until an execution workflow owns the state, use this small active checklist:
 
-- [ ] Define the first product outcome and its acceptance evidence.
-- [ ] Implement the agreed outcome and retain its verification result.
+- [x] Create the separate public repository GeorgeFejer91/Pulsraum and verify its control plane.
+- [ ] Publish four sections: project description, application domains, team, participation/contact.
+- [ ] Verify keyboard access, phone/desktop layout, readable text and local Pretext measurement.
+- [ ] Verify the exact deployed GitHub Pages commit and live page.
+- [ ] Connect pulsraum.eu and www through Namecheap DNS; verify HTTPS or name the exact pending external condition.
 
 Replace these bootstrap tasks with the agreed product tasks. Before a session
 ends, record the next concrete action, blockers, evidence, and last-observed
@@ -43,9 +45,11 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 
 ## Architecture and ownership
 
-The implementation stack, modules, external contracts, and deployment surface
-are currently **Undecided**. Once selected, record only the top-level ownership
-map here and route detailed protocols to task-specific files.
+The site is static HTML/CSS with a small locally served JavaScript text-measurement module. Pretext is pinned; its browser files and license are copied locally by a standard-library build script. GitHub Pages serves the repository root. No application framework, server, analytics, forms, sensor permissions or health-data collection are needed for this project page.
+
+Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
+
+Visual direction: restrained warm background, deep green type, generous document flow and four anchor-linked sections. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. The site is German; no em dashes in its project copy.
 
 ## Current verified state
 

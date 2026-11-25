@@ -1,0 +1,8 @@
+{
+  "name": "pulsraum",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "node scripts/build.mjs", "check": "node --check site.js" },
+  "dependencies": { "@chenglou/pretext": "1.0.0" }
+}

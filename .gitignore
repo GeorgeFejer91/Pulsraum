@@ -1,5 +1,6 @@
 # Local agent/runtime artifacts
 .for-ai-local/
+node_modules/
 
 # Local configuration and credentials
 .env
