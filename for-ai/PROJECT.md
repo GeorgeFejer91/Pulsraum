@@ -17,9 +17,10 @@ Resume existing GSD `.planning/` state or the established project checklist.
 Until an execution workflow owns the state, use this small active checklist:
 
 - [x] Create the separate public repository GeorgeFejer91/Pulsraum and verify its control plane.
-- [ ] Publish four sections: project description, application domains, team, participation/contact.
-- [ ] Verify keyboard access, phone/desktop layout, readable text and local Pretext measurement.
-- [ ] Verify the exact deployed GitHub Pages commit and live page.
+- [x] Publish four sections: project description, application domains, team, participation/contact.
+- [x] Verify desktop/phone reflow at 320, 390, 844 and 1440 px, skip-link keyboard focus, team anchor, 21 measured text regions, four sections and no observed clipping. Full assistive-technology and 200% text-spacing matrices remain untested.
+- [x] Verify GitHub Pages built commit f14dd760f84508c52eb8ced424b56e72a9621c70 successfully; default HTTPS Pages URL redirects to the configured custom domain.
+- [ ] Verify rendered live page after apex DNS resolves.
 - [ ] Connect pulsraum.eu and www through Namecheap DNS; verify HTTPS or name the exact pending external condition.
 
 Replace these bootstrap tasks with the agreed product tasks. Before a session
@@ -53,9 +54,15 @@ Visual direction: restrained warm background, deep green type, generous document
 
 ## Current verified state
 
-- Fresh Git repository initialized on 2026-11-25.
-- AI control plane created and mechanically checked.
-- No product implementation has been scaffolded.
+- Public repository and four-section static site created on 25 November 2026. Bootstrap and context checker passed; npm build/syntax and four-section/local-asset checks passed.
+- GitHub Pages built exact product commit f14dd760f84508c52eb8ced424b56e72a9621c70. Source: main, repository root. CNAME is pulsraum.eu. Local main and remote main matched at that commit when checked.
+- Namecheap www CNAME saved to GeorgeFejer91.github.io; verified after refresh and through public resolver 1.1.1.1.
+- The old default apex URL redirect is absent in the latest observed panel. Public lookup currently returns no apex A record. Root ALIAS/A configuration remains unfinished.
+- Browser input from another activity interrupted the domain edit. A request to leave the Namecheap DNS tab available is pending; do not fight concurrent input or use stale window/element geometry.
+- HTTPS certificate is not yet provisioned; enforce-HTTPS is false. Do not describe the custom domain as live or secure until observed. No SSL purchase is necessary for GitHub Pages.
+- Native UI selection requires fresh state after window-size or user-input changes. Scope edits to this domain's website records; preserve mail, SPF, account and security settings.
+
+Next action: when the domain tab is available, set apex ALIAS @ to GeorgeFejer91.github.io (or all four official GitHub A records), verify authoritative/public DNS, then verify live content and HTTPS availability. User authorized this DNS connection and public website launch. Record any remaining propagation condition explicitly. No further team member, company identity or medical capability was invented.
 
 Git and runnable checks are the authority for branch, revision, and behavior.
 Do not turn this section into a second status ledger.
