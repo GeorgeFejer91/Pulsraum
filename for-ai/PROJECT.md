@@ -43,6 +43,27 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 - Agent orchestration and durable project memory: `for-ai/`.
 - Local generated diagnostics and scratch evidence: `.for-ai-local/` (ignored).
 
+## Website layout
+
+Give every website section visibly distinct boxes, one per topic, person, or
+way to participate. Use a clear title and keep the explanation, images, and
+links that support that subject together in its box. Keep section headings and
+brief introductions above the boxes so readers can see how they fit together.
+
+- **Project** groups each core idea in its own box, such as what Pulsraum does
+  and how it processes data locally.
+- **Applications** gives each use case its own box. The native accordion may
+  provide the boxes, with one labeled disclosure per use case.
+- **Team** gives each member a profile box with their name, a portrait cleared
+  for publication, verified credentials, relevant website links, and a short
+  description of what they do on Pulsraum. Omit individual details until they
+  are confirmed and available for publication.
+- **Participation and contact** gives each distinct opportunity or contact
+  route its own box. Keep each call to action with the opportunity it serves.
+
+Use consistent box boundaries and spacing in both themes. Let boxes grow with
+their contents and stack them in reading order on narrow screens.
+
 ## Architecture and ownership
 
 The site uses static HTML and CSS with locally served JavaScript. The build script copies the pinned Pretext browser modules and license. The applications section uses a native stretch accordion with Pretext measurement and document reflow for enlarged text. The Pages workflow stages only public website files and requires rendered verification of that artifact before deployment.

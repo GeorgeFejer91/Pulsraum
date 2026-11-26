@@ -49,6 +49,13 @@ the affected area in light and dark themes where relevant. Check the rendered
 layout, labels, wrapping, spacing, focus and expanded states. Keep the four
 main sections readable at 320 CSS px and without JavaScript. The accordion must
 expand without internal scrolling and preserve touch and keyboard access.
+
+When changing a section's content or layout, review it against the
+[website layout contract](./PROJECT.md#website-layout). Check that each box
+conveys one subject, that each team member has a separate profile box with the
+available verified details, and that boxes stay distinct in both themes and
+stack in reading order at narrow widths.
+
 The browser check also covers landscape, 480 CSS px, doubled text, text
 spacing, and local asset loading. Record the renderings reviewed, checks run,
 and untested device or assistive-technology scope.
