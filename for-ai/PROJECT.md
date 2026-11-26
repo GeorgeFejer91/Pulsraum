@@ -76,6 +76,9 @@ or person. Keep supporting text, images, and links with their subject.
   Its WebP atlas uses the side camera, frames 1 to 95 at every other frame,
   in four rows of twelve 356 × 258 px tiles. The web SVG draws the Bluetooth
   link, so the scene's Bluetooth/receiver collection is hidden for this export.
+  The local-analysis card shows a measurement moving directly from the user's
+  smartphone to their home PC. Both devices and the one-way arrow remain
+  visible in the still diagram. The planned sync uses no cloud service.
 - **Team** gives each member a separate profile box with available details
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
