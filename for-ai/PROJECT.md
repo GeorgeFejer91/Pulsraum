@@ -30,10 +30,10 @@ checklist and do not close the overall goal before its acceptance criteria pass.
 
 Current website update:
 
-- [x] Add the scientific building blocks under Project. The local `main` update
-  passed 12 Chromium and WebKit rendering cases and focused desktop and phone
-  checks in both themes. Physical devices and screen readers were outside the
-  test matrix.
+- [x] Add the scientific building blocks under Project. With the pinned
+  navigation integrated, local `main` passed 13 Chromium and WebKit rendering
+  cases and focused desktop and phone checks in both themes. Physical devices
+  and screen readers were outside the test matrix.
 - [ ] Publish the update when requested. The observed remote `main` points to
   the pinned-navigation update `f1a6ab78598e37463865f2a759b931ffe76d31dd`.
 

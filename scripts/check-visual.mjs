@@ -60,11 +60,44 @@ async function checkLayout(page) {
   assert.deepEqual(issues, []);
 }
 
+async function checkNavigation(page, phone) {
+  const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  const initial = await navigation.boundingBox();
+  const teamLink = navigation.getByRole('link', { name: 'Team' });
+  await teamLink.focus();
+  await teamLink.press('Enter');
+  assert.equal(new URL(page.url()).hash, '#team');
+  const teamScroll = await page.evaluate(() => window.scrollY);
+  assert.ok(teamScroll > 0, 'Section links must scroll the page');
+
+  const pinned = await navigation.boundingBox();
+  assert.ok(Math.abs(pinned.y - initial.y) < 2, 'The main menu must stay in place when the page scrolls');
+  if (!phone) {
+    const content = await page.getByRole('main').boundingBox();
+    assert.ok(pinned.x + pinned.width <= content.x, 'The desktop menu must sit to the left of the content');
+  } else {
+    const teamHeading = await page.locator('#team-title').boundingBox();
+    assert.ok(Math.abs(pinned.y + pinned.height - page.viewportSize().height) < 2, 'The phone menu must sit at the bottom');
+    assert.ok(teamHeading.y >= 0 && teamHeading.y + teamHeading.height <= pinned.y, 'The phone menu must leave the destination heading visible');
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const footerLink = await page.locator('footer a').last().boundingBox();
+    assert.ok(footerLink.y + footerLink.height <= pinned.y + 1, 'The phone menu must leave the footer links reachable');
+  }
+
+  const projectLink = navigation.getByRole('link', { name: 'Projekt' });
+  await projectLink.focus();
+  await projectLink.press('Enter');
+  assert.equal(new URL(page.url()).hash, '#projekt');
+  assert.ok(await page.evaluate(() => window.scrollY) < teamScroll, 'The project link must scroll back up');
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
 async function checkPage(browser, name, width, height, mode = 'default') {
+  const phone = width <= 844;
   const page = await browser.newPage({
     viewport: { width, height },
-    hasTouch: width <= 844,
-    isMobile: width <= 844,
+    hasTouch: phone,
+    isMobile: phone,
     colorScheme: mode === 'dark' ? 'dark' : 'light',
     reducedMotion: 'reduce',
     javaScriptEnabled: mode !== 'no-js',
@@ -107,10 +140,14 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       if (name === 'chromium') await page.keyboard.press('Tab');
       else await page.locator('.skip-link').focus();
       assert.equal(await page.locator('.skip-link:focus-visible').count(), 1);
-      const teamLink = page.getByRole('navigation').getByRole('link', { name: 'Team' });
-      await teamLink.focus();
-      await teamLink.press('Enter');
-      assert.equal(new URL(page.url()).hash, '#team');
+    }
+    await checkNavigation(page, phone);
+    if (width === 1440 && mode === 'default') {
+      const scrollBehavior = () => page.locator('html').evaluate(root => getComputedStyle(root).scrollBehavior);
+      assert.equal(await scrollBehavior(), 'auto');
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      assert.equal(await scrollBehavior(), 'smooth');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
     }
     await checkLayout(page);
     assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements
@@ -132,7 +169,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const details = summary.locator('..');
       const paragraph = details.locator('p');
       if (await details.getAttribute('open') === null) {
-        if (index === 1 && width <= 844) await summary.tap();
+        if (index === 1 && phone) await summary.tap();
         else await summary.press('Enter');
       }
       assert.ok(await paragraph.isVisible(), 'Every accordion description must be readable after activation');
@@ -167,6 +204,7 @@ try {
     await checkPage(browser, 'chromium', 390, 844, 'large-text');
     await checkPage(browser, 'chromium', 390, 844, 'no-js');
     await checkPage(browser, 'chromium', 390, 844, 'dark');
+    await checkPage(browser, 'chromium', 1440, 900, 'dark');
   } finally {
     await browser.close();
   }
