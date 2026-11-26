@@ -3,9 +3,12 @@ import { prepare, measureLineStats, measureNaturalWidth, setLocale } from './ass
 // The document remains readable without JS. Measurements only let text regions grow.
 setLocale('de');
 await document.fonts.ready;
+const root = document.documentElement;
+const navigation = document.querySelector('.site-header nav');
 const cache = new WeakMap();
 const elements = [...document.querySelectorAll('[data-measure]')];
 function measure() {
+  root.style.setProperty('--navigation-block-size', `${navigation.offsetHeight}px`);
   for (const element of elements) {
     const width = element.getBoundingClientRect().width;
     if (width <= 0) continue;
@@ -27,7 +30,7 @@ function measure() {
     element.dataset.measuredLines = String(stats.lineCount);
     element.dataset.measuredWidth = String(Math.round(measureNaturalWidth(entry.prepared)));
   }
-  document.documentElement.dataset.textMeasurement = 'ready';
+  root.dataset.textMeasurement = 'ready';
 }
 let frame;
 const observer = new ResizeObserver(() => {
@@ -35,4 +38,5 @@ const observer = new ResizeObserver(() => {
   frame = requestAnimationFrame(measure);
 });
 elements.forEach(element => observer.observe(element));
+observer.observe(navigation);
 measure();
