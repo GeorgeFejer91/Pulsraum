@@ -456,7 +456,7 @@ img.portrait {
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 34%);
     gap: clamp(1.5rem, 4cqi, 3rem);
   }
-  .milestone-layout:has(.validation-phone) {
+  .milestone-layout:has(.validation-phone, .local-analysis) {
     grid-template-columns: minmax(0, 1fr) minmax(19rem, 43%);
   }
 }
@@ -486,6 +486,9 @@ img.portrait {
 .milestone-figure .ink-fill { fill: var(--ink); }
 .milestone-figure text { fill: var(--ink); stroke: none; }
 .milestone-figure .plot-label { font-size: 15px; }
+.local-analysis { max-width: 31rem; }
+.local-analysis .metric-label { font-size: 14px; }
+.local-analysis .metric-values { font-size: 20px; font-weight: 600; }
 .validation-phone {
   max-width: 31rem;
   border: 0;
@@ -562,11 +565,13 @@ img.portrait {
     stroke-dasharray: 100;
     animation: draw-trace 3.8s linear infinite;
   }
-  .in-view .sync-packet { animation: send-measurement 3.6s linear infinite; }
+  .local-analysis { --analysis-period: 5s; }
+  .in-view .sync-packet { animation: send-measurement var(--analysis-period) linear infinite; }
   .in-view .sync-received {
     stroke-dasharray: 100;
-    animation: receive-measurement 3.6s linear infinite;
+    animation: receive-measurement var(--analysis-period) linear infinite;
   }
+  .in-view .metric-values { animation: show-metrics var(--analysis-period) ease-out infinite; }
   .in-view .time-marker { animation: compare-recordings 8s linear infinite; }
   .in-view .pod-breath { animation: h10-breath 4s ease-in-out infinite; }
   .in-view .pod-beat { animation: h10-beat 3.8s linear infinite; }
@@ -599,12 +604,16 @@ img.portrait {
 }
 /* The packet starts behind the phone and disappears behind the monitor. */
 @keyframes send-measurement {
-  0%, 12% { transform: translateX(-62px); }
-  60%, 100% { transform: translateX(68px); }
+  0%, 8% { transform: translateX(-46px); }
+  38%, 100% { transform: translateX(44px); }
 }
 @keyframes receive-measurement {
-  0%, 55% { stroke-dashoffset: 100; }
-  80%, 100% { stroke-dashoffset: 0; }
+  0%, 36% { stroke-dashoffset: 100; }
+  56%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes show-metrics {
+  0%, 56%, 100% { opacity: 0; }
+  64%, 96% { opacity: 1; }
 }
 @keyframes compare-recordings {
   from { transform: translateX(-54px); }

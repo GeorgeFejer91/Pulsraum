@@ -84,7 +84,10 @@ or person. Keep supporting text, images, and links with their subject.
   tiles. Hide the Bluetooth/receiver collection for this export.
   The local-analysis card shows a measurement moving directly from the user's
   smartphone to their home PC. Both devices and the one-way arrow remain
-  visible in the still diagram. The planned sync uses no cloud service.
+  visible in the still diagram. The planned sync uses no cloud service. A
+  seated person sees two example results on the monitor: heart rate from
+  the ECG and breathing rate from the respiratory trace. The animation shows
+  the traces before the values; the still diagram shows both.
 - **Team** gives each member a separate profile box with available details
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
