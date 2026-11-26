@@ -75,9 +75,12 @@ or person. Keep supporting text, images, and links with their subject.
   abdomen, phone and graph cursor together. Inhalation rises in blue and
   exhalation falls in ochre. The phone waves use the active segment's color.
   The validation card links its editable spirometer scene in `assets/models/`.
-  Its WebP atlas uses the side camera, frames 1 to 95 at every other frame,
-  in four rows of twelve 356 × 258 px tiles. The web SVG draws the Bluetooth
-  link, so the scene's Bluetooth/receiver collection is hidden for this export.
+  The phone compares three labeled streams on one time axis. Its own signal is
+  solid blue. The Polar H10 above it uses ochre dashes and the spirometer to
+  its right uses teal dots, with matching Bluetooth paths into the display.
+  The WebP atlas uses the Blender camera `Webansicht · Messkopf und Griff`,
+  frames 1 to 95 at every other frame, in four rows of twelve 256 × 300 px
+  tiles. Hide the Bluetooth/receiver collection for this export.
   The local-analysis card shows a measurement moving directly from the user's
   smartphone to their home PC. Both devices and the one-way arrow remain
   visible in the still diagram. The planned sync uses no cloud service.

@@ -212,63 +212,57 @@
               <p data-measure><span data-en="We plan to compare the breathing movements recorded by a smartphone with accelerometer data recorded at the same time by the Polar H10. Our">Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene</span> <a href="https://www.vernier.com/product/go-direct-spirometer/" data-en="Vernier Go Direct Spirometer">Go Direct Spirometer von Vernier</a> <span data-en="provides reference measurements of airflow and breathing volume.">liefert Vergleichswerte für Atemfluss und Atemvolumen.</span></p>
               <a class="inline-link" href="assets/models/vernier-go-direct-spirometer.blend" download><span data-measure data-en="Download the Blender model of the spirometer">Blender-Modell des Spirometers herunterladen</span></a>
             </div>
-            <svg class="milestone-figure validation-phone" viewBox="0 -88 320 304" role="img" aria-labelledby="validation-figure">
-              <title id="validation-figure" data-en="The Polar H10 and the Vernier Go Direct Spirometer send measurements to the smartphone via Bluetooth. On the H10, blue indicates breathing and red indicates heartbeats. In the side view of the spirometer, blue particles show airflow reversing through the tube as the person breathes in and out. The screen compares the three traces.">Polar H10 und Vernier Go Direct Spirometer senden ihre Messdaten per Bluetooth an das Smartphone. Am H10 markiert Blau die Atmung und Rot den Herzschlag. In der schrägen Seitenansicht des Spirometers zeigen blaue Teilchen, wie die Luft beim Einatmen und Ausatmen in entgegengesetzter Richtung durch das Messrohr strömt. Das Display vergleicht die drei Messkurven.</title>
+            <svg class="milestone-figure validation-phone" viewBox="0 0 380 218" role="img" aria-labelledby="validation-figure" aria-describedby="validation-description">
+              <title id="validation-figure" data-en="Three breathing signals on a shared timeline">Drei Atemsignale im Zeitvergleich</title>
+              <desc id="validation-description" data-en="The solid blue line shows breathing movement measured by the phone. The Polar H10 above the phone sends accelerometer data over Bluetooth, shown as ochre dashes. The spirometer on the right sends airflow readings, shown as teal dots. The particles in its tube reverse direction with each inhalation and exhalation.">Die blaue, durchgezogene Kurve zeigt die Atembewegung am Smartphone. Der Polar H10 über dem Smartphone sendet seine Beschleunigungsdaten per Bluetooth. Seine Kurve ist ockerfarben und gestrichelt. Das Spirometer rechts sendet den Atemfluss. Seine Kurve ist türkis und gepunktet. Im Messrohr wechseln die Teilchen beim Ein- und Ausatmen die Richtung.</desc>
               <defs>
-                <clipPath id="spirometer-frame"><rect width="356" height="258"/></clipPath>
+                <clipPath id="spirometer-frame"><rect width="256" height="300"/></clipPath>
+                <clipPath id="validation-phase-window"><rect x="283" y="164" width="96" height="22"/></clipPath>
               </defs>
               <g class="device">
-                <g transform="translate(19 -28) scale(.2355)">
-                  <image href="assets/illustrations/polar-h10.webp" width="560" height="221"/>
-                  <g class="h10-light" mask="url(#h10-pod-whites)">
-                    <rect class="pod-breath signal-resp" x="107" y="58" width="272" height="162"/>
-                    <rect class="pod-beat signal-ecg" x="143" y="104" width="188" height="83"/>
-                  </g>
+                <image href="assets/illustrations/polar-h10.webp" x="39" y="8" width="133" height="53"/>
+                <g class="polar-stream device-link">
+                  <use href="#bluetooth-symbol" transform="translate(-86 -18) scale(.74)"/>
+                  <path class="stream-route" stroke-dasharray="5 4" d="M16 36q-10 0-10 10v86q0 11 10 11"/>
+                  <path d="m12 139 5 4-5 4"/>
                 </g>
-                <g transform="translate(142 -85) scale(.5)">
+                <g class="spirometer-art" transform="translate(283 47) scale(.374)">
                   <g clip-path="url(#spirometer-frame)">
                     <g class="spirometer-frame-row">
-                      <image class="spirometer-frame-column" href="assets/illustrations/spirometer-airflow.webp" width="4272" height="1032"/>
+                      <image class="spirometer-frame-column" href="assets/illustrations/spirometer-airflow.webp" width="3072" height="1200"/>
                     </g>
                   </g>
                 </g>
-                <g transform="translate(-75 0)">
-                  <use href="#bluetooth-symbol" transform="translate(26 -3) scale(.74)"/>
-                  <g class="bluetooth-waves">
-                    <path d="M155 43q5 4 10 0"/>
-                    <path d="M151 49q9 7 18 0"/>
-                    <path d="M147 55q13 10 26 0"/>
+                <g class="flow-stream device-link">
+                  <use href="#bluetooth-symbol" transform="translate(188 103) scale(.74)"/>
+                  <path class="stream-route" stroke-dasharray="1 4" d="M289 157v12q0 9-10 9h-4"/>
+                  <path d="m279 174-5 4 5 4"/>
+                </g>
+                <g class="flow-stream" clip-path="url(#validation-phase-window)" aria-hidden="true">
+                  <g class="breath-phase" text-anchor="middle">
+                    <text x="332" y="180" data-en="Inhale">Einatmen</text>
+                    <text x="332" y="205" data-en="Exhale">Ausatmen</text>
                   </g>
                 </g>
-                <g class="spirometer-link" transform="translate(57 0)">
-                  <use href="#bluetooth-symbol" transform="translate(26 -3) scale(.74)"/>
-                  <g class="bluetooth-waves">
-                    <path d="M155 43q5 4 10 0"/>
-                    <path d="M151 49q9 7 18 0"/>
-                    <path d="M147 55q13 10 26 0"/>
-                  </g>
+                <rect class="device-shell" x="20" y="77" width="251" height="134" rx="18"/>
+                <rect class="device-face" x="25" y="82" width="241" height="124" rx="14"/>
+                <path class="detail" d="M126 200h36"/>
+                <path class="guide" d="M143 108h111m-111 35h111m-111 35h111"/>
+                <g class="signal-resp">
+                  <text class="plot-label" x="33" y="113">Smartphone</text>
+                  <path class="trace" d="M143 118c13 0 15-20 28-20s16 20 28 20 15-20 27-20 16 20 28 20"/>
                 </g>
-                <g class="breath-phase" text-anchor="middle" aria-hidden="true">
-                  <text x="277" y="55" class="inhale" data-en="Inhale">Einatmen</text>
-                  <text x="277" y="55" class="exhale" data-en="Exhale">Ausatmen</text>
+                <g class="polar-stream">
+                  <text class="plot-label" x="33" y="148">Polar H10</text>
+                  <path class="trace" stroke-dasharray="5 3" d="M143 152c11 1 18-18 28-18 12 0 16 16 28 17 11 1 17-18 28-17 12 1 16 19 27 18"/>
                 </g>
-                <path class="detail" d="M59 65h20m6 0h14"/>
-                <rect class="device-shell" x="3" y="67" width="314" height="145" rx="21"/>
-                <rect class="device-face" x="9" y="73" width="302" height="133" rx="16"/>
-                <path d="M16 132v15"/>
-                <path class="detail" d="M141 200h38"/>
-                <g transform="translate(0 69)">
-                  <text class="plot-label" x="26" y="40">Smartphone</text>
-                  <text class="plot-label" x="26" y="77">Polar H10</text>
-                  <text class="plot-label" x="26" y="114">Spirometer</text>
-                  <path class="guide" d="M116 35h184M116 72h184m-184 37h184"/>
-                  <path class="trace signal-resp" d="M117 35c12 0 16-11 27-11s18 22 31 22 18-22 33-22 17 22 32 22 17-22 30-22 17 11 29 11"/>
-                  <path class="trace signal-resp" stroke-dasharray="5 3" d="M117 72c13 0 17-10 29-10s17 20 29 20 20-22 32-20 19 20 32 20 19-20 31-20 18 10 29 10"/>
-                  <path class="trace signal-resp" d="M117 109q8-15 16-13c10 2 14 25 26 25s14-25 27-25 16 25 29 25 16-25 29-25 18 25 30 25 14-18 25-16"/>
-                  <g class="time-marker">
-                    <path d="M247 17v111"/>
-                    <path class="ink-fill" d="m243 15 4 5 4-5Z"/>
-                  </g>
+                <g class="flow-stream">
+                  <text class="plot-label" x="33" y="183">Spirometer</text>
+                  <path class="trace" stroke-dasharray="1 3.5" d="M143 178q7-13 14-12c11 1 16 22 27 23 10 1 17-24 28-23s16 22 27 23q8 1 15-11"/>
+                </g>
+                <g class="time-marker">
+                  <path d="M197 94v98"/>
+                  <path fill="currentColor" d="m194 92 3 4 3-4Z"/>
                 </g>
               </g>
             </svg>

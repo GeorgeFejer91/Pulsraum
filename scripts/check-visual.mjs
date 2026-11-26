@@ -339,6 +339,24 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     }
     await checkLayout(page);
+    const validation = stages.nth(2).locator('.validation-phone');
+    const streams = await validation.locator('.trace').evaluateAll(paths => paths.map(path => {
+      const label = path.parentElement.querySelector('.plot-label');
+      return {
+        color: getComputedStyle(path).stroke,
+        pattern: getComputedStyle(path).strokeDasharray,
+        labelColor: getComputedStyle(label).fill,
+        labelFits: label.getBoundingClientRect().right < path.getBoundingClientRect().left,
+      };
+    }));
+    assert.equal(streams.length, 3);
+    assert.equal(new Set(streams.map(stream => stream.color)).size, 3, 'Each device needs a distinct trace color');
+    assert.equal(new Set(streams.map(stream => stream.pattern)).size, 3, 'Each device needs a distinct line pattern');
+    assert.ok(streams.every(stream => stream.labelFits && stream.labelColor === stream.color),
+      'Each label must match its trace and leave the plot clear');
+    const phoneShell = await validation.locator('.device-shell').boundingBox();
+    const spirometerLeft = await validation.locator('.spirometer-art').evaluate(g => g.getScreenCTM().e);
+    assert.ok(spirometerLeft > phoneShell.x + phoneShell.width, 'The spirometer belongs to the right of the phone');
     assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements
       .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
       .map(element => element.textContent.trim())), [], 'Research text must fit inside its boxes');
