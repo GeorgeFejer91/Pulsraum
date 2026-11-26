@@ -42,6 +42,19 @@ async function checkBreathingPhases(drawing) {
     await clock.ready;
     const seek = x => { clock.currentTime = duration * x / endX; };
     const edge = () => belly.getBoundingClientRect().right;
+    // The middle of each stroke becomes visible only after the cursor reaches it.
+    for (const line of segments) {
+      const sample = line.getPointAtLength(line.getTotalLength() / 2);
+      const screen = sample.matrixTransform(line.getScreenCTM());
+      const painted = () => document.elementsFromPoint(screen.x, screen.y).includes(line);
+      seek(sample.x - 4);
+      if (painted()) throw Error('The waveform is visible ahead of the cursor');
+      seek(sample.x + 4);
+      if (!painted()) throw Error('The waveform is missing behind the cursor');
+    }
+    const airflow = rig.querySelector('.mouth-air');
+    if (!airflow?.querySelector('path')) throw Error('The mouth needs visible airflow particles');
+    const airOffset = () => parseFloat(getComputedStyle(airflow.querySelector('path')).strokeDashoffset);
     seek(0);
     let lastEdge = edge();
     const restEdge = lastEdge;
@@ -52,6 +65,7 @@ async function checkBreathingPhases(drawing) {
       const ink = getComputedStyle(line).stroke;
       colors.add(ink);
       const rising = line.dataset.phase === 'inhale';
+      let previousAir = airOffset();
       for (let i = 1; i < line.points.length; i++) {
         const a = line.points.getItem(i - 1), b = line.points.getItem(i);
         const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
@@ -59,6 +73,11 @@ async function checkBreathingPhases(drawing) {
         const point = new DOMPoint().matrixTransform(cursor.getScreenCTM()).matrixTransform(plot.getScreenCTM().inverse());
         if (Math.abs(point.x - x) > .05 || Math.abs(point.y - y) > .05) throw Error('Cursor left the breath trace');
         if (getComputedStyle(waves).stroke !== ink || getComputedStyle(cursor).fill !== ink) throw Error('Breath phase color mismatch');
+        const air = airOffset();
+        if (getComputedStyle(airflow).stroke !== ink || !(rising ? air > previousAir : air < previousAir)) {
+          throw Error('Air particles must move toward the mouth on inhale and away on exhale in the phase color');
+        }
+        previousAir = air;
         const currentEdge = edge();
         if (rising ? currentEdge <= lastEdge : currentEdge >= lastEdge) throw Error('Belly movement reversed relative to the graph');
         if (Math.abs((phone.getBoundingClientRect().x - restPhoneX) - (currentEdge - restEdge)) > .05) throw Error('Phone drifted from the belly');

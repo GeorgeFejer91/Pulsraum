@@ -496,6 +496,12 @@ img.portrait {
 }
 .phone-assembly { transform: translateX(calc(var(--belly-travel) * 1px)); }
 .phone-waves { stroke: currentColor; }
+.breathing-rig.is-recording .breath-plot { clip-path: url(#breath-reveal); }
+#breath-reveal rect { width: calc(var(--breath-x) * 1px); }
+.mouth-air {
+  stroke: currentColor;
+  stroke-dashoffset: calc(var(--breath-y) * -1px);
+}
 .breath-cursor {
   fill: currentColor;
   stroke: var(--paper);

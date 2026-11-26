@@ -167,8 +167,25 @@
               <p data-measure data-en="The browser app reads the smartphone’s accelerometer to detect breathing movements.">Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="breath-figure">
-              <title id="breath-figure" data-en="A simulated breath seen from the side. As the person inhales, their abdomen and phone move outward and the dot rises along the blue curve. As they exhale, their abdomen moves inward and the dot descends along the ochre curve. The radio waves match the color of each phase.">Simulierter Atemzug im Profil. Beim Einatmen bewegt sich der Bauch mit dem Smartphone nach außen, der Punkt steigt auf der blauen Kurve. Beim Ausatmen bewegt sich der Bauch nach innen, der Punkt sinkt auf der ockerfarbenen Kurve. Die Funkwellen zeigen die Farbe der jeweiligen Atemphase.</title>
+              <title id="breath-figure" data-en="As the person inhales, blue air particles flow into the mouth, the abdomen lifts the phone, and the dot draws a rising blue line. As the person exhales, ochre particles flow out, the abdomen settles, and the dot draws the falling ochre line.">Beim Einatmen strömen blaue Luftteilchen in den Mund, der Bauch hebt das Smartphone und der Punkt zeichnet die ansteigende blaue Kurve. Beim Ausatmen strömen ockerfarbene Teilchen aus dem Mund, der Bauch senkt sich und der Punkt zeichnet die abfallende ockerfarbene Kurve.</title>
               <g class="device breathing-rig">
+                <defs>
+                  <clipPath id="breath-reveal"><rect x="0" y="-50" height="56"/></clipPath>
+                  <linearGradient id="breath-air-fade">
+                    <stop offset="0" stop-color="white"/>
+                    <stop offset=".62" stop-color="white"/>
+                    <stop offset="1" stop-color="white" stop-opacity="0"/>
+                  </linearGradient>
+                  <mask id="breath-air-mask" maskUnits="userSpaceOnUse" x="82" y="16" width="55" height="38">
+                    <rect x="82" y="16" width="55" height="38" fill="url(#breath-air-fade)" stroke="none"/>
+                  </mask>
+                </defs>
+                <!-- Round dashes follow three air paths that converge behind the lips. -->
+                <g class="mouth-air" mask="url(#breath-air-mask)">
+                  <path d="M80 35C96 35 107 28 131 20" stroke-width="3.4" stroke-dasharray=".1 17"/>
+                  <path d="M75 35C98 35 113 35 137 32" stroke-width="4" stroke-dasharray=".1 21"/>
+                  <path d="M84 35C97 35 111 42 131 47" stroke-width="2.8" stroke-dasharray=".1 15"/>
+                </g>
                 <!-- The front abdominal wall joins the fixed rib cage and hip at x=78. -->
                 <path class="device-shell" d="M78 124L79 128Q65 132 48 128C50 118 52 110 51 102L47 70Q46 57 54 51L61 47Q67 51 73 47C76 50 79 54 81 59C84 65 85 71 83 76C82 80 79 82 78 85"/>
                 <path class="abdomen-motion device-shell" d="M78 85C78 91 83 95 83 101C83 110 79 118 78 124"/>

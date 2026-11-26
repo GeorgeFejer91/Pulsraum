@@ -72,8 +72,9 @@ or person. Keep supporting text, images, and links with their subject.
   starts a continuous loop. One pause control covers all five illustrations.
   Reduced motion and JavaScript-free views show the complete still diagram.
   In the smartphone breathing diagram, the plotted breath samples drive the
-  abdomen, phone and graph cursor together. Inhalation rises in blue and
-  exhalation falls in ochre. The phone waves use the active segment's color.
+  abdomen, phone, mouth airflow and graph cursor together. The cursor draws
+  the blue rising trace as particles enter the mouth and the ochre falling
+  trace as they leave. The phone waves use the active segment's color.
   The validation card links its editable spirometer scene in `assets/models/`.
   The phone compares three labeled streams on one time axis. Its own signal is
   solid blue. The Polar H10 above it uses ochre dashes and the spirometer to

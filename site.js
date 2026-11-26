@@ -111,7 +111,9 @@ if ('IntersectionObserver' in window) {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const pause = document.getElementById('pause-animations');
   function syncBreathPlayback() {
-    if (figure.classList.contains('in-view') && !reducedMotion.matches && !pause.checked) breath.play();
+    const recording = figure.classList.contains('in-view') && !reducedMotion.matches && !pause.checked;
+    rig.classList.toggle('is-recording', recording);
+    if (recording) breath.play();
     else breath.cancel();
   }
   pause.addEventListener('change', syncBreathPlayback);
