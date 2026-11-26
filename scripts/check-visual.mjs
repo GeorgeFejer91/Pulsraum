@@ -256,7 +256,17 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await pause.isVisible(), false);
     const stages = milestones.getByRole('listitem');
     assert.equal(await stages.count(), 5);
-    for (const stage of await stages.all()) {
+    for (const [index, stage] of (await stages.all()).entries()) {
+      const completed = index < 2;
+      const status = stage.getByRole('checkbox', { name: completed ? 'Abgeschlossen' : 'Geplant', exact: true });
+      assert.equal(await status.isChecked(), completed);
+      assert.ok(await status.isDisabled(), 'Milestone progress is read-only');
+      const card = await stage.boundingBox();
+      const mark = await status.boundingBox();
+      const heading = await stage.getByRole('heading').boundingBox();
+      assert.ok(mark.width >= 32 && mark.height >= 32 && mark.y > card.y &&
+        mark.y + mark.height <= heading.y && mark.x + mark.width < card.x + card.width &&
+        mark.x > card.x + card.width / 2, 'Each card needs a large status checkbox at the upper right');
       assert.equal(await stage.getByRole('img', { name: /.+/ }).count(), 1,
         'Each milestone needs one named illustration');
       const drawing = stage.locator('svg');
@@ -264,8 +274,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await drawing.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0,
         'Reduced motion must show a still illustration');
     }
-    assert.deepEqual(await stages.locator('.milestone-status').allTextContents(),
-      ['✓ Abgeschlossen', '✓ Abgeschlossen', 'Geplant', 'Geplant', 'Geplant']);
     assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
       'https://www.vernier.com/product/go-direct-spirometer/');
     if (mode === 'dark') assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
@@ -274,7 +282,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption')];
+        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -411,8 +419,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const timeline = englishMenu.getByRole('link', { name: 'Project timeline' });
       assert.equal(await timeline.getAttribute('href'), '#projektverlauf');
       const englishStages = page.getByRole('region', { name: 'Project timeline' }).getByRole('listitem');
-      assert.match(await englishStages.first().innerText(), /Completed/);
-      assert.match(await englishStages.nth(2).innerText(), /Planned/);
+      assert.equal(await englishStages.getByRole('checkbox', { name: 'Completed', checked: true }).count(), 2);
+      assert.equal(await englishStages.getByRole('checkbox', { name: 'Planned', checked: false }).count(), 3);
       assert.equal(await page.getByRole('link', { name: 'Vernier Go Direct Spirometer' }).count(), 1);
       assert.match(await page.locator('#h10-figure').textContent(), /ECG/);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);

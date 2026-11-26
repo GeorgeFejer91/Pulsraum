@@ -418,30 +418,84 @@ img.portrait {
 }
 
 .milestones {
+  container-type: inline-size;
   display: grid;
   gap: clamp(.75rem, 2vw, 1.25rem);
   margin: 0;
-  padding-inline-start: 1.75em;
+  padding: 0;
+  list-style: none;
+  counter-reset: milestone;
 }
-.milestones li::marker {
+.milestones > li {
+  counter-increment: milestone;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+.milestones > li::before {
+  align-self: start;
+  content: counter(milestone, decimal-leading-zero) / "";
+  font: bold italic clamp(2.25rem, 4vw, 3rem)/1 Georgia, serif;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.milestone-status {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  max-width: 100%;
   color: var(--muted);
-  font-weight: 600;
-}
-.milestones .milestone-status {
-  margin-bottom: .5rem;
   font-size: .875rem;
   font-weight: 600;
+  text-align: end;
+  overflow-wrap: anywhere;
 }
-.milestones .is-complete { color: var(--complete); }
+.milestone-status input {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(2.25rem, 3.4vw, 2.875rem);
+  aspect-ratio: 1;
+  margin: 0;
+  border: 2px solid var(--muted);
+  border-radius: .2rem;
+  opacity: 1;
+}
+.milestone-status input:checked {
+  border-color: var(--complete);
+  background: var(--complete);
+}
+.milestone-status input:checked::after {
+  content: "";
+  width: 54%;
+  height: 30%;
+  border-left: .2rem solid var(--box-paper);
+  border-bottom: .2rem solid var(--box-paper);
+  transform: translateY(-12%) rotate(-45deg);
+}
 
-.milestones li { container-type: inline-size; }
 .milestone-layout {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: center;
 }
-@container (min-width: 42rem) {
+@container (max-width: 15rem) {
+  .milestone-status { display: contents; }
+  .milestone-status input {
+    grid-area: 1 / 2;
+    justify-self: end;
+  }
+  .milestone-status span {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+}
+@container (min-width: 45rem) {
   .milestone-layout {
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 34%);
     gap: clamp(1.5rem, 4cqi, 3rem);

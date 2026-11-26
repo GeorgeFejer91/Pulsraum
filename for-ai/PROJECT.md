@@ -67,8 +67,10 @@ or person. Keep supporting text, images, and links with their subject.
   Regenerate the checked-in paths with `python scripts/generate-signals.py`.
 - **Grundlagen** introduces the hardware, software, and published research that
   Pulsraum builds on. Each box links to its associated paper or software.
-- **Projektverlauf** presents the five milestones in an ordered list with
-  visible completion text and a green checkmark for completed work. Keep the
+- **Projektverlauf** presents the five milestones in an ordered list. Each card
+  shows its number at the top left and its labeled progress checkbox at the
+  top right. Completed milestones are checked and planned milestones are empty.
+  Visitors can read these statuses in either language. Keep the
   distinction between completed prototypes and planned measurement validation.
   Each card illustrates its step with one inline SVG. Entering the viewport
   starts a continuous loop. One pause control covers all five illustrations.
