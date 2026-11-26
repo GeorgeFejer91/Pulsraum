@@ -98,6 +98,7 @@
 }
 .signal-drawing {
   display: block;
+  overflow: hidden;
   width: 100%;
   height: auto;
   border: 1px solid var(--rule);
@@ -120,6 +121,11 @@
   stroke-linejoin: round;
 }
 .signal-figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: .75rem;
   margin-top: .375rem;
   color: var(--muted);
   font-size: .8125rem;
@@ -449,6 +455,12 @@ img.portrait {
   }
   .motion-setting input { margin: 0; accent-color: var(--ink); }
   .motion-setting input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .signal-figure .motion-setting { margin-top: 0; }
+  .signal-figure:has(.motion-setting:not([hidden])) .signal-trace {
+    animation: scroll-signal var(--signal-period, 16s) linear infinite paused;
+  }
+  .signal-figure.signal-ecg { --signal-period: 6.666667s; }
+  .signal-figure.in-view:has(input:not(:checked)) .signal-trace { animation-play-state: running; }
   .in-view .trace-draw, .in-view .trend-draw {
     stroke-dasharray: 100;
     animation: draw-trace 3.8s linear infinite;
@@ -481,6 +493,10 @@ img.portrait {
 }
 @media (prefers-reduced-motion: reduce) {
   .motion-setting { display: none; }
+}
+/* The second copy takes the first copy's place at the end of each period. */
+@keyframes scroll-signal {
+  to { transform: translateX(-880px); }
 }
 @keyframes draw-trace {
   from { stroke-dashoffset: 100; }

@@ -50,22 +50,40 @@
           <h2 class="box-title signal-resp" data-measure>Atemsignal</h2>
           <p data-measure>Atembewegung per Smartphone</p>
           <figure class="signal-figure signal-resp">
-        <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
-          <path class="signal-baseline" d="M0 52H440"/>
-          <path class="signal-trace" d="M12 52C49 52 65 18 108 18S166 85 219 85 282 18 326 18 382 52 428 52"/>
-        </svg>
-            <figcaption data-measure>Schematischer Verlauf</figcaption>
+            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+              <path class="signal-baseline" d="M0 52H440"/>
+              <g class="signal-trace">
+                <use href="assets/illustrations/signals.svg#respiration"/>
+                <use href="assets/illustrations/signals.svg#respiration" x="880"/>
+              </g>
+            </svg>
+            <figcaption>
+              <span data-measure>Simuliert · 15 Atemzüge/min</span>
+              <label class="motion-setting" hidden>
+                <input type="checkbox" aria-label="Pause für das Atemsignal">
+                <span data-measure>Pause</span>
+              </label>
+            </figcaption>
           </figure>
         </article>
         <article class="knowledge-box">
           <h2 class="box-title signal-ecg" data-measure>EKG</h2>
           <p data-measure>Herzsignal vom Polar H10</p>
           <figure class="signal-figure signal-ecg">
-        <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
-          <path class="signal-baseline" d="M0 52H440"/>
-          <path class="signal-trace" d="M12 52H70q8-9 17 0h10l7 8 10-43 9 57 9-22h13q16-19 32 0h101q8-9 17 0h10l7 8 10-43 9 57 9-22h13q16-19 32 0h43"/>
-        </svg>
-            <figcaption data-measure>Schematischer Verlauf</figcaption>
+            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+              <path class="signal-baseline" d="M0 66H440"/>
+              <g class="signal-trace">
+                <use href="assets/illustrations/signals.svg#ecg"/>
+                <use href="assets/illustrations/signals.svg#ecg" x="880"/>
+              </g>
+            </svg>
+            <figcaption>
+              <span data-measure>Simuliert · 72 Schläge/min</span>
+              <label class="motion-setting" hidden>
+                <input type="checkbox" aria-label="Pause für das EKG">
+                <span data-measure>Pause</span>
+              </label>
+            </figcaption>
           </figure>
         </article>
       </div>

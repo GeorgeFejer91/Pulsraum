@@ -48,6 +48,6 @@ if ('IntersectionObserver' in window) {
       entry.target.classList.toggle('in-view', entry.isIntersecting);
     }
   });
-  document.querySelectorAll('.milestone-figure').forEach(svg => drawings.observe(svg));
-  document.querySelector('.motion-setting').hidden = false;
+  document.querySelectorAll('.milestone-figure, .signal-figure').forEach(figure => drawings.observe(figure));
+  document.querySelectorAll('.motion-setting').forEach(control => { control.hidden = false; });
 }

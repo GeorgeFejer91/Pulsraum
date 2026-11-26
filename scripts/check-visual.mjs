@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -165,6 +165,18 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
+    const signals = page.locator('#projekt .signal-figure');
+    assert.equal(await signals.count(), 2);
+    if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
+    for (const figure of await signals.all()) {
+      assert.match(await figure.locator('figcaption').innerText(), /Simuliert/);
+      const strip = figure.locator('.signal-trace');
+      assert.ok(await strip.evaluate(g => g.getBBox().width >= 880 && g.getBBox().height > 40),
+        'A full simulated trace must load even with motion or JavaScript disabled');
+      assert.equal(await strip.evaluate(g => g.getAnimations().length), 0);
+      assert.equal(await figure.getByRole('checkbox').isVisible(), false);
+    }
+    if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'reduce' });
     const pause = milestones.getByRole('checkbox', { name: 'Animationen pausieren' });
     assert.equal(await pause.isVisible(), false);
     const stages = milestones.getByRole('listitem');
@@ -205,6 +217,40 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       assert.equal(await scrollBehavior(), 'smooth');
+      for (const figure of await signals.all()) {
+        await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+        const strip = await figure.locator('.signal-trace').elementHandle();
+        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', strip);
+        const control = figure.getByRole('checkbox', { name: /Pause/ });
+        if (phone) await control.tap();
+        else await control.press('Space');
+        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'paused', strip);
+        // Hold the actual endpoint so the second copy, before wraparound, is visible.
+        await strip.evaluate(g => {
+          const effect = g.getAnimations()[0].effect;
+          if (effect.getTiming().iterations !== Infinity) throw new Error('Signal must loop continuously');
+          effect.updateTiming({ iterations: 1, fill: 'both' });
+        });
+        const seek = async cycles => {
+          await strip.evaluate((g, offset) => {
+            const animation = g.getAnimations()[0];
+            animation.currentTime = animation.effect.getTiming().duration * offset;
+          }, cycles);
+        };
+        const copies = figure.locator('.signal-trace use');
+        assert.equal(await copies.first().getAttribute('href'), await copies.last().getAttribute('href'));
+        await seek(0);
+        const start = await copies.first().boundingBox();
+        await seek(0.25);
+        assert.ok((await copies.first().boundingBox()).x < start.x - 10, 'Samples must scroll left');
+        await seek(1);
+        const end = await copies.last().boundingBox();
+        assert.ok(Math.abs(end.x - start.x) < 0.5 && Math.abs(end.y - start.y) < 0.5,
+          'The second copy must align with the first at the loop boundary');
+        await strip.evaluate(g => g.getAnimations()[0].effect.updateTiming({ iterations: Infinity }));
+        await control.press('Space');
+        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', strip);
+      }
       await pause.waitFor({ state: 'visible' });
       await pause.press('Space');
       assert.equal(await pause.isChecked(), true);
