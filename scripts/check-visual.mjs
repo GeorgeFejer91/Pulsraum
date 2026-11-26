@@ -150,6 +150,14 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
     const stages = milestones.getByRole('listitem');
     assert.equal(await stages.count(), 5);
+    for (const stage of await stages.all()) {
+      assert.equal(await stage.getByRole('img', { name: /.+/ }).count(), 1,
+        'Each milestone needs one named illustration');
+      const drawing = stage.locator('svg');
+      assert.ok(await drawing.isVisible());
+      assert.equal(await drawing.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0,
+        'Reduced motion must show a still illustration');
+    }
     assert.deepEqual(await stages.locator('.milestone-status').allTextContents(),
       ['✓ Abgeschlossen', '✓ Abgeschlossen', 'Geplant', 'Geplant', 'Geplant']);
     assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
@@ -172,12 +180,23 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await page.locator('.skip-link:focus-visible').count(), 1);
     }
     await checkNavigation(page, phone);
-    if (width === 1440 && mode === 'default') {
+    if (mode === 'default' && (width === 1440 || (name === 'webkit' && width === 390))) {
       const scrollBehavior = () => page.locator('html').evaluate(root => getComputedStyle(root).scrollBehavior);
       assert.equal(await scrollBehavior(), 'auto');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       assert.equal(await scrollBehavior(), 'smooth');
+      for (const stage of await stages.all()) {
+        const drawing = stage.locator('svg');
+        await drawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
+        await page.waitForFunction(svg => {
+          const animations = svg.getAnimations({ subtree: true });
+          return animations.some(animation => animation.playState === 'running') &&
+            animations.every(animation => animation.effect.getComputedTiming().endTime <= 5000);
+        },
+          await drawing.elementHandle());
+      }
       await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     }
     await checkLayout(page);
     assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements

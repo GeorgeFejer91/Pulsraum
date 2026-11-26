@@ -367,6 +367,71 @@
 }
 .milestones .is-complete { color: var(--complete); }
 
+.milestones li { container-type: inline-size; }
+.milestone-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+@container (min-width: 42rem) {
+  .milestone-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 34%);
+    gap: clamp(1.5rem, 4cqi, 3rem);
+  }
+}
+.milestone-figure {
+  display: block;
+  width: 100%;
+  max-width: 25rem;
+  height: auto;
+  justify-self: center;
+  background-color: var(--paper);
+  background-image: radial-gradient(var(--signal-grid) .8px, transparent 1px);
+  background-size: 12px 12px;
+  border: 1px solid var(--rule);
+}
+.milestone-figure .device {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.milestone-figure .device-shell { fill: var(--tint); }
+.milestone-figure .device-face, .milestone-figure .trend-points { fill: var(--box-paper); }
+.milestone-figure .detail { stroke: var(--muted); stroke-width: 1.3; }
+.milestone-figure .guide { stroke: var(--signal-guide); stroke-width: 1; }
+.milestone-figure .trace { stroke: currentColor; stroke-width: 2.2; }
+.milestone-figure .ink-fill { fill: var(--ink); }
+.milestone-figure text { fill: var(--ink); stroke: none; }
+.milestone-figure .device-mark { font: bold 14px Arial, sans-serif; }
+.milestone-figure .plot-label { font-size: 15px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .in-view .trace-draw, .in-view .trend-draw {
+    stroke-dasharray: 100;
+    animation: draw-trace 3.8s linear backwards;
+  }
+  .in-view .analysis-input { animation-duration: 1.6s; }
+  .in-view .trend-draw { animation-duration: 1.6s; animation-delay: 1.6s; }
+  .in-view .trend-points { animation: show-points .6s 2.8s ease-out backwards; }
+  .in-view .abdomen-motion { animation: abdomen-breath 1.9s ease-in-out 2; }
+  .in-view .time-marker { animation: compare-recordings 4s ease-in-out; }
+  .in-view .sleep-breath {
+    transform-origin: 69px 96px;
+    animation: sleeping-breath 3.8s ease-in-out;
+  }
+}
+@keyframes draw-trace { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes show-points { from { opacity: 0; } to { opacity: 1; } }
+@keyframes abdomen-breath { 25% { transform: translateX(4px); } 75% { transform: translateX(-3px); } }
+@keyframes compare-recordings {
+  from { transform: translateX(-128px); }
+  to { transform: translateX(0); }
+}
+@keyframes sleeping-breath { 50% { transform: scaleY(1.17); } }
+
 @media (min-width: 64rem) {
   .building-blocks .box-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }

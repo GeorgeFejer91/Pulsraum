@@ -40,3 +40,13 @@ const observer = new ResizeObserver(() => {
 elements.forEach(element => observer.observe(element));
 observer.observe(navigation);
 measure();
+
+// Start the brief demonstrations where visitors can actually see them.
+if ('IntersectionObserver' in window) {
+  const drawings = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      entry.target.classList.toggle('in-view', entry.intersectionRatio >= 0.35);
+    }
+  }, { threshold: 0.35 });
+  document.querySelectorAll('.milestone-figure').forEach(svg => drawings.observe(svg));
+}
