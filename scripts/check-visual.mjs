@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/polar-h10\.webp|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
