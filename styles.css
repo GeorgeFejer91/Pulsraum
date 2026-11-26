@@ -239,3 +239,29 @@
 }
 
 .hero-statement { overflow-wrap: anywhere; }
+
+.building-blocks-intro {
+  max-width: 68ch;
+  margin-block: 16px 28px;
+  color: var(--muted);
+}
+
+.building-block-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.building-block {
+  padding: clamp(16px, 2.5vw, 28px);
+  border: 1px solid var(--rule);
+  background: var(--tint);
+  overflow-wrap: break-word;
+}
+
+.building-block h3 + p { margin-top: 12px; color: var(--muted); }
+.building-block-source { margin-top: 16px; }
+
+@media (max-width: 760px) {
+  .building-block-grid { grid-template-columns: minmax(0, 1fr); }
+}
