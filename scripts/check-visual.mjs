@@ -102,7 +102,7 @@ async function checkLayout(page) {
     }
     const navigation = document.querySelector('.site-header nav');
     if (navigation.scrollWidth > navigation.clientWidth + 1) issues.push('Navigation horizontal overflow');
-    for (const element of navigation.querySelectorAll('a')) {
+    for (const element of navigation.querySelectorAll('a, button:not([hidden])')) {
       if (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1) {
         issues.push(`Navigation label overflows: ${element.textContent.trim()}`);
       }
@@ -248,7 +248,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, p, h1, h2, h3, figcaption')];
+        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -348,6 +348,39 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     const prefix = `${screenshots}/${name}-${width}x${height}-${mode}`;
     await page.screenshot({ path: `${prefix}.png`, fullPage: true });
+    const language = navigation.getByRole('button', { name: 'English', exact: true });
+    if (mode === 'no-js') {
+      assert.equal(await language.isVisible(), false);
+    } else {
+      assert.ok(await language.isVisible(), 'The menu must offer the English version');
+      const target = await language.boundingBox();
+      assert.ok(target.width >= 44 && target.height >= 44, 'Language switch needs a full touch target');
+      if (phone) await language.tap();
+      else await language.press('Enter');
+      assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+      assert.match(await page.title(), /Open biosensing/i);
+      assert.deepEqual(await sections.allTextContents(), ['Pulsraum', 'Foundations', 'Project timeline', 'Team']);
+      const englishMenu = page.getByRole('navigation', { name: 'Main navigation' });
+      const german = englishMenu.getByRole('button', { name: 'Deutsch', exact: true });
+      assert.equal(await german.getAttribute('lang'), 'de');
+      if (!phone) assert.equal(await german.evaluate(button => button.matches(':focus-visible')), true);
+      const timeline = englishMenu.getByRole('link', { name: 'Project timeline' });
+      assert.equal(await timeline.getAttribute('href'), '#projektverlauf');
+      const englishStages = page.getByRole('region', { name: 'Project timeline' }).getByRole('listitem');
+      assert.match(await englishStages.first().innerText(), /Completed/);
+      assert.match(await englishStages.nth(2).innerText(), /Planned/);
+      assert.equal(await page.getByRole('link', { name: 'Vernier Go Direct Spirometer' }).count(), 1);
+      assert.match(await page.locator('#h10-figure').textContent(), /ECG/);
+      assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
+      await checkLayout(page);
+      await page.screenshot({ path: `${prefix}-en.png`, fullPage: true });
+      await page.reload({ waitUntil: 'networkidle' });
+      assert.ok(await german.isVisible(), 'The language choice must survive a reload');
+      await german.press('Enter');
+      assert.equal(await page.locator('html').getAttribute('lang'), 'de');
+      assert.ok(await language.isVisible());
+      assert.equal(await page.getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).count(), 1);
+    }
     if (mode === 'dark') {
       const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
       assert.equal(await toggle.getAttribute('aria-pressed'), 'true');

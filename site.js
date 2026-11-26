@@ -1,10 +1,39 @@
 import { prepare, measureLineStats, measureNaturalWidth, setLocale } from './assets/pretext/layout.js';
 
 // The document remains readable without JS. Measurements only let text regions grow.
-setLocale('de');
-await document.fonts.ready;
 const root = document.documentElement;
 const navigation = document.querySelector('.site-header nav');
+const languageToggle = navigation.querySelector('.language-toggle');
+const languageKey = 'pulsraum.language';
+const translations = [];
+// The German text is the source for the static page and for switching back.
+for (const attribute of [null, 'aria-label', 'title', 'content', 'lang']) {
+  const source = attribute ? `data-en-${attribute}` : 'data-en';
+  for (const element of document.querySelectorAll(`[${source}]`)) {
+    const de = attribute ? element.getAttribute(attribute) : element.textContent;
+    translations.push({ element, attribute, de, en: element.getAttribute(source) });
+  }
+}
+
+function applyLanguage(language) {
+  root.lang = language;
+  setLocale(language);
+  for (const translation of translations) {
+    const { element, attribute } = translation;
+    if (attribute) element.setAttribute(attribute, translation[language]);
+    else element.textContent = translation[language];
+  }
+}
+
+let initialLanguage = 'de';
+try {
+  if (localStorage.getItem(languageKey) === 'en') initialLanguage = 'en';
+} catch {
+  // Use German when storage is unavailable.
+}
+applyLanguage(initialLanguage);
+
+await document.fonts.ready;
 const cache = new WeakMap();
 const elements = [...document.querySelectorAll('[data-measure]')];
 function measure() {
@@ -17,7 +46,7 @@ function measure() {
     const text = element.innerText;
     const spacing = Number.parseFloat(css.letterSpacing) || 0;
     const whiteSpace = element.querySelector('br') ? 'pre-wrap' : 'normal';
-    const key = `${font}|${spacing}|${whiteSpace}|${text}`;
+    const key = `${root.lang}|${font}|${spacing}|${whiteSpace}|${text}`;
     let entry = cache.get(element);
     if (entry?.key !== key) {
       entry = { key, prepared: prepare(text, font, { letterSpacing: spacing, whiteSpace }) };
@@ -39,6 +68,17 @@ const observer = new ResizeObserver(() => {
 });
 elements.forEach(element => observer.observe(element));
 observer.observe(navigation);
+languageToggle.addEventListener('click', () => {
+  const language = root.lang === 'de' ? 'en' : 'de';
+  applyLanguage(language);
+  measure();
+  try {
+    localStorage.setItem(languageKey, language);
+  } catch {
+    // The selected language still applies to the current page.
+  }
+});
+languageToggle.hidden = false;
 measure();
 
 function createBreathAnimation(rig) {

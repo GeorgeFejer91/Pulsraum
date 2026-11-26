@@ -3,52 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Pulsraum: offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation. Browserbasierte Anwendungen mit lokaler Verarbeitung deiner Gesundheitsdaten.">
+  <meta name="description" content="Pulsraum: offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation. Browserbasierte Anwendungen mit lokaler Verarbeitung deiner Gesundheitsdaten." data-en-content="Pulsraum explores open biosensing for health and creative approaches to managing stress. Its planned browser apps will process your health data on your own device.">
   <meta name="theme-color" content="#f6f5ef">
   <meta property="og:title" content="Pulsraum">
-  <meta property="og:description" content="Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.">
+  <meta property="og:description" content="Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation." data-en-content="Open biosensing for health and creative approaches to managing stress.">
   <meta property="og:type" content="website">
-  <title>Pulsraum · Offene Biosensorik</title>
+  <title data-en="Pulsraum · Open biosensing">Pulsraum · Offene Biosensorik</title>
   <script src="theme.js"></script>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="site.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#projekt">Zum Inhalt</a>
+  <a class="skip-link" href="#projekt" data-en="Skip to content">Zum Inhalt</a>
   <header class="site-header">
     <div class="header-brand">
-      <a class="wordmark" href="#projekt" aria-label="Pulsraum, zum Projektanfang"><svg aria-hidden="true" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M2 16h7l3-6 5 12 4-6h9"/></svg><span data-measure>Pulsraum</span></a>
+      <a class="wordmark" href="#projekt" aria-label="Pulsraum, zum Projektanfang" data-en-aria-label="Pulsraum, back to the overview"><svg aria-hidden="true" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M2 16h7l3-6 5 12 4-6h9"/></svg><span data-measure>Pulsraum</span></a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" hidden>
         <span class="theme-icon" aria-hidden="true"></span>
-        <span data-measure>Dunkelmodus</span>
+        <span data-measure data-en="Dark mode">Dunkelmodus</span>
       </button>
     </div>
-    <nav aria-label="Hauptnavigation">
-      <a href="#projekt"><span data-measure>Auf einen Blick</span></a>
-      <a href="#bausteine"><span data-measure>Grundlagen</span></a>
-      <a href="#projektverlauf"><span data-measure>Projektverlauf</span></a>
+    <nav aria-label="Hauptnavigation" data-en-aria-label="Main navigation">
+      <a href="#projekt"><span data-measure data-en="At a glance">Auf einen Blick</span></a>
+      <a href="#bausteine"><span data-measure data-en="Foundations">Grundlagen</span></a>
+      <a href="#projektverlauf"><span data-measure data-en="Project timeline">Projektverlauf</span></a>
       <a href="#team"><span data-measure>Team</span></a>
+      <button class="language-toggle" type="button" lang="en" data-en-lang="de" hidden>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>
+        <span data-measure data-en="Deutsch">English</span>
+      </button>
     </nav>
   </header>
   <main>
     <section class="hero wrap" id="projekt" aria-labelledby="overview-title">
       <div class="hero-heading">
         <h1 id="overview-title" data-measure>Pulsraum</h1>
-        <p class="lead" data-measure>Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
+        <p class="lead" data-measure data-en="Open biosensing for health and creative approaches to managing stress.">Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
       </div>
       <div class="box-grid">
         <article class="knowledge-box" id="anwendungen">
-          <h2 class="box-title" data-measure>Was Pulsraum vorhat</h2>
-          <p data-measure>Pulsraum soll <span class="signal-ecg">EKG</span>, <span class="signal-resp">Atemmessung</span> und individuelles Biofeedback mit Smartphone und Polar H10 im Browser zugänglich machen. Damit wollen wir Atemübungen begleiten und Spiele oder Visualisierungen mit Körpersignalen steuern.</p>
-          <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure>Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
+          <h2 class="box-title" data-measure data-en="What we’re building">Was Pulsraum vorhat</h2>
+          <p data-measure><span data-en="Pulsraum aims to make">Pulsraum soll</span> <span class="signal-ecg" data-en="ECG">EKG</span>, <span class="signal-resp" data-en="breathing measurements">Atemmessung</span> <span data-en="and personal biofeedback accessible in the browser using a smartphone and a Polar H10. We want to use these signals to guide breathing exercises and control games or visualizations.">und individuelles Biofeedback mit Smartphone und Polar H10 im Browser zugänglich machen. Damit wollen wir Atemübungen begleiten und Spiele oder Visualisierungen mit Körpersignalen steuern.</span></p>
+          <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure data-en="View project on GitHub">Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title" data-measure>Daten auf deinem Gerät</h2>
-          <p data-measure>Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
+          <h2 class="box-title" data-measure data-en="Your data stays on your device">Daten auf deinem Gerät</h2>
+          <p data-measure data-en="Our goal is to let you process and store your health data on your own device. The open-source software is designed to work without tying you to a provider or sharing your data.">Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title signal-resp" data-measure>Atemsignal</h2>
-          <p data-measure>Atembewegung per Smartphone</p>
+          <h2 class="box-title signal-resp" data-measure data-en="Breathing signal">Atemsignal</h2>
+          <p data-measure data-en="Tracking breathing with a smartphone">Atembewegung per Smartphone</p>
           <figure class="signal-figure signal-resp">
             <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
               <path class="signal-baseline" d="M0 52H440"/>
@@ -58,17 +62,17 @@
               </g>
             </svg>
             <figcaption>
-              <span data-measure>Simuliert · 15 Atemzüge/min</span>
+              <span data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</span>
               <label class="motion-setting" hidden>
-                <input type="checkbox" aria-label="Pause für das Atemsignal">
+                <input type="checkbox" aria-label="Pause für das Atemsignal" data-en-aria-label="Pause the breathing signal">
                 <span data-measure>Pause</span>
               </label>
             </figcaption>
           </figure>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title signal-ecg" data-measure>EKG</h2>
-          <p data-measure>Herzsignal vom Polar H10</p>
+          <h2 class="box-title signal-ecg" data-measure data-en="ECG">EKG</h2>
+          <p data-measure data-en="Heart signal from the Polar H10">Herzsignal vom Polar H10</p>
           <figure class="signal-figure signal-ecg">
             <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
               <path class="signal-baseline" d="M0 66H440"/>
@@ -78,9 +82,9 @@
               </g>
             </svg>
             <figcaption>
-              <span data-measure>Simuliert · 72 Schläge/min</span>
+              <span data-measure data-en="Simulated · 72 beats/min">Simuliert · 72 Schläge/min</span>
               <label class="motion-setting" hidden>
-                <input type="checkbox" aria-label="Pause für das EKG">
+                <input type="checkbox" aria-label="Pause für das EKG" data-en-aria-label="Pause the ECG signal">
                 <span data-measure>Pause</span>
               </label>
             </figcaption>
@@ -90,45 +94,45 @@
     </section>
     <section class="section wrap building-blocks" id="bausteine" aria-labelledby="building-blocks-title">
       <div class="section-heading">
-        <h2 id="building-blocks-title" data-measure>Grundlagen</h2>
-        <p class="section-intro" data-measure>Pulsraum baut auf vorhandener Hardware, Software und Forschung auf. Zusammen sollen sie den Weg von der Signalerfassung bis zum Biofeedback im Browser abdecken.</p>
+        <h2 id="building-blocks-title" data-measure data-en="Foundations">Grundlagen</h2>
+        <p class="section-intro" data-measure data-en="Pulsraum builds on existing hardware, software and research. Together, these should cover everything from recording a signal to using it for biofeedback in the browser.">Pulsraum baut auf vorhandener Hardware, Software und Forschung auf. Zusammen sollen sie den Weg von der Signalerfassung bis zum Biofeedback im Browser abdecken.</p>
       </div>
       <div class="box-grid">
         <article class="knowledge-box">
-          <h3 class="box-title signal-ecg" data-measure>EKG mit Polar H10</h3>
-          <p data-measure>Der EKG-Brustgurt Polar H10 liefert das Herzsignal. Die Vorarbeit Polar Stream erfasst EKG-Rohdaten für die Weiterverarbeitung.</p>
-          <a class="inline-link" href="https://github.com/GeorgeFejer91/Polar-Stream"><span data-measure>Polar Stream auf GitHub</span><span aria-hidden="true">↗</span></a>
+          <h3 class="box-title signal-ecg" data-measure data-en="ECG with the Polar H10">EKG mit Polar H10</h3>
+          <p data-measure data-en="The Polar H10 chest strap records the heart’s electrical activity. Our existing Polar Stream software captures the raw ECG data for further processing.">Der EKG-Brustgurt Polar H10 liefert das Herzsignal. Die Vorarbeit Polar Stream erfasst EKG-Rohdaten für die Weiterverarbeitung.</p>
+          <a class="inline-link" href="https://github.com/GeorgeFejer91/Polar-Stream"><span data-measure data-en="Polar Stream on GitHub">Polar Stream auf GitHub</span><span aria-hidden="true">↗</span></a>
         </article>
         <article class="knowledge-box">
-          <h3 class="box-title signal-resp" data-measure>Atemmessung per Smartphone</h3>
-          <p data-measure>Ein am Bauch getragenes Smartphone soll Atembewegungen erfassen. Ein Forschungsbeispiel für den Einsatz von Smartphone-Sensoren ist SleepAp, das Bewegungsdaten und Tonaufnahmen für das Schlafapnoe-Screening nutzte.</p>
+          <h3 class="box-title signal-resp" data-measure data-en="Measuring breathing with a smartphone">Atemmessung per Smartphone</h3>
+          <p data-measure data-en="We plan to track breathing movements with a smartphone worn on the abdomen. SleepAp is one example of earlier research using smartphone sensors. It used movement and audio recordings to screen for sleep apnea.">Ein am Bauch getragenes Smartphone soll Atembewegungen erfassen. Ein Forschungsbeispiel für den Einsatz von Smartphone-Sensoren ist SleepAp, das Bewegungsdaten und Tonaufnahmen für das Schlafapnoe-Screening nutzte.</p>
           <a class="inline-link" href="https://ieeexplore.ieee.org/document/6747332"><span data-measure>SleepAp · Behar et al. (2015)</span><span aria-hidden="true">↗</span></a>
         </article>
         <article class="knowledge-box">
-          <h3 class="box-title" data-measure>Biofeedback im Browser</h3>
-          <p data-measure>Herz- und Atemsignale sollen Spiele und Visualisierungen steuern. EC Gaming erprobt diesen Ansatz mit Browserspielen, die auf den Herzschlag reagieren.</p>
-          <a class="inline-link" href="https://github.com/GeorgeFejer91/ECGaming"><span data-measure>EC Gaming auf GitHub</span><span aria-hidden="true">↗</span></a>
+          <h3 class="box-title" data-measure data-en="Biofeedback in the browser">Biofeedback im Browser</h3>
+          <p data-measure data-en="We plan to use heart and breathing signals to control games and visualizations. EC Gaming explores this idea with browser games that respond to each heartbeat.">Herz- und Atemsignale sollen Spiele und Visualisierungen steuern. EC Gaming erprobt diesen Ansatz mit Browserspielen, die auf den Herzschlag reagieren.</p>
+          <a class="inline-link" href="https://github.com/GeorgeFejer91/ECGaming"><span data-measure data-en="EC Gaming on GitHub">EC Gaming auf GitHub</span><span aria-hidden="true">↗</span></a>
         </article>
       </div>
     </section>
     <section class="section wrap" id="projektverlauf" aria-labelledby="milestones-title">
       <div class="section-heading">
-        <h2 id="milestones-title" data-measure>Projektverlauf</h2>
+        <h2 id="milestones-title" data-measure data-en="Project timeline">Projektverlauf</h2>
         <label class="motion-setting" hidden>
           <input id="pause-animations" type="checkbox">
-          <span data-measure>Animationen pausieren</span>
+          <span data-measure data-en="Pause animations">Animationen pausieren</span>
         </label>
       </div>
       <ol class="milestones">
         <li class="knowledge-box">
           <div class="milestone-layout">
             <div>
-              <h3 class="box-title" data-measure>Polar H10 per Bluetooth anbinden</h3>
-              <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> Abgeschlossen</p>
-              <p data-measure>Die Bluetooth-Anbindung verbindet den EKG-Brustgurt Polar H10 mit dem Browser und stellt EKG- und Herzfrequenzdaten für Web-Apps bereit.</p>
+              <h3 class="box-title" data-measure data-en="Connect the Polar H10 via Bluetooth">Polar H10 per Bluetooth anbinden</h3>
+              <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> <span data-en="Completed">Abgeschlossen</span></p>
+              <p data-measure data-en="The Polar H10 chest strap connects to the browser via Bluetooth, making ECG and heart rate data available to web apps.">Die Bluetooth-Anbindung verbindet den EKG-Brustgurt Polar H10 mit dem Browser und stellt EKG- und Herzfrequenzdaten für Web-Apps bereit.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="h10-figure">
-              <title id="h10-figure">Vom Polar H10 gelangt das EKG per Bluetooth in den Browser. In der Grafik färbt sich der Sensor im Atemrhythmus blau. Der Schriftzug pulsiert bei den EKG-Spitzen rot.</title>
+              <title id="h10-figure" data-en="The Polar H10 sends the ECG signal to the browser via Bluetooth. In the illustration, the sensor turns blue with each breath and its lettering flashes red at each ECG peak.">Vom Polar H10 gelangt das EKG per Bluetooth in den Browser. In der Grafik färbt sich der Sensor im Atemrhythmus blau. Der Schriftzug pulsiert bei den EKG-Spitzen rot.</title>
               <defs>
                 <clipPath id="h10-pod-contour">
                   <path d="M109 123C110 91 133 59 168 60c32 0 119 9 143 12 35 5 60 31 64 68 4 40-19 72-55 76-19 3-144-11-164-15-32-7-50-42-47-78Z"/>
@@ -158,12 +162,12 @@
         <li class="knowledge-box">
           <div class="milestone-layout">
             <div>
-              <h3 class="box-title" data-measure>Atembewegungen mit dem Smartphone erfassen</h3>
-              <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> Abgeschlossen</p>
-              <p data-measure>Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
+              <h3 class="box-title" data-measure data-en="Track breathing movements with a smartphone">Atembewegungen mit dem Smartphone erfassen</h3>
+              <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> <span data-en="Completed">Abgeschlossen</span></p>
+              <p data-measure data-en="The browser app reads the smartphone’s accelerometer to detect breathing movements.">Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="breath-figure">
-              <title id="breath-figure">Simulierter Atemzug im Profil. Beim Einatmen bewegt sich der Bauch mit dem Smartphone nach außen, der Punkt steigt auf der blauen Kurve. Beim Ausatmen bewegt sich der Bauch nach innen, der Punkt sinkt auf der ockerfarbenen Kurve. Die Funkwellen zeigen die Farbe der jeweiligen Atemphase.</title>
+              <title id="breath-figure" data-en="A simulated breath seen from the side. As the person inhales, their abdomen and phone move outward and the dot rises along the blue curve. As they exhale, their abdomen moves inward and the dot descends along the ochre curve. The radio waves match the color of each phase.">Simulierter Atemzug im Profil. Beim Einatmen bewegt sich der Bauch mit dem Smartphone nach außen, der Punkt steigt auf der blauen Kurve. Beim Ausatmen bewegt sich der Bauch nach innen, der Punkt sinkt auf der ockerfarbenen Kurve. Die Funkwellen zeigen die Farbe der jeweiligen Atemphase.</title>
               <g class="device breathing-rig">
                 <!-- The front abdominal wall joins the fixed rib cage and hip at x=78. -->
                 <path class="device-shell" d="M78 124L79 128Q65 132 48 128C50 118 52 110 51 102L47 70Q46 57 54 51L61 47Q67 51 73 47C76 50 79 54 81 59C84 65 85 71 83 76C82 80 79 82 78 85"/>
@@ -192,8 +196,8 @@
                   </g>
                   <circle class="breath-cursor" r="3.6"/>
                   <g class="breath-key" text-anchor="middle">
-                    <text data-phase="inhale" x="35" y="21">Einatmen</text>
-                    <text data-phase="exhale" x="119" y="21">Ausatmen</text>
+                    <text data-phase="inhale" x="35" y="21" data-en="Inhale">Einatmen</text>
+                    <text data-phase="exhale" x="119" y="21" data-en="Exhale">Ausatmen</text>
                   </g>
                 </g>
               </g>
@@ -203,13 +207,13 @@
         <li class="knowledge-box">
           <div class="milestone-layout">
             <div>
-              <h3 class="box-title" data-measure>Smartphone-Atemmessung validieren</h3>
-              <p class="milestone-status" data-measure>Geplant</p>
-              <p data-measure>Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene <a href="https://www.vernier.com/product/go-direct-spirometer/">Go Direct Spirometer von Vernier</a> liefert Vergleichswerte für Atemfluss und Atemvolumen.</p>
-              <a class="inline-link" href="assets/models/vernier-go-direct-spirometer.blend" download><span data-measure>Blender-Modell des Spirometers herunterladen</span></a>
+              <h3 class="box-title" data-measure data-en="Validate smartphone breathing measurements">Smartphone-Atemmessung validieren</h3>
+              <p class="milestone-status" data-measure data-en="Planned">Geplant</p>
+              <p data-measure><span data-en="We plan to compare the breathing movements recorded by a smartphone with accelerometer data recorded at the same time by the Polar H10. Our">Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene</span> <a href="https://www.vernier.com/product/go-direct-spirometer/" data-en="Vernier Go Direct Spirometer">Go Direct Spirometer von Vernier</a> <span data-en="provides reference measurements of airflow and breathing volume.">liefert Vergleichswerte für Atemfluss und Atemvolumen.</span></p>
+              <a class="inline-link" href="assets/models/vernier-go-direct-spirometer.blend" download><span data-measure data-en="Download the Blender model of the spirometer">Blender-Modell des Spirometers herunterladen</span></a>
             </div>
             <svg class="milestone-figure validation-phone" viewBox="0 -88 320 304" role="img" aria-labelledby="validation-figure">
-              <title id="validation-figure">Polar H10 und Vernier Go Direct Spirometer senden ihre Messdaten per Bluetooth an das Smartphone. Am H10 markiert Blau die Atmung und Rot den Herzschlag. In der schrägen Seitenansicht des Spirometers zeigen blaue Teilchen, wie die Luft beim Einatmen und Ausatmen in entgegengesetzter Richtung durch das Messrohr strömt. Das Display vergleicht die drei Messkurven.</title>
+              <title id="validation-figure" data-en="The Polar H10 and the Vernier Go Direct Spirometer send measurements to the smartphone via Bluetooth. On the H10, blue indicates breathing and red indicates heartbeats. In the side view of the spirometer, blue particles show airflow reversing through the tube as the person breathes in and out. The screen compares the three traces.">Polar H10 und Vernier Go Direct Spirometer senden ihre Messdaten per Bluetooth an das Smartphone. Am H10 markiert Blau die Atmung und Rot den Herzschlag. In der schrägen Seitenansicht des Spirometers zeigen blaue Teilchen, wie die Luft beim Einatmen und Ausatmen in entgegengesetzter Richtung durch das Messrohr strömt. Das Display vergleicht die drei Messkurven.</title>
               <defs>
                 <clipPath id="spirometer-frame"><rect width="356" height="258"/></clipPath>
               </defs>
@@ -245,8 +249,8 @@
                   </g>
                 </g>
                 <g class="breath-phase" text-anchor="middle" aria-hidden="true">
-                  <text x="277" y="55" class="inhale">Einatmen</text>
-                  <text x="277" y="55" class="exhale">Ausatmen</text>
+                  <text x="277" y="55" class="inhale" data-en="Inhale">Einatmen</text>
+                  <text x="277" y="55" class="exhale" data-en="Exhale">Ausatmen</text>
                 </g>
                 <path class="detail" d="M59 65h20m6 0h14"/>
                 <rect class="device-shell" x="3" y="67" width="314" height="145" rx="21"/>
@@ -273,12 +277,12 @@
         <li class="knowledge-box">
           <div class="milestone-layout">
             <div>
-              <h3 class="box-title" data-measure>Lokale Gesundheitsauswertung entwickeln</h3>
-              <p class="milestone-status" data-measure>Geplant</p>
-              <p data-measure>Du sollst selbst entscheiden, ob du deine Messdaten auf dem Smartphone auswertest oder sie auf deinen Heim-PC überträgst, um dort Gesundheitskennzahlen und Verläufe anzusehen. Die Synchronisierung erfolgt direkt zwischen deinen Geräten, ohne Cloud. Wir planen die Open-Source-Anwendung als Browserversion, als installierbare Progressive Web App (PWA) und als App für Android und iPhone.</p>
+              <h3 class="box-title" data-measure data-en="Analyze health data on your device">Lokale Gesundheitsauswertung entwickeln</h3>
+              <p class="milestone-status" data-measure data-en="Planned">Geplant</p>
+              <p data-measure data-en="We want you to choose where to analyze your measurements. You could use your phone or transfer them to your home computer to see health indicators and trends there. The two devices would sync directly without using the cloud. We plan to offer the open-source software as a browser app, an installable progressive web app (PWA), and apps for Android and iPhone.">Du sollst selbst entscheiden, ob du deine Messdaten auf dem Smartphone auswertest oder sie auf deinen Heim-PC überträgst, um dort Gesundheitskennzahlen und Verläufe anzusehen. Die Synchronisierung erfolgt direkt zwischen deinen Geräten, ohne Cloud. Wir planen die Open-Source-Anwendung als Browserversion, als installierbare Progressive Web App (PWA) und als App für Android und iPhone.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="analysis-figure">
-              <title id="analysis-figure">Dein Smartphone überträgt eine Messung direkt auf deinen Heim-PC. Die EKG-Kurve erscheint auf dem Monitor. Alle Messdaten bleiben auf deinen Geräten.</title>
+              <title id="analysis-figure" data-en="Your smartphone sends a recording directly to your home computer. The ECG trace appears on the monitor. All measurements stay on your devices.">Dein Smartphone überträgt eine Messung direkt auf deinen Heim-PC. Die EKG-Kurve erscheint auf dem Monitor. Alle Messdaten bleiben auf deinen Geräten.</title>
               <g class="device">
                 <defs>
                   <path id="sync-ecg" pathLength="100" d="M0 0h5q2-4 5 0h3l2 3 3-15 3 21 3-9h3q3-6 6 0h5"/>
@@ -302,8 +306,8 @@
                 <path class="device-face" d="M202 105h66l5 6h-76z"/>
                 <g class="plot-label" text-anchor="middle">
                   <text x="52" y="132">Smartphone</text>
-                  <text x="126" y="44">Ohne Cloud</text>
-                  <text x="235" y="132">Heim-PC</text>
+                  <text x="126" y="44" data-en="No cloud">Ohne Cloud</text>
+                  <text x="235" y="132" data-en="Home PC">Heim-PC</text>
                 </g>
               </g>
             </svg>
@@ -312,12 +316,12 @@
         <li class="knowledge-box">
           <div class="milestone-layout">
             <div>
-              <h3 class="box-title" data-measure>Schlafmessung zu Hause erproben</h3>
-              <p class="milestone-status" data-measure>Geplant</p>
-              <p data-measure>Wir wollen eine komfortable, leicht anzulegende Smartphone-Halterung entwickeln, die das Gerät über Nacht in einer stabilen Position hält. Für die Auswertung von Schlafdaten zu Hause wollen wir die Messprotokolle für Atmung und Herzfrequenz mit parallelen Messungen eines medizinischen kardiorespiratorischen Referenzgeräts vergleichen und ihre Eignung für die Schlafdiagnostik untersuchen.</p>
+              <h3 class="box-title" data-measure data-en="Test sleep monitoring at home">Schlafmessung zu Hause erproben</h3>
+              <p class="milestone-status" data-measure data-en="Planned">Geplant</p>
+              <p data-measure data-en="We want to develop a comfortable smartphone holder that is easy to put on and keeps the phone in place overnight. To assess whether our breathing and heart rate measurements could help diagnose sleep disorders, we plan to compare at-home recordings with simultaneous measurements from a medical cardiorespiratory reference device.">Wir wollen eine komfortable, leicht anzulegende Smartphone-Halterung entwickeln, die das Gerät über Nacht in einer stabilen Position hält. Für die Auswertung von Schlafdaten zu Hause wollen wir die Messprotokolle für Atmung und Herzfrequenz mit parallelen Messungen eines medizinischen kardiorespiratorischen Referenzgeräts vergleichen und ihre Eignung für die Schlafdiagnostik untersuchen.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="sleep-figure">
-              <title id="sleep-figure">Eine Halterung hält das Smartphone am Bauch einer schlafenden Person. Daneben zeichnet ein Referenzgerät Atem- und Herzsignal auf.</title>
+              <title id="sleep-figure" data-en="A holder keeps a smartphone against a sleeping person’s abdomen. Beside them, a reference device records breathing and heart signals.">Eine Halterung hält das Smartphone am Bauch einer schlafenden Person. Daneben zeichnet ein Referenzgerät Atem- und Herzsignal auf.</title>
               <g class="device">
                 <path class="device-shell" d="M41 22a13 13 0 1 0 14 17A15 15 0 0 1 41 22Z"/>
                 <path class="device-shell" d="M20 96h191v12H20Z"/>
@@ -348,10 +352,10 @@
           <img class="portrait" src="assets/team/crop_selfie.png" alt="" width="398" height="398" decoding="async">
           <div>
             <h3 class="box-title" data-measure>George Fejer</h3>
-            <p class="person-role" data-measure>M.Sc. Kognitive Neuropsychologie</p>
-            <p data-measure>Verbindet bei Pulsraum seine Forschung zu Atmung und Körperwahrnehmung mit physiologischer Signalverarbeitung und interaktiven Anwendungen.</p>
-            <div class="profile-links" role="group" aria-label="Profile von George Fejer">
-              <a href="https://www.georgefejer.com/" aria-label="Forschungsprofil" title="Forschungsprofil">
+            <p class="person-role" data-measure data-en="M.Sc. in Cognitive Neuropsychology">M.Sc. Kognitive Neuropsychologie</p>
+            <p data-measure data-en="At Pulsraum, George combines his research on breathing and body awareness with physiological signal processing and interactive applications.">Verbindet bei Pulsraum seine Forschung zu Atmung und Körperwahrnehmung mit physiologischer Signalverarbeitung und interaktiven Anwendungen.</p>
+            <div class="profile-links" role="group" aria-label="Profile von George Fejer" data-en-aria-label="George Fejer’s profiles">
+              <a href="https://www.georgefejer.com/" aria-label="Forschungsprofil" title="Forschungsprofil" data-en-aria-label="Research profile" data-en-title="Research profile">
                 <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>
               </a>
               <a href="https://scholar.google.com/citations?user=GPARoloAAAAJ&amp;hl=en" aria-label="Google Scholar" title="Google Scholar">
@@ -370,15 +374,15 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
               </a>
             </div>
-            <p class="profile-work" data-measure>Vorarbeiten zu Biosensorik und interaktivem Feedback: <a href="https://github.com/GeorgeFejer91/Polar-Stream">Polar Stream</a> und <a href="https://github.com/GeorgeFejer91/ECGaming">EC Gaming</a>.</p>
+            <p class="profile-work" data-measure><span data-en="Earlier work on biosensing and interactive feedback includes">Vorarbeiten zu Biosensorik und interaktivem Feedback:</span> <a href="https://github.com/GeorgeFejer91/Polar-Stream">Polar Stream</a> <span data-en="and">und</span> <a href="https://github.com/GeorgeFejer91/ECGaming">EC Gaming</a>.</p>
           </div>
         </article>
         <article class="knowledge-box person">
           <span class="portrait portrait-initial" aria-hidden="true">A</span>
           <div>
             <h3 class="box-title" data-measure>Alex</h3>
-            <p class="person-role" data-measure>Entwickler bei Zen Specs</p>
-            <p data-measure>Arbeitet als Projektpartner an der Ausrichtung von Pulsraum und verbindet Biosensorik, selbstbestimmte Datennutzung und kreative Anwendungen.</p>
+            <p class="person-role" data-measure data-en="Developer at Zen Specs">Entwickler bei Zen Specs</p>
+            <p data-measure data-en="As a project partner, Alex helps shape Pulsraum’s direction, bringing together biosensing, personal control over data and creative applications.">Arbeitet als Projektpartner an der Ausrichtung von Pulsraum und verbindet Biosensorik, selbstbestimmte Datennutzung und kreative Anwendungen.</p>
             <a class="inline-link" href="https://zen-specs.com/en/"><span data-measure>Zen Specs</span><span aria-hidden="true">↗</span></a>
           </div>
         </article>
@@ -387,8 +391,8 @@
   </main>
   <footer class="wrap site-footer" id="mitmachen">
     <a class="footer-brand" href="#projekt">Pulsraum</a>
-    <p>Offene Software. Lokale Daten. Eigene Entscheidungen.</p>
-    <a href="https://github.com/GeorgeFejer91/Pulsraum/issues"><span data-measure>Auf GitHub mitmachen</span></a>
+    <p data-en="Open software. Local data. Your choice.">Offene Software. Lokale Daten. Eigene Entscheidungen.</p>
+    <a href="https://github.com/GeorgeFejer91/Pulsraum/issues"><span data-measure data-en="Get involved on GitHub">Auf GitHub mitmachen</span></a>
   </footer>
 </body>
 </html>

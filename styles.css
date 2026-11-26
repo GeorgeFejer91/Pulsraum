@@ -244,7 +244,7 @@ img.portrait {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.theme-toggle:not([hidden]) {
+:is(.theme-toggle, .language-toggle):not([hidden]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -261,9 +261,10 @@ img.portrait {
   line-height: 1.4;
   cursor: pointer;
 }
-.theme-toggle:hover, .theme-toggle[aria-pressed="true"] {
+:is(.theme-toggle, .language-toggle):hover, .theme-toggle[aria-pressed="true"] {
   background: var(--tint);
 }
+.language-toggle svg { flex: none; }
 .theme-icon {
   display: block;
   flex: none;
@@ -330,6 +331,7 @@ img.portrait {
   }
   .site-header nav a { padding-inline: 8px; }
   .site-header nav a:hover { background: var(--tint); }
+  .language-toggle { justify-self: start; margin-block-start: 8px; }
   h1 { font-size: clamp(64px, calc(10.4vw - 1.5rem), 144px); }
 }
 
@@ -369,6 +371,19 @@ img.portrait {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     text-align: center;
+  }
+}
+
+@media (width < 30rem) {
+  .site-header nav:has(.language-toggle:not([hidden])) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    text-align: center;
+  }
+  .language-toggle {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: center;
   }
 }
 

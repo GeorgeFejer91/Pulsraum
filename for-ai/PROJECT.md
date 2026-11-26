@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Eine deutschsprachige Projektseite fuer offene Biosensorik und selbstbestimmtes Biofeedback mit lokaler Datenverarbeitung.
+Eine deutsch- und englischsprachige Projektseite fuer offene Biosensorik und selbstbestimmtes Biofeedback mit lokaler Datenverarbeitung.
 
 ## Primary goal
 
@@ -30,6 +30,8 @@ checklist and do not close the overall goal before its acceptance criteria pass.
 
 Current website update:
 
+- [x] Offer English and German in the main menu. The rendered suite checks both
+  directions, saved preferences, section labels and links on desktop and phone.
 - [x] Organize the site as Auf einen Blick, Grundlagen, Projektverlauf, and Team.
   The first two of five milestones are complete according to the project owner.
   The remaining milestones describe planned validation, local analysis, and
@@ -93,7 +95,7 @@ The site uses static HTML and CSS with locally served JavaScript. The build scri
 
 Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
 
-The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. The site is German; no em dashes in its project copy.
+The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. German is the default and the JavaScript-free version. The menu switches the whole page between German and English and remembers the selection when browser storage is available. Keep both versions aligned and avoid em dashes in project copy.
 
 ## Current verified state
 

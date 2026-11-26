@@ -2,7 +2,7 @@
 
 Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.
 
-Eine deutschsprachige Projektseite mit vier Bereichen: Projekt, Anwendungen, Team und Mitmachen. Die geplanten Browseranwendungen sollen Herz- und Atemsignale von Smartphone und Polar H10 lokal verarbeiten. Diese Seite ist eine Projektvorstellung, kein Messgerät und kein Nachweis klinischer Validierung.
+Eine Projektseite mit vier Bereichen: Auf einen Blick, Grundlagen, Projektverlauf und Team. Über das Menü lässt sich die Seite zwischen Deutsch und Englisch umschalten. Die geplanten Browseranwendungen sollen Herz- und Atemsignale von Smartphone und Polar H10 lokal verarbeiten. Diese Seite ist eine Projektvorstellung, kein Messgerät und kein Nachweis klinischer Validierung.
 
 Website: https://pulsraum.eu/
 
