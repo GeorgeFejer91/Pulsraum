@@ -97,6 +97,10 @@
     <section class="section wrap" id="projektverlauf" aria-labelledby="milestones-title">
       <div class="section-heading">
         <h2 id="milestones-title" data-measure>Projektverlauf</h2>
+        <label class="motion-setting" hidden>
+          <input id="pause-animations" type="checkbox">
+          <span data-measure>Animationen pausieren</span>
+        </label>
       </div>
       <ol class="milestones">
         <li class="knowledge-box">
@@ -142,19 +146,25 @@
               <p data-measure>Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="breath-figure">
-              <title id="breath-figure">Das Smartphone bewegt sich mit der Bauchdecke. Aus der Bewegung entsteht eine Atemkurve.</title>
+              <title id="breath-figure">Eine Person im Profil trägt ein Smartphone am Bauch. Beim Atmen hebt und senkt sich die Bauchdecke mit dem Gerät. Rechts entsteht die zugehörige Atemkurve.</title>
               <g class="device">
-                <path class="detail" d="M52 18c-3 12-8 21-11 33-4 14-3 32 0 48l-3 25"/>
                 <g class="abdomen-motion">
-                  <path d="M81 18c4 10 15 16 16 28 1 10-5 15-2 25 3 10 13 23 12 34l-3 18"/>
-                  <path class="detail" d="M42 104q30 8 64-1m-64 6q28 8 63-1"/>
-                  <g transform="rotate(-12 104 77)">
-                    <rect class="device-shell" x="94" y="52" width="22" height="48" rx="4"/>
-                    <rect class="device-face" x="97" y="57" width="16" height="35" rx="2"/>
-                    <path class="detail" d="M103 96h4"/>
+                  <!-- The shirt follows the rib cage, then narrows below the chest. -->
+                  <path class="device-shell" d="M63 41Q71 47 78 42C81 47 87 49 90 54Q98 64 95 73C94 78 89 81 89 87C89 93 94 99 94 108Q94 117 90 129Q68 134 44 128C46 116 47 108 45 98L40 67Q38 55 49 49Z"/>
+                  <path class="detail" d="M76 50q8 1 12 6m-14 20q11 4 19-2"/>
+                  <path class="device-face" d="M46 97Q68 101 93 95L94 102Q70 109 47 104Z"/>
+                  <g transform="rotate(-6 93 98)">
+                    <rect class="device-shell" x="84" y="83" width="18" height="34" rx="3"/>
+                    <rect class="device-face" x="87" y="87" width="12" height="24" rx="1.5"/>
+                    <path class="detail" d="M92 114h3"/>
                   </g>
-                  <path class="detail" d="M119 71q3 4 3 9m3-13q5 6 5 14"/>
+                  <path class="detail" d="M108 94q3 4 2 8m3-12q5 6 4 15"/>
                 </g>
+                <!-- A relaxed arm overlaps the strap on the near side. -->
+                <path class="device-face" d="M42 67Q39 79 39 92C38 102 33 117 32 128Q35 132 41 130C46 116 53 104 54 95L58 73Z"/>
+                <path class="device-shell" d="M62 44C49 44 42 49 40 58L37 75Q45 80 57 79L62 66"/>
+                <path class="device-face" d="M63 31C57 27 57 18 62 13C66 8 76 8 81 13Q85 17 84 23L88 29L85 30Q85 36 81 37L76 37Q75 41 79 44Q72 49 61 43Q66 38 63 31Z"/>
+                <path class="detail" d="M67 25q-3-3-4 0t3 5m14-8 2 .5"/>
                 <path class="guide" d="M140 77h161m-1-3v6"/>
                 <path class="trace signal-resp trace-draw" pathLength="100" d="M141 77c12 0 15-24 30-24s19 48 34 48 19-48 35-48 18 48 34 48c13 0 16-24 26-24"/>
               </g>

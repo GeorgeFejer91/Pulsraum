@@ -41,12 +41,13 @@ elements.forEach(element => observer.observe(element));
 observer.observe(navigation);
 measure();
 
-// Start the brief demonstrations where visitors can actually see them.
+// Run the demonstrations while any part of the drawing is visible.
 if ('IntersectionObserver' in window) {
   const drawings = new IntersectionObserver(entries => {
     for (const entry of entries) {
-      entry.target.classList.toggle('in-view', entry.intersectionRatio >= 0.35);
+      entry.target.classList.toggle('in-view', entry.isIntersecting);
     }
-  }, { threshold: 0.35 });
+  });
   document.querySelectorAll('.milestone-figure').forEach(svg => drawings.observe(svg));
+  document.querySelector('.motion-setting').hidden = false;
 }

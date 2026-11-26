@@ -148,6 +148,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
+    const pause = milestones.getByRole('checkbox', { name: 'Animationen pausieren' });
+    assert.equal(await pause.isVisible(), false);
     const stages = milestones.getByRole('listitem');
     assert.equal(await stages.count(), 5);
     for (const stage of await stages.all()) {
@@ -186,15 +188,39 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       assert.equal(await scrollBehavior(), 'smooth');
+      await pause.waitFor({ state: 'visible' });
+      await pause.press('Space');
+      assert.equal(await pause.isChecked(), true);
+      const firstDrawing = stages.first().locator('svg');
+      await firstDrawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await stages.first().locator('svg.in-view').waitFor();
+      assert.equal(await firstDrawing.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0);
+      if (phone) await pause.tap();
+      else await pause.press('Space');
+      assert.equal(await pause.isChecked(), false);
       for (const stage of await stages.all()) {
         const drawing = stage.locator('svg');
         await drawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await page.waitForFunction(svg => {
           const animations = svg.getAnimations({ subtree: true });
-          return animations.some(animation => animation.playState === 'running') &&
-            animations.every(animation => animation.effect.getComputedTiming().endTime <= 5000);
+          return animations.length > 0 && animations.every(animation => animation.playState === 'running' &&
+            animation.effect.getTiming().iterations === Infinity);
         },
           await drawing.elementHandle());
+        // Seek past the initial cycle and check that the browser keeps advancing.
+        await drawing.evaluate(svg => {
+          for (const animation of svg.getAnimations({ subtree: true })) {
+            const { delay, duration } = animation.effect.getTiming();
+            animation.currentTime = delay + duration * 2;
+          }
+        });
+        await page.waitForFunction(svg => {
+          const animations = svg.getAnimations({ subtree: true });
+          return animations.length > 0 && animations.every(animation => {
+            const { currentIteration, progress } = animation.effect.getComputedTiming();
+            return currentIteration >= 2 && progress > 0;
+          });
+        }, await drawing.elementHandle());
       }
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -204,7 +230,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
       .map(element => element.textContent.trim())), [], 'Research text must fit inside its boxes');
     if (mode !== 'no-js') {
-      const stageText = milestones.locator('[data-measure]');
+      const stageText = milestones.locator('[data-measure]:visible');
       assert.equal(await stageText.locator('xpath=self::*[@data-measured-lines]').count(), await stageText.count());
     }
     const prefix = `${screenshots}/${name}-${width}x${height}-${mode}`;

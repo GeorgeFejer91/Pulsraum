@@ -65,8 +65,8 @@ or person. Keep supporting text, images, and links with their subject.
   visible completion text and a green checkmark for completed work. Keep the
   distinction between completed prototypes and planned measurement validation.
   Each card illustrates its step with one inline SVG. Entering the viewport
-  plays a brief demonstration. Reduced motion and JavaScript-free views show
-  the complete still diagram.
+  starts a continuous loop. One pause control covers all five illustrations.
+  Reduced motion and JavaScript-free views show the complete still diagram.
 - **Team** gives each member a separate profile box with available details
   confirmed for publication. A link in the footer opens GitHub for participation.
 
