@@ -410,6 +410,11 @@
   border: 0;
   background: transparent;
 }
+.h10-light rect {
+  fill: color-mix(in srgb, currentColor 76%, white);
+  stroke: none;
+  opacity: 0;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .in-view .trace-draw, .in-view .trend-draw {
@@ -421,6 +426,8 @@
   .in-view .trend-points { animation: show-points .6s 2.8s ease-out backwards; }
   .in-view .abdomen-motion { animation: abdomen-breath 1.9s ease-in-out 2; }
   .in-view .time-marker { animation: compare-recordings 4s ease-in-out; }
+  .in-view .pod-breath { animation: h10-breath 4s ease-in-out; }
+  .in-view .pod-beat { animation: h10-beat 3.8s linear; }
   .in-view .bluetooth-waves path { animation: radio-pulse 1.2s ease-in-out 3 backwards; }
   .in-view .bluetooth-waves path:nth-child(2) { animation-delay: .16s; }
   .in-view .bluetooth-waves path:nth-child(3) { animation-delay: .32s; }
@@ -439,6 +446,16 @@
 @keyframes radio-pulse {
   0%, 100% { opacity: .3; }
   35%, 55% { opacity: 1; }
+}
+/* Follow the two respiratory crests crossed by the comparison cursor. */
+@keyframes h10-breath {
+  0%, 47%, 85%, 100% { opacity: 0; }
+  33%, 61% { opacity: 1; }
+}
+/* The R peaks lie at 27.1% and 75.4% of the ECG path's drawn length. */
+@keyframes h10-beat {
+  0%, 22%, 39%, 70%, 87%, 100% { opacity: 0; }
+  27.1%, 30%, 75.4%, 78% { opacity: 1; }
 }
 @keyframes sleeping-breath { 50% { transform: scaleY(1.17); } }
 

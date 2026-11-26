@@ -7,10 +7,10 @@ import { chromium, webkit } from 'playwright';
 
 const site = process.argv[2] ?? '.';
 const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
-const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp' };
+const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', svg: 'image/svg+xml' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/polar-h10\.webp|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg)|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -184,6 +184,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const scrollBehavior = () => page.locator('html').evaluate(root => getComputedStyle(root).scrollBehavior);
       assert.equal(await scrollBehavior(), 'auto');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       assert.equal(await scrollBehavior(), 'smooth');
       for (const stage of await stages.all()) {
         const drawing = stage.locator('svg');

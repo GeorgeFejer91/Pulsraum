@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 154" role="img" aria-labelledby="title desc">
+  <title id="title">Vernier Go Direct Spirometer</title>
+  <desc id="desc">Seitenansicht mit türkisfarbenem Griff, eingelassenem Knopf und einem durchsichtigen, vergitterten Lufteinlass rechts.</desc>
+  <defs>
+    <linearGradient id="case" x2=".08" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#747774"/><stop offset=".36" stop-color="#515654"/><stop offset="1" stop-color="#393e3c"/>
+    </linearGradient>
+    <linearGradient id="grip" x2=".12" y2="1">
+      <stop stop-color="#67bdc0"/><stop offset=".28" stop-color="#299ca2"/><stop offset=".8" stop-color="#18878c"/><stop offset="1" stop-color="#126b70"/>
+    </linearGradient>
+    <clipPath id="inlet"><ellipse cx="365" cy="81" rx="44" ry="49" transform="rotate(-13 365 81)"/></clipPath>
+  </defs>
+  <g stroke="#343c3a" stroke-width="2" stroke-linejoin="round">
+    <!-- Handle, overmold and its recessed power button. -->
+    <path fill="url(#case)" d="M15 22c27 0 57 1 82-1 25-2 39-11 64-12 33-2 60-2 98-1l129 8 8 101-104 17c-46-2-87-3-127-11-24-5-45-15-72-18L14 99C-1 96 0 28 15 22Z"/>
+    <path fill="#777b76" d="M15 22h5c-12 19-12 59-3 77l-5-1C0 85 0 37 15 22Z"/>
+    <path fill="url(#grip)" stroke="#317d7e" d="M73 32c21-1 39 3 55-9l19-13c28-5 68-4 106-4-15 22-20 85-6 125-37-1-69-3-96-9-19-15-30-24-55-27L81 93c-20-2-21-54-8-61Z"/>
+    <path fill="none" stroke="#207d81" stroke-opacity=".55" stroke-width="3.5" d="M214 10c-13 24-16 85-4 116m17-116c-12 32-13 82-4 117"/>
+    <rect x="81" y="46" width="27" height="39" rx="11" fill="#268f94" stroke="#21888c"/>
+    <ellipse cx="95" cy="66" rx="4.6" ry="8.2" fill="#3aa4a7" stroke="#18797f" stroke-width="1.6"/>
+    <path stroke="#3d4240" stroke-width="3" d="M58 63v3"/>
+    <!-- Front housing, upper latch and lower mounting lug. -->
+    <path fill="#515552" d="m310 9 2-7 37 1 3 9M285 121l39 1 11 17-50-2Z"/>
+    <path fill="#414644" d="m325 126 9-2 6 12-7 7-10-3Z"/>
+    <path fill="none" stroke="#909590" stroke-width="1" d="M263 8c-14 27-18 84-6 121"/>
+    <!-- Transparent flow head, seen obliquely; the grid lies inside the near lip. -->
+    <ellipse cx="413" cy="66" rx="51" ry="53" transform="rotate(-13 413 66)" fill="#dce6e3" fill-opacity=".64" stroke="#535c58" stroke-width="3"/>
+    <path fill="#c9d7d3" fill-opacity=".7" d="M350 27c11-7 37-13 53-14 29-2 50 19 57 46 6 24-4 45-24 55l-47 22Z"/>
+    <ellipse cx="365" cy="81" rx="58" ry="60" transform="rotate(-13 365 81)" fill="#9da9a4" stroke="#424a46" stroke-width="2.6"/>
+    <ellipse cx="365" cy="81" rx="50" ry="54" transform="rotate(-13 365 81)" fill="#525d57" stroke="#d7dfdb" stroke-width="2"/>
+    <g clip-path="url(#inlet)">
+      <path fill="#e7efec" stroke="none" d="M305 22h118v119H305z"/>
+      <path fill="#75847c" stroke="none" d="M317 23h32c-3 23-3 83 2 116h-34z"/>
+      <path fill="none" stroke="#39423d" stroke-width="3" d="M354 24v114m22-112v113m21-107v102M309 51l112 4M310 76l113 4M308 103l111 3"/>
+    </g>
+    <path fill="none" stroke="#f4f8f5" stroke-opacity=".8" stroke-width="2" d="M324 44c12-16 26-20 41-19m43 86c-6 11-16 18-27 22"/>
+  </g>
+  <g fill="#e4eae6" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <g transform="translate(34 62) rotate(-87)">
+      <text font-size="10" font-weight="700">Vernier</text>
+      <text y="10" font-size="6.5">Go Direct</text>
+    </g>
+    <text transform="translate(279 72) rotate(88)" font-size="12">Spirometer</text>
+  </g>
+</svg>
