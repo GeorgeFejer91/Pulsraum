@@ -20,8 +20,8 @@ Until an execution workflow owns the state, use this small active checklist:
 - [x] Publish four sections: project description, application domains, team, participation/contact.
 - [x] Verify the stretch accordion in desktop and smartphone browser renderings, including 320 to 1440 CSS px, touch, keyboard, dark mode, enlarged text, text spacing and JavaScript disabled.
 - [x] Connect pulsraum.eu and www through Namecheap DNS. GitHub's health check validates both names, and live HTTP serves the page and www redirect.
-- [ ] Verify the GitHub Actions deployment of the visually checked artifact.
-- [ ] Verify the rendered site and www redirect over HTTPS with enforcement enabled.
+- [x] Verify the GitHub Actions deployment of the visually checked artifact.
+- [x] Verify the rendered site and www redirect over HTTPS with enforcement enabled.
 
 Replace these bootstrap tasks with the agreed product tasks. Before a session
 ends, record the next concrete action, blockers, evidence, and last-observed
@@ -121,12 +121,18 @@ Public copy describes planned measurement software, not an already validated med
 
 The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. German is the default and the JavaScript-free version. The menu switches the whole page between German and English and remembers the selection when browser storage is available. Keep both versions aligned and avoid em dashes in project copy.
 
+The main navigation stays visible as a left sidebar on wide screens with a mouse or trackpad and as a bottom menu on phones and narrow screens. Native anchor links scroll smoothly when the visitor allows motion. The bottom menu leaves room to reach the footer and its links. This layout shipped in `f1a6ab7` and passed the live Brave, Chromium, and WebKit checks. [Pages deployment](https://github.com/GeorgeFejer91/Pulsraum/actions/runs/45833362433)
+
 ## Current verified state
 
-- The legacy Pages pipeline served commit `7b007bd` on 25 November 2026. The apex returned HTTP 200 and www returned a 301 to the apex. GitHub reported both domains eligible for HTTPS and no provisioned certificate. HTTPS enforcement was off.
-- Locally staged content passed 12 rendered cases in Chromium and WebKit. Desktop, narrow and landscape phone, both themes, and enlarged-text screenshots were inspected. Physical phones and screen readers were outside the tested matrix.
-
-Next action: verify the Pages workflow run for the published revision. Check certificate provisioning and enable HTTPS when available, then verify the live page and redirects.
+- Public repository and four-section static site created on 25 November 2026. Bootstrap and context checker passed; npm build/syntax and four-section/local-asset checks passed.
+- GitHub Pages built and deployed 7b007bd1471018d5ba12422196c01028dce0d131 from the root of main. The public HTTP page served matching HTML, CSS and theme JavaScript. Chromium verified both themes at 320, 390, 844 and 1440 px, including 28 measured text regions, keyboard focus, theme persistence, signal contrast, and text spacing.
+- Locally staged accordion content passed 12 rendered cases in Chromium and WebKit. Desktop, narrow and landscape phone, both themes, and enlarged-text screenshots were inspected. Physical phones and screen readers were outside the tested matrix.
+- Main and origin/main matched at `f39ef3123c6a07c705637b90845201bc9c48b0f2`. The [Pages workflow](https://github.com/GeorgeFejer91/Pulsraum/actions/runs/45687232807) passed the rendered checks, retained 24 screenshots, and deployed that commit successfully. The live HTTP site passed the same 12 browser cases. Its desktop Chromium and phone WebKit renderings were inspected.
+- Both Namecheap authoritative nameservers and public resolvers 1.1.1.1 and 8.8.8.8 returned all four GitHub Pages IPv4 addresses for pulsraum.eu and the www CNAME to GeorgeFejer91.github.io. Requests using those DNS answers returned the German four-section page at the apex (HTTP 200) and a www redirect to it (HTTP 301).
+- On 26 November 2026, Brave reproduced a certificate hostname error for both public names. DNS and CAA checks passed. Removing and immediately restoring the same custom-domain binding restarted GitHub Pages certificate provisioning. GitHub approved a certificate for `pulsraum.eu` and `www.pulsraum.eu` and accepted HTTPS enforcement.
+- All four HTTP and HTTPS entry URLs ended at `https://pulsraum.eu/` after the edge cache refreshed. The HTML, CSS, and two entry scripts matched deployed commit `f39ef3123c6a07c705637b90845201bc9c48b0f2`. On Windows, Brave, Chrome, Edge, Playwright Firefox, and Playwright WebKit passed entry URL, main navigation, and accordion checks at desktop and phone viewport sizes. The existing live Chromium and WebKit visual suite passed all 12 cases. Physical phones and the Safari application were outside the test matrix.
+- Native UI selection requires fresh state after window-size or user-input changes. Scope edits to this domain's website records; preserve mail, SPF, account and security settings.
 
 Git and runnable checks are the authority for branch, revision, and behavior.
 Do not turn this section into a second status ledger.
