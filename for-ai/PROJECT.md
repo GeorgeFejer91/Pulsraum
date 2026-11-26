@@ -68,7 +68,9 @@ or person. Keep supporting text, images, and links with their subject.
   starts a continuous loop. One pause control covers all five illustrations.
   Reduced motion and JavaScript-free views show the complete still diagram.
 - **Team** gives each member a separate profile box with available details
-  confirmed for publication. A link in the footer opens GitHub for participation.
+  confirmed for publication. George's card uses the portrait from his academic
+  website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
+  A link in the footer opens GitHub for participation.
 
 Use consistent box boundaries and spacing in both themes. Let boxes grow with
 their contents and stack them in reading order on narrow screens.

@@ -7,10 +7,10 @@ import { chromium, webkit } from 'playwright';
 
 const site = process.argv[2] ?? '.';
 const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
-const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', svg: 'image/svg+xml' };
+const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg)|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -137,6 +137,23 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await profile.locator('h3').count(), 1);
       assert.ok(await profile.locator('.person-role').textContent());
       assert.ok(await profile.locator('a').count(), 'Each profile needs a relevant website');
+    }
+    const george = profiles.filter({ has: page.getByRole('heading', { name: 'George Fejer' }) });
+    assert.equal(await george.locator('img.portrait').getAttribute('src'), 'assets/team/crop_selfie.png');
+    const profileUrls = {
+      'Forschungsprofil': 'https://www.georgefejer.com/',
+      'Google Scholar': 'https://scholar.google.com/citations?user=GPARoloAAAAJ&hl=en',
+      'GitHub': 'https://github.com/GeorgeFejer91',
+      'LinkedIn': 'https://www.linkedin.com/in/george-fejer1/',
+      'ORCID': 'https://orcid.org/0000-0002-4904-5504',
+      'X': 'https://twitter.com/GeorgeFejer',
+    };
+    for (const [name, url] of Object.entries(profileUrls)) {
+      const link = george.getByRole('link', { name, exact: true });
+      assert.equal(await link.getAttribute('href'), url);
+      assert.ok(await link.locator('svg').isVisible(), `${name} needs a visible icon`);
+      const bounds = await link.boundingBox();
+      assert.ok(bounds.width >= 44 && bounds.height >= 44, `${name} needs a full touch target`);
     }
     for (const image of await page.locator('main img').all()) {
       await image.scrollIntoViewIfNeeded();
