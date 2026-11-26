@@ -278,16 +278,25 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
-    const signals = page.locator('#projekt .signal-figure');
+    const signalPanel = page.locator('#projekt .knowledge-box').filter({ has: page.locator('.signal-figure') });
+    assert.equal(await signalPanel.count(), 1, 'Both time series belong in one panel');
+    const signals = signalPanel.locator('.signal-figure');
     assert.equal(await signals.count(), 2);
+    assert.deepEqual(await signals.getByRole('heading').allTextContents(), ['Atemsignal', 'EKG']);
+    assert.deepEqual(await signals.locator('figcaption p').allTextContents(), ['Atembewegung per Smartphone', 'Herzsignal vom Polar H10']);
+    assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simuliert · 15 Atemzüge/min', 'Simuliert · 72 Schläge/min']);
+    assert.equal(await signalPanel.locator('input, button').count(), 0);
+    const [breathingPlot, ecgPlot] = await Promise.all((await signals.locator('.signal-drawing').all()).map(plot => plot.boundingBox()));
+    assert.ok(breathingPlot.y + breathingPlot.height <= ecgPlot.y && Math.abs(breathingPlot.x - ecgPlot.x) < 1 &&
+      Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
     for (const figure of await signals.all()) {
-      assert.match(await figure.locator('figcaption').innerText(), /Simuliert/);
+      assert.ok(await figure.locator('figcaption .signal-organ').isVisible());
       const strip = figure.locator('.signal-trace');
       assert.ok(await strip.evaluate(g => g.getBBox().width >= 880 && g.getBBox().height > 40),
         'A full simulated trace must load even with motion or JavaScript disabled');
       assert.equal(await strip.evaluate(g => g.getAnimations().length), 0);
-      assert.equal(await figure.getByRole('checkbox').isVisible(), false);
+      assert.equal(await figure.locator('.signal-organ').evaluate(svg => svg.getAnimations({ subtree: true }).length), 0);
     }
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'reduce' });
     const pause = milestones.getByRole('checkbox', { name: 'Animationen pausieren' });
@@ -342,13 +351,28 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         const strip = await figure.locator('.signal-trace').elementHandle();
         await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', strip);
-        const control = figure.getByRole('checkbox', { name: /Pause/ });
-        if (phone) await control.tap();
-        else await control.press('Space');
-        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'paused', strip);
+        const organ = figure.locator('.organ-motion');
+        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', await organ.elementHandle());
+        const expandedAt = await figure.evaluate(el => el.classList.contains('signal-resp') ? .082 : .0316);
+        const organWidths = await organ.evaluate(async (g, peak) => {
+          const animation = g.getAnimations()[0];
+          const trace = g.closest('figure').querySelector('.signal-trace').getAnimations()[0];
+          if (animation.startTime !== trace.startTime || animation.effect.getTiming().duration !== trace.effect.getTiming().duration)
+            throw Error('The organ and trace must share their playback timing');
+          animation.pause();
+          await animation.ready;
+          animation.currentTime = 0;
+          const rest = g.getBoundingClientRect().width;
+          animation.currentTime = peak * animation.effect.getTiming().duration;
+          return [rest, g.getBoundingClientRect().width];
+        }, expandedAt);
+        assert.ok(organWidths[1] > organWidths[0] * 1.1, 'The lungs and heart must expand at their respective signal peaks');
         // Hold the actual endpoint so the second copy, before wraparound, is visible.
-        await strip.evaluate(g => {
-          const effect = g.getAnimations()[0].effect;
+        await strip.evaluate(async g => {
+          const animation = g.getAnimations()[0];
+          animation.pause();
+          await animation.ready;
+          const effect = animation.effect;
           if (effect.getTiming().iterations !== Infinity) throw new Error('Signal must loop continuously');
           effect.updateTiming({ iterations: 1, fill: 'both' });
         });
@@ -368,9 +392,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         const end = await copies.last().boundingBox();
         assert.ok(Math.abs(end.x - start.x) < 0.5 && Math.abs(end.y - start.y) < 0.5,
           'The second copy must align with the first at the loop boundary');
-        await strip.evaluate(g => g.getAnimations()[0].effect.updateTiming({ iterations: Infinity }));
-        await control.press('Space');
-        await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', strip);
       }
       await pause.waitFor({ state: 'visible' });
       await pause.press('Space');
@@ -462,6 +483,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await englishStages.getByRole('checkbox', { name: 'Planned', checked: false }).count(), 3);
       assert.equal(await page.getByRole('link', { name: 'Vernier Go Direct Spirometer' }).count(), 1);
       assert.match(await page.locator('#h10-figure').textContent(), /ECG/);
+      assert.deepEqual(await signals.getByRole('heading').allTextContents(), ['Breathing signal', 'ECG']);
+      assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simulated · 15 breaths/min', 'Simulated · 72 beats/min']);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
       assert.equal(await institute.getAttribute('href'), 'https://www.mpib-berlin.mpg.de/en');

@@ -60,8 +60,11 @@ Give each website section visibly distinct boxes, one per topic, milestone,
 or person. Keep supporting text, images, and links with their subject.
 
 - **Auf einen Blick** presents the project, example uses, local data processing,
-  and two scrolling NeuroKit2 simulations. Each has a pause control. Reduced
-  motion and JavaScript-free views show a still trace from the same samples.
+  and two scrolling NeuroKit2 simulations in one box. The breathing trace
+  sits above the ECG. The lungs expand and contract with the breathing trace,
+  and the heart pulses as each R peak arrives at the right edge. Each row
+  shows its source and simulated rate. Reduced-motion and JavaScript-free
+  views show both organs and traces at rest.
   The ECG models a resting chest-strap signal at 130 Hz with variable beat
   spacing, breathing-related baseline drift and intermittent contact noise.
   Regenerate the checked-in paths with `python scripts/generate-signals.py`.

@@ -99,14 +99,43 @@
 .signal-resp { color: var(--respiration); }
 .signal-ecg { color: var(--ecg); }
 
-.signal-figure {
-  margin-top: .75rem;
+.signal-panel {
+  grid-column: 1 / -1;
+}
+.signal-figure + .signal-figure {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.signal-figure figcaption {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: .75rem;
+  margin-bottom: .75rem;
+}
+.signal-figure .box-title {
+  margin: 0;
+}
+.signal-organ {
+  grid-row: span 2;
+  width: 3rem;
+  height: 3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.organ-body {
+  fill: currentColor;
+  fill-opacity: .16;
 }
 .signal-drawing {
   display: block;
   overflow: hidden;
   width: 100%;
-  height: auto;
+  height: clamp(4.75rem, 12vw, 8rem);
   border: 1px solid var(--rule);
   background-image: linear-gradient(var(--signal-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--signal-grid) 1px, transparent 1px);
@@ -126,16 +155,9 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.signal-figure figcaption {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: .75rem;
+.signal-rate {
   margin-top: .375rem;
-  color: var(--muted);
   font-size: .8125rem;
-  line-height: 1.4;
 }
 
 .section {
@@ -599,12 +621,18 @@ img.portrait {
   }
   .motion-setting input { margin: 0; accent-color: var(--ink); }
   .motion-setting input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-  .signal-figure .motion-setting { margin-top: 0; }
-  .signal-figure:has(.motion-setting:not([hidden])) .signal-trace {
-    animation: scroll-signal var(--signal-period, 16s) linear infinite paused;
+  .signal-figure.in-view .signal-trace {
+    animation: scroll-signal var(--signal-period, 16s) linear infinite;
   }
   .signal-figure.signal-ecg { --signal-period: 6.666667s; }
-  .signal-figure.in-view:has(input:not(:checked)) .signal-trace { animation-play-state: running; }
+  .signal-resp.in-view .organ-motion {
+    transform-origin: 24px 17px;
+    animation: fill-lungs var(--signal-period, 16s) ease-in-out infinite;
+  }
+  .signal-ecg.in-view .organ-motion {
+    transform-origin: 24px 24px;
+    animation: beat-heart var(--signal-period) ease-out infinite;
+  }
   .in-view .trace-draw {
     stroke-dasharray: 100;
     animation: draw-trace 3.8s linear infinite;
@@ -641,6 +669,18 @@ img.portrait {
 /* The second copy takes the first copy's place at the end of each period. */
 @keyframes scroll-signal {
   to { transform: translateX(-880px); }
+}
+/* Match the breath extrema, holds and R peaks arriving at the right edge of the plot. */
+@keyframes fill-lungs {
+  0%, 100% { transform: scale(.84, .90); }
+  8.3%, 30.9%, 62.8%, 84.1% { transform: scale(1.07, 1.06); }
+  17%, 45.6%, 73.5%, 98.6% { transform: scale(.83, .89); }
+  22.5%, 25.5%, 36%, 40%, 50%, 56%, 91.5% { transform: scale(.95, .98); }
+}
+@keyframes beat-heart {
+  0%, 1.7%, 7%, 13.7%, 19%, 24.7%, 30%, 36.1%, 41.5%, 48.8%, 54.2%,
+  61.2%, 66.6%, 73.8%, 79.2%, 87.6%, 93%, 100% { transform: scale(.91); }
+  3.16%, 15.2%, 26.18%, 37.63%, 50.34%, 62.72%, 75.34%, 89.13% { transform: scale(1.09); }
 }
 @keyframes draw-trace {
   from { stroke-dashoffset: 100; }

@@ -50,44 +50,47 @@
           <h2 class="box-title" data-measure data-en="Your data stays on your device">Daten auf deinem Gerät</h2>
           <p data-measure data-en="Our goal is to let you process and store your health data on your own device. The open-source software is designed to work without tying you to a provider or sharing your data.">Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
         </article>
-        <article class="knowledge-box">
-          <h2 class="box-title signal-resp" data-measure data-en="Breathing signal">Atemsignal</h2>
-          <p data-measure data-en="Tracking breathing with a smartphone">Atembewegung per Smartphone</p>
+        <article id="signale" class="knowledge-box signal-panel" aria-labelledby="respiration-title ecg-title">
           <figure class="signal-figure signal-resp">
-            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+            <figcaption>
+              <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
+                <g class="organ-motion">
+                  <path class="organ-body" d="M19 10c-3-2-7 2-10 8C5 25 3 34 5 39c1 3 5 2 9 0l5-2c2-1 3-3 3-6V17c0-4-1-6-3-7ZM29 10c3-2 7 2 10 8 4 7 6 16 4 21-1 3-5 2-9 0l-5-2c-2-1-3-3-3-6V17c0-4 1-6 3-7Z"/>
+                  <path d="m24 17-8 9-4 8m4-8-6 2m14-11 8 9 4 8m-4-8 6 2"/>
+                </g>
+                <path d="M24 5v12"/>
+              </svg>
+              <h2 id="respiration-title" class="box-title" data-measure data-en="Breathing signal">Atemsignal</h2>
+              <p data-measure data-en="Tracking breathing with a smartphone">Atembewegung per Smartphone</p>
+            </figcaption>
+            <svg class="signal-drawing" viewBox="0 0 440 104" preserveAspectRatio="none" aria-hidden="true">
               <path class="signal-baseline" d="M0 52H440"/>
               <g class="signal-trace">
                 <use href="assets/illustrations/signals.svg#respiration"/>
                 <use href="assets/illustrations/signals.svg#respiration" x="880"/>
               </g>
             </svg>
-            <figcaption>
-              <span data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</span>
-              <label class="motion-setting" hidden>
-                <input type="checkbox" aria-label="Pause für das Atemsignal" data-en-aria-label="Pause the breathing signal">
-                <span data-measure>Pause</span>
-              </label>
-            </figcaption>
+            <p class="signal-rate" data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</p>
           </figure>
-        </article>
-        <article class="knowledge-box">
-          <h2 class="box-title signal-ecg" data-measure data-en="ECG">EKG</h2>
-          <p data-measure data-en="Heart signal from the Polar H10">Herzsignal vom Polar H10</p>
           <figure class="signal-figure signal-ecg">
-            <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
+            <figcaption>
+              <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
+                <g class="organ-motion">
+                  <path class="organ-body" d="M24 39C20 36 6 26 6 17a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 9-14 19-18 22Z"/>
+                  <path d="M12 18c0-3 2-5 5-5"/>
+                </g>
+              </svg>
+              <h2 id="ecg-title" class="box-title" data-measure data-en="ECG">EKG</h2>
+              <p data-measure data-en="Heart signal from the Polar H10">Herzsignal vom Polar H10</p>
+            </figcaption>
+            <svg class="signal-drawing" viewBox="0 0 440 104" preserveAspectRatio="none" aria-hidden="true">
               <path class="signal-baseline" d="M0 66H440"/>
               <g class="signal-trace">
                 <use href="assets/illustrations/signals.svg#ecg"/>
                 <use href="assets/illustrations/signals.svg#ecg" x="880"/>
               </g>
             </svg>
-            <figcaption>
-              <span data-measure data-en="Simulated · 72 beats/min">Simuliert · 72 Schläge/min</span>
-              <label class="motion-setting" hidden>
-                <input type="checkbox" aria-label="Pause für das EKG" data-en-aria-label="Pause the ECG signal">
-                <span data-measure>Pause</span>
-              </label>
-            </figcaption>
+            <p class="signal-rate" data-measure data-en="Simulated · 72 beats/min">Simuliert · 72 Schläge/min</p>
           </figure>
         </article>
       </div>
