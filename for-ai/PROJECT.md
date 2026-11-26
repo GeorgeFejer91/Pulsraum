@@ -94,7 +94,9 @@ or person. Keep supporting text, images, and links with their subject.
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
   His card identifies the Max Planck Institute for Human Development and the
-  University of Konstanz as his research affiliations using their official SVGs.
+  University of Konstanz as his research affiliations. Their SVG emblems show
+  the Minerva and the square Konstanz signet directly on the profile background,
+  with dark lines in light mode and light lines in dark mode.
   A link in the footer opens GitHub for participation.
 
 Use consistent box boundaries and spacing in both themes. Let boxes grow with

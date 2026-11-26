@@ -208,24 +208,14 @@ img.portrait {
 }
 .affiliation-logos {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 1rem 1.5rem;
-  width: fit-content;
-  max-width: 100%;
-  padding: .75rem 1rem;
-  background: white;
-}
-.affiliation-logos a {
-  display: grid;
-  align-items: center;
-  max-width: 100%;
-  min-height: 44px;
+  gap: 1rem;
 }
 .affiliation-logos img {
   display: block;
-  max-width: 100%;
-  height: auto;
+}
+:root[data-theme="dark"] .affiliation-logos img {
+  filter: invert(1);
 }
 
 .site-footer {

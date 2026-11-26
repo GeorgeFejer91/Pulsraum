@@ -210,9 +210,11 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await george.locator('img.portrait').getAttribute('src'), 'assets/team/crop_selfie.png');
     const affiliations = george.locator('figure.affiliations');
     assert.equal(await affiliations.getByRole('link', { name: 'Max-Planck-Institut für Bildungsforschung' })
-      .locator('img').getAttribute('src'), 'assets/team/mpib-de.svg');
+      .locator('img').getAttribute('src'), 'assets/team/mpib-minerva.svg');
     assert.equal(await affiliations.getByRole('link', { name: 'Universität Konstanz' })
-      .locator('img').getAttribute('src'), 'assets/team/universitaet-konstanz.svg');
+      .locator('img').getAttribute('src'), 'assets/team/konstanz-signet.svg');
+    assert.equal(await affiliations.locator('.affiliation-logos').evaluate(row => getComputedStyle(row).backgroundColor),
+      'rgba(0, 0, 0, 0)', 'The profile surface must show through the affiliation row');
     const profileUrls = {
       'Forschungsprofil': 'https://www.georgefejer.com/',
       'Google Scholar': 'https://scholar.google.com/citations?user=GPARoloAAAAJ&hl=en',
@@ -416,8 +418,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
       assert.equal(await institute.getAttribute('href'), 'https://www.mpib-berlin.mpg.de/en');
-      assert.equal(await institute.locator('img').getAttribute('src'), 'assets/team/mpib-en.svg');
-      await institute.locator('img').evaluate(image => image.decode());
+      assert.equal(await institute.getAttribute('title'), 'Max Planck Institute for Human Development');
       assert.equal(await affiliations.getByRole('link', { name: 'University of Konstanz' })
         .getAttribute('href'), 'https://www.uni-konstanz.de/en/');
       await checkLayout(page);
