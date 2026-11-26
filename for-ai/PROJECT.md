@@ -83,6 +83,9 @@ or person. Keep supporting text, images, and links with their subject.
   The phone compares three labeled streams on one time axis. Its own signal is
   solid blue. The Polar H10 above it uses ochre dashes and the spirometer to
   its right uses teal dots, with matching Bluetooth paths into the display.
+  The Polar strap expands through the two-second inhale and contracts through
+  the two-second exhale. Its sensor face stays rigid. Regenerate its frame
+  strip with `python scripts/generate-belt.py`.
   The WebP atlas uses the Blender camera `Webansicht · Messkopf und Griff`,
   frames 1 to 95 at every other frame, in four rows of twelve 256 × 300 px
   tiles. Hide the Bluetooth/receiver collection for this export.

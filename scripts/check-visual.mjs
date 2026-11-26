@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -25,6 +25,44 @@ const server = createServer(async (request, response) => {
 server.listen(0, '127.0.0.1');
 await once(server, 'listening');
 const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.address().port}/`;
+
+async function checkValidationBelt(drawing) {
+  const widths = [];
+  for (const time of [0, 1000, 2000, 3000, 4000]) {
+    await drawing.evaluate(async (svg, ms) => {
+      for (const animation of svg.getAnimations({ subtree: true })) {
+        animation.pause();
+        await animation.ready;
+        animation.currentTime = ms;
+      }
+    }, time);
+    const frame = await drawing.screenshot();
+    widths.push(await drawing.evaluate(async (svg, base64) => {
+      const image = new Image();
+      image.src = 'data:image/png;base64,' + base64;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = 380;
+      canvas.height = 218;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, 380, 218);
+      // Measure the silhouette above the phone, clear of the Bluetooth symbol.
+      const { data, width } = ctx.getImageData(30, 10, 170, 46);
+      let left = width, right = -1;
+      for (let i = 0; i < data.length; i += 4) {
+        if (Math.max(data[i], data[i + 1], data[i + 2]) >= 100) continue;
+        const x = (i / 4) % width;
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+      }
+      return right - left;
+    }, frame.toString('base64')));
+  }
+  const [rest, inhaling, full, exhaling, end] = widths;
+  assert.ok(inhaling > rest + 4 && full > inhaling + 4 && exhaling < full - 4 &&
+    exhaling > end + 4 && Math.abs(end - rest) <= 1,
+  `Belt must expand on inhale and contract on exhale, observed widths ${widths}`);
+}
 
 async function checkBreathingPhases(drawing) {
   await drawing.evaluate(async svg => {
@@ -368,6 +406,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
           });
         }, await drawing.elementHandle());
         if (await drawing.locator('.breathing-rig').count()) await checkBreathingPhases(drawing);
+        if (await drawing.evaluate(svg => svg.matches('.validation-phone'))) await checkValidationBelt(drawing);
       }
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
