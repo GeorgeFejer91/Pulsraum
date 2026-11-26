@@ -30,12 +30,12 @@ checklist and do not close the overall goal before its acceptance criteria pass.
 
 Current website update:
 
-- [x] Add the scientific building blocks under Project. With the pinned
-  navigation integrated, local `main` passed 13 Chromium and WebKit rendering
-  cases and focused desktop and phone checks in both themes. Physical devices
-  and screen readers were outside the test matrix.
-- [ ] Publish the update when requested. The observed remote `main` points to
-  the pinned-navigation update `f1a6ab78598e37463865f2a759b931ffe76d31dd`.
+- [x] Organize the site as Auf einen Blick, Grundlagen, Projektverlauf, and Team.
+  The first two of five milestones are complete according to the project owner.
+  The remaining milestones describe planned validation, local analysis, and
+  home sleep measurement research.
+
+Use the most recent successful [Pages workflow run](https://github.com/GeorgeFejer91/Pulsraum/actions/workflows/pages.yml) and the live visual review to verify publication.
 
 ## Non-goals
 
@@ -54,30 +54,25 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 
 ## Website layout
 
-Give every website section visibly distinct boxes, one per topic, person, or
-way to participate. Use a clear title and keep the explanation, images, and
-links that support that subject together in its box. Keep section headings and
-brief introductions above the boxes so readers can see how they fit together.
+Give each website section visibly distinct boxes, one per topic, milestone,
+or person. Keep supporting text, images, and links with their subject.
 
-- **Project** groups each core idea in its own box, such as what Pulsraum does
-  and how it processes data locally. Its **Wissenschaftliche Bausteine**
-  subsection gives each planned technology a separate box and keeps its
-  research or prototype link with it.
-- **Applications** gives each use case its own box. The native accordion may
-  provide the boxes, with one labeled disclosure per use case.
-- **Team** gives each member a profile box with their name, a portrait cleared
-  for publication, verified credentials, relevant website links, and a short
-  description of what they do on Pulsraum. Omit individual details until they
-  are confirmed and available for publication.
-- **Participation and contact** gives each distinct opportunity or contact
-  route its own box. Keep each call to action with the opportunity it serves.
+- **Auf einen Blick** presents the project, example uses, local data processing,
+  and labeled illustrations of the two signals.
+- **Grundlagen** introduces the hardware, software, and published research that
+  Pulsraum builds on. Each box links to its associated paper or software.
+- **Projektverlauf** presents the five milestones in an ordered list with
+  visible completion text and a green checkmark for completed work. Keep the
+  distinction between completed prototypes and planned measurement validation.
+- **Team** gives each member a separate profile box with available details
+  confirmed for publication. A link in the footer opens GitHub for participation.
 
 Use consistent box boundaries and spacing in both themes. Let boxes grow with
 their contents and stack them in reading order on narrow screens.
 
 ## Architecture and ownership
 
-The site uses static HTML and CSS with locally served JavaScript. The build script copies the pinned Pretext browser modules and license. The applications section uses a native stretch accordion with Pretext measurement and document reflow for enlarged text. The Pages workflow stages only public website files and requires rendered verification of that artifact before deployment.
+The site uses static HTML and CSS with locally served JavaScript. The build script copies the pinned Pretext browser modules and license. The ordered milestone cards use native document flow and Pretext measurement for enlarged text. The Pages workflow stages only public website files and requires rendered verification of that artifact before deployment.
 
 Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
 

@@ -24,30 +24,31 @@
       </button>
     </div>
     <nav aria-label="Hauptnavigation">
-      <a href="#projekt"><span data-measure>Projekt</span></a>
-      <a href="#anwendungen"><span data-measure>Anwendungen</span></a>
+      <a href="#projekt"><span data-measure>Auf einen Blick</span></a>
+      <a href="#bausteine"><span data-measure>Grundlagen</span></a>
+      <a href="#projektverlauf"><span data-measure>Projektverlauf</span></a>
       <a href="#team"><span data-measure>Team</span></a>
-      <a href="#mitmachen"><span data-measure>Mitmachen</span></a>
     </nav>
   </header>
   <main>
-    <section class="hero wrap" id="projekt" aria-labelledby="project-title">
+    <section class="hero wrap" id="projekt" aria-labelledby="overview-title">
       <div class="hero-heading">
-        <h1 id="project-title" data-measure>Pulsraum</h1>
+        <h1 data-measure>Pulsraum</h1>
+        <h2 id="overview-title" data-measure>Auf einen Blick</h2>
         <p class="lead" data-measure>Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
       </div>
       <div class="box-grid">
-        <article class="knowledge-box">
-          <h2 class="box-title" data-measure>Was Pulsraum vorhat</h2>
-          <p data-measure>Pulsraum soll <span class="signal-ecg">EKG</span>, <span class="signal-resp">Atemmessung</span> und individuelles Biofeedback mit Smartphone und Polar H10 zugänglich machen. Das Projekt befindet sich im Aufbau.</p>
+        <article class="knowledge-box" id="anwendungen">
+          <h3 class="box-title" data-measure>Was Pulsraum vorhat</h3>
+          <p data-measure>Pulsraum soll <span class="signal-ecg">EKG</span>, <span class="signal-resp">Atemmessung</span> und individuelles Biofeedback mit Smartphone und Polar H10 im Browser zugänglich machen. Damit wollen wir Atemübungen begleiten und Spiele oder Visualisierungen mit Körpersignalen steuern.</p>
           <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure>Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title" data-measure>Daten auf deinem Gerät</h2>
-          <p data-measure>Die Gesundheitsdaten werden auf dem eigenen Gerät verarbeitet und gespeichert, ohne Anbieterbindung oder Weitergabe.</p>
+          <h3 class="box-title" data-measure>Daten auf deinem Gerät</h3>
+          <p data-measure>Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title signal-resp" data-measure>Atemsignal</h2>
+          <h3 class="box-title signal-resp" data-measure>Atemsignal</h3>
           <p data-measure>Atembewegung per Smartphone</p>
           <figure class="signal-figure signal-resp">
         <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
@@ -58,7 +59,7 @@
           </figure>
         </article>
         <article class="knowledge-box">
-          <h2 class="box-title signal-ecg" data-measure>EKG</h2>
+          <h3 class="box-title signal-ecg" data-measure>EKG</h3>
           <p data-measure>Herzsignal vom Polar H10</p>
           <figure class="signal-figure signal-ecg">
         <svg class="signal-drawing" viewBox="0 0 440 104" aria-hidden="true">
@@ -69,51 +70,64 @@
           </figure>
         </article>
       </div>
-      <section class="building-blocks" id="bausteine" aria-labelledby="building-blocks-title">
-        <h2 id="building-blocks-title" data-measure>Wissenschaftliche Bausteine</h2>
-        <p class="building-blocks-intro" data-measure>Pulsraum soll diese Technologien in einem Open-Source-Paket für den Browser zusammenführen, von der Signalerfassung bis zum Biofeedback.</p>
-        <div class="box-grid">
-          <article class="knowledge-box">
-            <h3 class="box-title signal-ecg" data-measure>EKG mit Polar H10</h3>
-            <p data-measure>Der Brustgurt soll das Herzsignal liefern, das Pulsraum auf dem eigenen Gerät verarbeitet. Polar Stream ist eine Vorarbeit für die Erfassung von EKG-Rohdaten.</p>
-            <a class="inline-link" href="https://github.com/GeorgeFejer91/Polar-Stream"><span data-measure>Polar Stream auf GitHub</span><span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="knowledge-box">
-            <h3 class="box-title signal-resp" data-measure>Atemmessung per Smartphone</h3>
-            <p data-measure>Ein am Bauch getragenes Smartphone soll Atembewegungen erfassen. Ein Forschungsbeispiel für den Einsatz von Smartphone-Sensoren ist SleepAp, das Bewegungsdaten und Tonaufnahmen für das Schlafapnoe-Screening nutzte.</p>
-            <a class="inline-link" href="https://ieeexplore.ieee.org/document/6747332"><span data-measure>SleepAp · Behar et al. (2015)</span><span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="knowledge-box">
-            <h3 class="box-title" data-measure>Biofeedback im Browser</h3>
-            <p data-measure>Herz- und Atemsignale sollen Spiele und Visualisierungen steuern. EC Gaming erprobt diesen Ansatz mit Browserspielen, die auf den Herzschlag reagieren.</p>
-            <a class="inline-link" href="https://github.com/GeorgeFejer91/ECGaming"><span data-measure>EC Gaming auf GitHub</span><span aria-hidden="true">↗</span></a>
-          </article>
-        </div>
-      </section>
     </section>
-    <section class="section wrap applications-panel" id="anwendungen" aria-labelledby="applications-title">
-      <div class="section-heading"><p class="section-label">Anwendungen</p><h2 id="applications-title" data-measure>Eine offene Grundlage.<br>Drei Anwendungs&shy;bereiche.</h2></div>
-      <div class="applications">
-        <details class="knowledge-box" name="anwendungen" open>
-          <summary><span data-measure>Persönliche Gesundheit</span><span class="disclosure-icon" aria-hidden="true"></span></summary>
-          <p data-measure>Körpersignale beobachten, <span class="signal-resp">Atemübungen</span> begleiten und eigene Formen der Stressregulation erkunden. Verständliche Rückmeldungen und selbst verwaltete Aufzeichnungen stehen im Mittelpunkt.</p>
-        </details>
-        <details class="knowledge-box" name="anwendungen">
-          <summary><span data-measure>Medizinische Messverfahren</span><span class="disclosure-icon" aria-hidden="true"></span></summary>
-          <p data-measure>Geplant sind Vergleiche mit medizinischen <span class="signal-ecg">Herzreferenzen</span> und <span class="signal-resp">Atemreferenzen</span>. Dazu gehört die Frage, wie zuverlässig sich <span class="signal-resp">Atmung</span> mit einem am Bauch befestigten Smartphone erfassen lässt.</p>
-        </details>
-        <details class="knowledge-box" name="anwendungen">
-          <summary><span data-measure>Kreative Medien</span><span class="disclosure-icon" aria-hidden="true"></span></summary>
-          <p data-measure>Die <span class="signal-resp">Atmung</span> bewegt Blätter in einem Wald. Eine Blase wächst und schrumpft im eigenen <span class="signal-resp">Atemrhythmus</span>. Offene Schnittstellen sollen individuelle Spiele, Visualisierungen und immersive Anwendungen ermöglichen.</p>
-        </details>
+    <section class="section wrap building-blocks" id="bausteine" aria-labelledby="building-blocks-title">
+      <div class="section-heading">
+        <h2 id="building-blocks-title" data-measure>Grundlagen</h2>
+        <p class="section-intro" data-measure>Pulsraum baut auf vorhandener Hardware, Software und Forschung auf. Zusammen sollen sie den Weg von der Signalerfassung bis zum Biofeedback im Browser abdecken.</p>
       </div>
-      <article class="knowledge-box applications-note">
-        <h3 class="box-title" data-measure>Messqualität und Validierung</h3>
-        <p data-measure>Messqualität und Geräteeignung werden gesondert geprüft. Medizinische Vergleichsstudien sind geplant. Eine klinische Validierung liegt für den geplanten Browserbaukasten noch nicht vor.</p>
-      </article>
+      <div class="box-grid">
+        <article class="knowledge-box">
+          <h3 class="box-title signal-ecg" data-measure>EKG mit Polar H10</h3>
+          <p data-measure>Der EKG-Brustgurt Polar H10 liefert das Herzsignal. Die Vorarbeit Polar Stream erfasst EKG-Rohdaten für die Weiterverarbeitung.</p>
+          <a class="inline-link" href="https://github.com/GeorgeFejer91/Polar-Stream"><span data-measure>Polar Stream auf GitHub</span><span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="knowledge-box">
+          <h3 class="box-title signal-resp" data-measure>Atemmessung per Smartphone</h3>
+          <p data-measure>Ein am Bauch getragenes Smartphone soll Atembewegungen erfassen. Ein Forschungsbeispiel für den Einsatz von Smartphone-Sensoren ist SleepAp, das Bewegungsdaten und Tonaufnahmen für das Schlafapnoe-Screening nutzte.</p>
+          <a class="inline-link" href="https://ieeexplore.ieee.org/document/6747332"><span data-measure>SleepAp · Behar et al. (2015)</span><span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="knowledge-box">
+          <h3 class="box-title" data-measure>Biofeedback im Browser</h3>
+          <p data-measure>Herz- und Atemsignale sollen Spiele und Visualisierungen steuern. EC Gaming erprobt diesen Ansatz mit Browserspielen, die auf den Herzschlag reagieren.</p>
+          <a class="inline-link" href="https://github.com/GeorgeFejer91/ECGaming"><span data-measure>EC Gaming auf GitHub</span><span aria-hidden="true">↗</span></a>
+        </article>
+      </div>
+    </section>
+    <section class="section wrap" id="projektverlauf" aria-labelledby="milestones-title">
+      <div class="section-heading">
+        <h2 id="milestones-title" data-measure>Projektverlauf</h2>
+      </div>
+      <ol class="milestones">
+        <li class="knowledge-box">
+          <h3 class="box-title" data-measure>Polar H10 per Bluetooth anbinden</h3>
+          <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> Abgeschlossen</p>
+          <p data-measure>Die Bluetooth-Anbindung verbindet den EKG-Brustgurt Polar H10 mit dem Browser und stellt EKG- und Herzfrequenzdaten für Web-Apps bereit.</p>
+        </li>
+        <li class="knowledge-box">
+          <h3 class="box-title" data-measure>Atembewegungen mit dem Smartphone erfassen</h3>
+          <p class="milestone-status is-complete" data-measure><span aria-hidden="true">✓</span> Abgeschlossen</p>
+          <p data-measure>Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
+        </li>
+        <li class="knowledge-box">
+          <h3 class="box-title" data-measure>Smartphone-Atemmessung validieren</h3>
+          <p class="milestone-status" data-measure>Geplant</p>
+          <p data-measure>Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene <a href="https://www.vernier.com/product/go-direct-spirometer/">Go Direct Spirometer von Vernier</a> liefert Vergleichswerte für Atemfluss und Atemvolumen.</p>
+        </li>
+        <li class="knowledge-box">
+          <h3 class="box-title" data-measure>Lokale Gesundheitsauswertung entwickeln</h3>
+          <p class="milestone-status" data-measure>Geplant</p>
+          <p data-measure>Für die selbstbestimmte Gesundheitsbeobachtung planen wir eine Open-Source-Anwendung. Vorgesehen sind eine Browserversion, eine installierbare Progressive Web App (PWA) und Apps für Android und iPhone. Sie soll Messdaten auf dem eigenen Gerät auswerten und daraus verständliche Gesundheitskennzahlen und Verläufe ableiten.</p>
+        </li>
+        <li class="knowledge-box">
+          <h3 class="box-title" data-measure>Schlafmessung zu Hause erproben</h3>
+          <p class="milestone-status" data-measure>Geplant</p>
+          <p data-measure>Wir wollen eine komfortable, leicht anzulegende Smartphone-Halterung entwickeln, die das Gerät über Nacht in einer stabilen Position hält. Für die Auswertung von Schlafdaten zu Hause wollen wir die Messprotokolle für Atmung und Herzfrequenz mit parallelen Messungen eines medizinischen kardiorespiratorischen Referenzgeräts vergleichen und ihre Eignung für die Schlafdiagnostik untersuchen.</p>
+        </li>
+      </ol>
     </section>
     <section class="section wrap" id="team" aria-labelledby="team-title">
-      <div class="section-heading"><p class="section-label">Team</p><h2 id="team-title" data-measure>Forschung trifft Gestaltung.</h2></div>
+      <div class="section-heading"><h2 id="team-title" data-measure>Team</h2></div>
       <div class="box-grid">
         <article class="knowledge-box person">
           <img class="portrait" src="assets/team/george-fejer.webp" alt="" width="320" height="320" decoding="async">
@@ -139,24 +153,11 @@
         </article>
       </div>
     </section>
-    <section class="section participate" id="mitmachen" aria-labelledby="participate-title">
-      <div class="wrap">
-        <div class="section-heading"><p class="section-label">Mitmachen</p><h2 id="participate-title" data-measure>Biofeedback mitgestalten.</h2></div>
-        <div class="box-grid">
-          <article class="knowledge-box">
-            <h3 class="box-title" data-measure>Am Projekt mitarbeiten</h3>
-            <p data-measure>Du entwickelst mit Biosensoren, arbeitest an Messverfahren oder möchtest eigene Rückmeldungen gestalten? Entdecke das Projekt und seine Entwicklung auf GitHub.</p>
-            <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure>Zum Projekt auf GitHub</span><span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="knowledge-box">
-            <h3 class="box-title" data-measure>Ideen und Rückmeldungen</h3>
-            <p data-measure>Welche Funktionen wären für dich hilfreich? Teile deine Fragen, Ideen oder Beobachtungen mit uns.</p>
-            <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum/issues"><span data-measure>Auf GitHub austauschen</span><span aria-hidden="true">↗</span></a>
-          </article>
-        </div>
-      </div>
-    </section>
   </main>
-  <footer class="wrap site-footer"><a class="footer-brand" href="#projekt">Pulsraum</a><p>Offene Software. Lokale Daten. Eigene Entscheidungen.</p><a href="https://github.com/GeorgeFejer91/Pulsraum">GitHub ↗</a></footer>
+  <footer class="wrap site-footer" id="mitmachen">
+    <a class="footer-brand" href="#projekt">Pulsraum</a>
+    <p>Offene Software. Lokale Daten. Eigene Entscheidungen.</p>
+    <a href="https://github.com/GeorgeFejer91/Pulsraum/issues"><span data-measure>Auf GitHub mitmachen</span></a>
+  </footer>
 </body>
 </html>

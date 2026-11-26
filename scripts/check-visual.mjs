@@ -28,15 +28,13 @@ const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.addres
 
 async function checkLayout(page) {
   const issues = await page.evaluate(() => {
-    const panel = document.querySelector('#anwendungen');
-    const groups = panel.querySelector('.applications');
     const issues = [];
     for (const section of document.querySelectorAll('main > section')) {
       const boxes = [...section.querySelectorAll('.knowledge-box')];
       if (boxes.length < 2) issues.push(`${section.id} needs separate content boxes`);
       let previous;
       for (const box of boxes) {
-        const label = box.querySelector('h2, h3, summary');
+        const label = box.querySelector('h3');
         const bounds = box.getBoundingClientRect();
         const css = getComputedStyle(box);
         if (!label?.textContent.trim() || !label.getClientRects().length) issues.push(`${section.id} has an unlabeled box`);
@@ -50,30 +48,16 @@ async function checkLayout(page) {
         previous = bounds;
       }
     }
-    for (const element of [document.documentElement, panel, groups, ...groups.querySelectorAll('summary')]) {
-      if (element.scrollWidth > element.clientWidth + 1) issues.push(`${element.className || element.tagName} horizontal overflow`);
-      if (element !== document.documentElement && element.scrollHeight > element.clientHeight + 1) {
-        issues.push(`${element.className || element.tagName} internal vertical overflow`);
+    if (document.documentElement.scrollWidth > document.documentElement.clientWidth + 1) {
+      issues.push('Page horizontal overflow');
+    }
+    const navigation = document.querySelector('.site-header nav');
+    if (navigation.scrollWidth > navigation.clientWidth + 1) issues.push('Navigation horizontal overflow');
+    for (const element of navigation.querySelectorAll('a')) {
+      if (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1) {
+        issues.push(`Navigation label overflows: ${element.textContent.trim()}`);
       }
     }
-    for (const element of groups.querySelectorAll('summary [data-measure], details[open] p')) {
-      const range = document.createRange();
-      range.selectNodeContents(element);
-      const text = range.getBoundingClientRect();
-      const box = element.getBoundingClientRect();
-      if (text.left < box.left - 1 || text.right > box.right + 1 || text.bottom > box.bottom + 1) {
-        issues.push(`Text exceeds its box: ${element.textContent.trim()}`);
-      }
-    }
-    const headingEnd = panel.querySelector('h2').lastChild;
-    if (headingEnd.nodeType === Node.TEXT_NODE && /[.!?]$/.test(headingEnd.data)) {
-      const range = document.createRange();
-      range.setStart(headingEnd, headingEnd.length - 2);
-      range.setEnd(headingEnd, headingEnd.length);
-      if (range.getClientRects().length > 1) issues.push('Application heading ends with punctuation on its own line');
-    }
-    const [heading, body, note] = [...panel.children].map(element => element.getBoundingClientRect());
-    if (heading.bottom > body.top || body.bottom > note.top) issues.push('Accordion groups overlap the heading or note');
     return issues;
   });
   assert.deepEqual(issues, []);
@@ -82,10 +66,13 @@ async function checkLayout(page) {
 async function checkNavigation(page, phone) {
   const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
   const initial = await navigation.boundingBox();
-  for (const anchor of ['#anwendungen', '#mitmachen']) {
+  for (const anchor of ['#bausteine', '#projektverlauf']) {
     const link = navigation.locator(`a[href="${anchor}"]`);
-    await link.press('Enter');
+    if (phone && anchor === '#projektverlauf') await link.tap();
+    else await link.press('Enter');
     assert.equal(new URL(page.url()).hash, anchor);
+    const heading = await page.locator(`${anchor} h2`).boundingBox();
+    assert.ok(heading.y >= 0 && heading.y < page.viewportSize().height, 'Navigation must reveal the destination heading');
   }
   const teamLink = navigation.getByRole('link', { name: 'Team' });
   await teamLink.focus();
@@ -108,7 +95,7 @@ async function checkNavigation(page, phone) {
     assert.ok(footerLink.y + footerLink.height <= pinned.y + 1, 'The phone menu must leave the footer links reachable');
   }
 
-  const projectLink = navigation.getByRole('link', { name: 'Projekt' });
+  const projectLink = navigation.getByRole('link', { name: 'Auf einen Blick', exact: true });
   await projectLink.focus();
   await projectLink.press('Enter');
   assert.equal(new URL(page.url()).hash, '#projekt');
@@ -138,7 +125,12 @@ async function checkPage(browser, name, width, height, mode = 'default') {
   try {
     const response = await page.goto(url, { waitUntil: 'networkidle' });
     assert.ok(response?.ok(), 'Website must load successfully');
-    assert.equal(await page.locator('main > section').count(), 4);
+    const sections = page.locator('main > section > div:first-child h2');
+    assert.deepEqual(await sections.allTextContents(), ['Auf einen Blick', 'Grundlagen', 'Projektverlauf', 'Team']);
+    const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
+    assert.deepEqual(await navigation.getByRole('link').allTextContents(), await sections.allTextContents());
+    assert.equal(await page.getByRole('contentinfo').getByRole('link', { name: 'Auf GitHub mitmachen' }).getAttribute('href'),
+      'https://github.com/GeorgeFejer91/Pulsraum/issues');
     const profiles = page.locator('#team .person');
     assert.ok(await profiles.count() >= 2, 'Each team member needs a profile box');
     for (const profile of await profiles.all()) {
@@ -150,22 +142,25 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await image.scrollIntoViewIfNeeded();
       assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published portraits must load');
     }
-    const buildingBlocks = page.getByRole('region', { name: 'Wissenschaftliche Bausteine' });
+    const buildingBlocks = page.getByRole('region', { name: 'Grundlagen' });
     assert.equal(await buildingBlocks.count(), 1, 'The project must include a named research section');
     assert.equal(await buildingBlocks.getByRole('article').count(), 3);
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
-    const accordion = page.locator('#anwendungen');
-    const summaries = accordion.locator('details > summary');
-    assert.equal(await summaries.count(), 3, 'The three application areas must use native disclosures');
-    assert.equal(await accordion.locator('details:first-child[open]').count(), 1);
+    const milestones = page.getByRole('region', { name: 'Projektverlauf' });
+    const stages = milestones.getByRole('listitem');
+    assert.equal(await stages.count(), 5);
+    assert.deepEqual(await stages.locator('.milestone-status').allTextContents(),
+      ['✓ Abgeschlossen', '✓ Abgeschlossen', 'Geplant', 'Geplant', 'Geplant']);
+    assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
+      'https://www.vernier.com/product/go-direct-spirometer/');
     if (mode === 'dark') assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     if (mode === 'spacing') {
       await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-block-end: 2em !important; }' });
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, p, h1, h2, h3, summary span, .figure-heading span, figcaption span')];
+        const elements = [...document.querySelectorAll('a, p, h1, h2, h3, figcaption')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -188,33 +183,12 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements
       .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
       .map(element => element.textContent.trim())), [], 'Research text must fit inside its boxes');
-    const geometry = await accordion.evaluate(element => {
-      const rows = [...element.querySelectorAll('summary')].map(summary => summary.getBoundingClientRect());
-      const label = element.querySelector('summary span');
-      return {
-        rowGap: rows[2].top - rows[1].bottom,
-        inset: label.getBoundingClientRect().left - rows[0].left,
-        fontSize: Number.parseFloat(getComputedStyle(label).fontSize),
-      };
-    });
+    if (mode !== 'no-js') {
+      const stageText = milestones.locator('[data-measure]');
+      assert.equal(await stageText.locator('xpath=self::*[@data-measured-lines]').count(), await stageText.count());
+    }
     const prefix = `${screenshots}/${name}-${width}x${height}-${mode}`;
     await page.screenshot({ path: `${prefix}.png`, fullPage: true });
-    for (let index = 0; index < 3; index++) {
-      const summary = summaries.nth(index);
-      const details = summary.locator('..');
-      const paragraph = details.locator('p');
-      if (await details.getAttribute('open') === null) {
-        if (index === 1 && phone) await summary.tap();
-        else await summary.press('Enter');
-      }
-      assert.ok(await paragraph.isVisible(), 'Every accordion description must be readable after activation');
-      assert.equal(await accordion.locator('details[open]').count(), 1);
-      if (mode !== 'no-js') {
-        await paragraph.locator('xpath=self::*[@data-measured-lines]').waitFor({ state: 'attached' });
-      }
-      await checkLayout(page);
-    }
-    await accordion.screenshot({ path: `${prefix}-accordion.png` });
     if (mode === 'dark') {
       const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
       assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
@@ -225,7 +199,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     assert.deepEqual(failed, [], 'Website resources and scripts must load locally without errors');
     console.log(`${name} ${width}×${height} ${mode}: passed`);
-    return geometry;
   } finally {
     await page.close();
   }
@@ -235,14 +208,12 @@ await mkdir(screenshots, { recursive: true });
 try {
   const browser = await chromium.launch();
   try {
-    const narrow = await checkPage(browser, 'chromium', 320, 568);
-    const short = await checkPage(browser, 'chromium', 390, 640);
-    const tall = await checkPage(browser, 'chromium', 390, 932);
+    await checkPage(browser, 'chromium', 320, 568);
+    await checkPage(browser, 'chromium', 390, 640);
+    await checkPage(browser, 'chromium', 390, 932);
     await checkPage(browser, 'chromium', 480, 800);
     await checkPage(browser, 'chromium', 844, 390);
-    const wide = await checkPage(browser, 'chromium', 1440, 900);
-    assert.ok(tall.rowGap > short.rowGap, 'Accordion groups must separate as viewport height grows');
-    assert.ok(wide.inset > narrow.inset && wide.fontSize > narrow.fontSize, 'Accordion insets and type must stretch when space permits');
+    await checkPage(browser, 'chromium', 1440, 900);
     await checkPage(browser, 'chromium', 390, 844, 'spacing');
     await checkPage(browser, 'chromium', 390, 844, 'large-text');
     await checkPage(browser, 'chromium', 390, 844, 'no-js');

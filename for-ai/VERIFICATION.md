@@ -53,12 +53,12 @@ that each box has a single subject and a title, each team member has a separate
 profile with the confirmed details available for publication, and the boxes
 have visible boundaries and stack in reading order on narrow screens. Review
 type, wrapping, spacing, signal labels and colors, link and button labels,
-keyboard focus, and both expanded and collapsed accordion states. Check
-navigation, theme switching, and accordion access by keyboard and touch.
+keyboard focus, and the visibility of all milestone descriptions and statuses.
+Check navigation and theme switching by keyboard and verify the mobile menu
+with touch.
 
 Include 320 CSS px reflow, portrait and landscape, doubled text, text spacing,
-and JavaScript disabled. The accordion must grow without internal scrolling,
-and the rendered page must load its assets locally. Record the configurations
+and JavaScript disabled. The page must load its assets locally. Record the configurations
 and screenshots reviewed, the observed outcome for each rule, and any
 untested hardware or assistive technology. Automated test output complements
 inspection of the renderings.
