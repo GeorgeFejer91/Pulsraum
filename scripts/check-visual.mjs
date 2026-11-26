@@ -150,6 +150,11 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await image.scrollIntoViewIfNeeded();
       assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published portraits must load');
     }
+    const buildingBlocks = page.getByRole('region', { name: 'Wissenschaftliche Bausteine' });
+    assert.equal(await buildingBlocks.count(), 1, 'The project must include a named research section');
+    assert.equal(await buildingBlocks.getByRole('article').count(), 3);
+    assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
+      'https://ieeexplore.ieee.org/document/6747332');
     const accordion = page.locator('#anwendungen');
     const summaries = accordion.locator('details > summary');
     assert.equal(await summaries.count(), 3, 'The three application areas must use native disclosures');
@@ -180,6 +185,9 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'reduce' });
     }
     await checkLayout(page);
+    assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements
+      .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
+      .map(element => element.textContent.trim())), [], 'Research text must fit inside its boxes');
     const geometry = await accordion.evaluate(element => {
       const rows = [...element.querySelectorAll('summary')].map(summary => summary.getBoundingClientRect());
       const label = element.querySelector('summary span');

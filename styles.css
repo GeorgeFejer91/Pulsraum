@@ -420,3 +420,14 @@
   margin-block-end: var(--application-inset);
   font-size: 1rem;
 }
+
+.building-blocks { margin-top: clamp(2rem, 5vw, 4rem); }
+.building-blocks-intro {
+  max-width: 68ch;
+  margin-block: .75rem 1rem;
+  color: var(--muted);
+}
+
+@media (min-width: 64rem) {
+  .building-blocks .box-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

@@ -28,6 +28,15 @@ ends, record the next concrete action, blockers, evidence, and last-observed
 branch/commit/publication state in the canonical task owner. Keep one active
 checklist and do not close the overall goal before its acceptance criteria pass.
 
+Current website update:
+
+- [x] Add the scientific building blocks under Project. With the pinned
+  navigation integrated, local `main` passed 13 Chromium and WebKit rendering
+  cases and focused desktop and phone checks in both themes. Physical devices
+  and screen readers were outside the test matrix.
+- [ ] Publish the update when requested. The observed remote `main` points to
+  the pinned-navigation update `f1a6ab78598e37463865f2a759b931ffe76d31dd`.
+
 ## Non-goals
 
 - No speculative framework, service, abstraction, compatibility layer, or
@@ -51,7 +60,9 @@ links that support that subject together in its box. Keep section headings and
 brief introductions above the boxes so readers can see how they fit together.
 
 - **Project** groups each core idea in its own box, such as what Pulsraum does
-  and how it processes data locally.
+  and how it processes data locally. Its **Wissenschaftliche Bausteine**
+  subsection gives each planned technology a separate box and keeps its
+  research or prototype link with it.
 - **Applications** gives each use case its own box. The native accordion may
   provide the boxes, with one labeled disclosure per use case.
 - **Team** gives each member a profile box with their name, a portrait cleared
