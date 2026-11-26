@@ -7,10 +7,10 @@ import { chromium, webkit } from 'playwright';
 
 const site = process.argv[2] ?? '.';
 const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
-const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml' };
+const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }

@@ -176,18 +176,28 @@
               <h3 class="box-title" data-measure>Smartphone-Atemmessung validieren</h3>
               <p class="milestone-status" data-measure>Geplant</p>
               <p data-measure>Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene <a href="https://www.vernier.com/product/go-direct-spirometer/">Go Direct Spirometer von Vernier</a> liefert Vergleichswerte für Atemfluss und Atemvolumen.</p>
+              <a class="inline-link" href="assets/models/vernier-go-direct-spirometer.blend" download><span data-measure>Blender-Modell des Spirometers herunterladen</span></a>
             </div>
-            <svg class="milestone-figure validation-phone" viewBox="0 -14 320 230" role="img" aria-labelledby="validation-figure">
-              <title id="validation-figure">Links sendet der Polar H10 seine Bewegungsdaten per Bluetooth an das Smartphone. In der Grafik markiert Blau die Atmung und ein roter Impuls den Herzschlag. Rechts ist das Vernier Go Direct Spirometer abgebildet. Das Display zeigt die drei Messkurven mit einem gemeinsamen Zeitmarker.</title>
+            <svg class="milestone-figure validation-phone" viewBox="0 -88 320 304" role="img" aria-labelledby="validation-figure">
+              <title id="validation-figure">Polar H10 und Vernier Go Direct Spirometer senden ihre Messdaten per Bluetooth an das Smartphone. Am H10 markiert Blau die Atmung und Rot den Herzschlag. In der schrägen Seitenansicht des Spirometers zeigen blaue Teilchen, wie die Luft beim Einatmen und Ausatmen in entgegengesetzter Richtung durch das Messrohr strömt. Das Display vergleicht die drei Messkurven.</title>
+              <defs>
+                <clipPath id="spirometer-frame"><rect width="356" height="258"/></clipPath>
+              </defs>
               <g class="device">
-                <g transform="translate(19 -12) scale(.2355)">
+                <g transform="translate(19 -28) scale(.2355)">
                   <image href="assets/illustrations/polar-h10.webp" width="560" height="221"/>
                   <g class="h10-light" mask="url(#h10-pod-whites)">
                     <rect class="pod-breath signal-resp" x="107" y="58" width="272" height="162"/>
                     <rect class="pod-beat signal-ecg" x="143" y="104" width="188" height="83"/>
                   </g>
                 </g>
-                <image href="assets/illustrations/vernier-go-direct-spirometer.svg" x="169" y="-10" width="136" height="50"/>
+                <g transform="translate(142 -85) scale(.5)">
+                  <g clip-path="url(#spirometer-frame)">
+                    <g class="spirometer-frame-row">
+                      <image class="spirometer-frame-column" href="assets/illustrations/spirometer-airflow.webp" width="4272" height="1032"/>
+                    </g>
+                  </g>
+                </g>
                 <g transform="translate(-75 0)">
                   <use href="#bluetooth-symbol" transform="translate(26 -3) scale(.74)"/>
                   <g class="bluetooth-waves">
@@ -195,6 +205,18 @@
                     <path d="M151 49q9 7 18 0"/>
                     <path d="M147 55q13 10 26 0"/>
                   </g>
+                </g>
+                <g class="spirometer-link" transform="translate(57 0)">
+                  <use href="#bluetooth-symbol" transform="translate(26 -3) scale(.74)"/>
+                  <g class="bluetooth-waves">
+                    <path d="M155 43q5 4 10 0"/>
+                    <path d="M151 49q9 7 18 0"/>
+                    <path d="M147 55q13 10 26 0"/>
+                  </g>
+                </g>
+                <g class="breath-phase" text-anchor="middle" aria-hidden="true">
+                  <text x="277" y="55" class="inhale">Einatmen</text>
+                  <text x="277" y="55" class="exhale">Ausatmen</text>
                 </g>
                 <path class="detail" d="M59 65h20m6 0h14"/>
                 <rect class="device-shell" x="3" y="67" width="314" height="145" rx="21"/>

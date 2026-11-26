@@ -435,6 +435,7 @@ img.portrait {
   stroke: none;
   opacity: 0;
 }
+.breath-phase text { font-size: 13px; opacity: 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   .motion-setting:not([hidden]) {
@@ -465,6 +466,11 @@ img.portrait {
   .in-view .bluetooth-waves path { animation: radio-pulse 1.2s ease-in-out infinite backwards; }
   .in-view .bluetooth-waves path:nth-child(2) { animation-delay: .16s; }
   .in-view .bluetooth-waves path:nth-child(3) { animation-delay: .32s; }
+  /* The Blender render has four rows of twelve frames, played at 12 fps. */
+  .in-view .spirometer-frame-row { animation: spirometer-row 4s steps(4) infinite; }
+  .in-view .spirometer-frame-column { animation: spirometer-column 1s steps(12) infinite; }
+  .in-view .breath-phase text { animation: breath-label 4s step-end infinite; }
+  .in-view .breath-phase .exhale { animation-delay: -2s; }
   .in-view .sleep-breath {
     transform-origin: 69px 96px;
     animation: sleeping-breath 3.8s ease-in-out infinite;
@@ -511,6 +517,9 @@ img.portrait {
   0%, 100% { opacity: .3; }
   35%, 55% { opacity: 1; }
 }
+@keyframes spirometer-row { from { transform: translateY(0); } to { transform: translateY(-1032px); } }
+@keyframes spirometer-column { from { transform: translateX(0); } to { transform: translateX(-4272px); } }
+@keyframes breath-label { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
 /* Follow the two respiratory crests crossed by the comparison cursor. */
 @keyframes h10-breath {
   0%, 47%, 85%, 100% { opacity: 0; }
