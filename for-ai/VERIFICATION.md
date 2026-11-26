@@ -36,55 +36,66 @@ Before implementation, name:
 - broader checks required by affected boundaries;
 - explicitly deferred work.
 
-## Gate 2: focused change
+## Gate 2: rendered verification after every repository change
 
-Every website change requires rendered visual verification before commit and
-publication, including copy, CSS, scripts, markup, and assets. Run
-`npm ci --ignore-scripts`, `npm run build`, `npm run check`, and
-`npm run check:visual`. Install the locked browsers when needed with
-`npx playwright install chromium webkit`.
+Every agent must build and visually verify the full website after every
+repository change and before committing or publishing it. This applies to
+documentation, `for-ai/`, workflow, and tooling changes as well as to website
+source and assets. Run `npm ci --ignore-scripts`, `npm run build`,
+`npm run check`, and `npm run check:visual`. Install the locked browsers if
+needed with `npx playwright install chromium webkit`.
 
-Open the desktop and phone screenshots in `.for-ai-local/visual/` and inspect
-the affected area in light and dark themes where relevant. Check the rendered
-layout, labels, wrapping, spacing, focus and expanded states. Keep the four
-main sections readable at 320 CSS px and without JavaScript. The accordion must
-expand without internal scrolling and preserve touch and keyboard access.
+Open the actual screenshots in `.for-ai-local/visual/` and review all four
+sections at desktop and phone sizes in light and dark themes. Check each
+[website layout rule](./PROJECT.md#website-layout) and the UI contract under
+[architecture and ownership](./PROJECT.md#architecture-and-ownership). Verify
+that each box has a single subject and a title, each team member has a separate
+profile with the confirmed details available for publication, and the boxes
+have visible boundaries and stack in reading order on narrow screens. Review
+type, wrapping, spacing, signal labels and colors, link and button labels,
+keyboard focus, and both expanded and collapsed accordion states. Check
+navigation, theme switching, and accordion access by keyboard and touch.
 
-When changing a section's content or layout, review it against the
-[website layout contract](./PROJECT.md#website-layout). Check that each box
-conveys one subject, that each team member has a separate profile box with the
-available verified details, and that boxes stay distinct in both themes and
-stack in reading order at narrow widths.
-
-The browser check also covers landscape, 480 CSS px, doubled text, text
-spacing, and local asset loading. Record the renderings reviewed, checks run,
-and untested device or assistive-technology scope.
-
-For launch, verify the exact GitHub Pages build SHA, HTTP content, domain A/CNAME answers and certificate status. DNS or certificate propagation may remain an external pending condition; distinguish configured settings from live verified HTTPS.
-
-Run the narrowest real check for the change. Add the exact commands here when
-the project selects its stack. A syntax check proves syntax; a unit test proves
-its tested logic; neither proves UI, deployment, hardware, performance, safety,
-or scientific validity unless it directly observes that surface.
+Include 320 CSS px reflow, portrait and landscape, doubled text, text spacing,
+and JavaScript disabled. The accordion must grow without internal scrolling,
+and the rendered page must load its assets locally. Record the configurations
+and screenshots reviewed, the observed outcome for each rule, and any
+untested hardware or assistive technology. Automated test output complements
+inspection of the renderings.
 
 ## Gate 3: integrated readiness
 
 Run proportionate build, test, lint, type, runtime, visual, device, security,
-and compatibility checks for every affected boundary. Do not run an expensive
-or irrelevant full matrix for a documentation-only edit.
+and compatibility checks for every affected boundary. Gate 2 applies in full
+for every repository change.
 
-## Gate 4: publication
+## Gate 4: publication and live visual verification
 
-1. Review status and diff; preserve unrelated changes.
-2. Confirm only intended paths are staged.
-3. Confirm all required gates passed. Website changes require a completed visual
-   review. A missing rendering or failed check blocks publication.
-4. Create one coherent commit under normal repository policy.
-5. Push without force and without bypassing protection or secret scanning.
-6. Verify the remote commit and required CI/deployment for that exact SHA.
-   The Pages workflow verifies its staged artifact in Chromium and WebKit
-   and publishes only after the rendered checks pass. The workflow keeps the
-   screenshots as the `website-screenshots` artifact.
+1. Review status and diff. Stage the intended changes and preserve unrelated
+   local work.
+2. Complete Gate 2 for the revision being published. A failed rule or missing
+   visual evidence blocks publication until it is resolved.
+3. Commit and push the completed change to the permitted publication branch.
+   The Pages workflow runs on every main push and deploys its staged public
+   artifact only after Chromium and WebKit pass. It stores the screenshots
+   in the `website-screenshots` artifact.
+4. Wait for the GitHub Pages deployment of the exact pushed SHA. Confirm the
+   live HTTPS page and assets match that revision and the www address redirects
+   to the apex. Check DNS and certificate status when changing domain setup.
+5. Run the same browser suite against the live page, saving its evidence
+   separately from the local review. From a fresh PowerShell session at the
+   repository root, run:
+
+   ```powershell
+   $env:PULSRAUM_VISUAL_URL = 'https://pulsraum.eu/'
+   $env:PULSRAUM_VISUAL_DIR = '.for-ai-local/visual-live'
+   npm run check:visual
+   ```
+
+   Review the live screenshots against every UI and layout rule in Gate 2.
+   Record the deployed SHA, Actions run, tested viewports and themes, screenshots
+   reviewed, and any limitations. Publication is complete when the live review
+   passes. If a check fails, diagnose it and verify the corrected release.
 
 ## Handoff evidence
 

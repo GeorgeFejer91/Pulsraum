@@ -6,11 +6,11 @@ import { join } from 'node:path';
 import { chromium, webkit } from 'playwright';
 
 const site = process.argv[2] ?? '.';
-const screenshots = '.for-ai-local/visual';
-const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript' };
+const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
+const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js)$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/team\/[\w-]+\.webp)$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -31,6 +31,25 @@ async function checkLayout(page) {
     const panel = document.querySelector('#anwendungen');
     const groups = panel.querySelector('.applications');
     const issues = [];
+    for (const section of document.querySelectorAll('main > section')) {
+      const boxes = [...section.querySelectorAll('.knowledge-box')];
+      if (boxes.length < 2) issues.push(`${section.id} needs separate content boxes`);
+      let previous;
+      for (const box of boxes) {
+        const label = box.querySelector('h2, h3, summary');
+        const bounds = box.getBoundingClientRect();
+        const css = getComputedStyle(box);
+        if (!label?.textContent.trim() || !label.getClientRects().length) issues.push(`${section.id} has an unlabeled box`);
+        if (!Number.parseFloat(css.borderTopWidth) || css.borderTopStyle === 'none') issues.push(`${section.id} has a box without a visible border`);
+        if (box.scrollWidth > box.clientWidth + 1 || box.scrollHeight > box.clientHeight + 1) {
+          issues.push(`Content overflows its box: ${label?.textContent.trim()}`);
+        }
+        if (innerWidth <= 680 && previous && previous.bottom >= bounds.top) {
+          issues.push(`${section.id} boxes must stack with space between them`);
+        }
+        previous = bounds;
+      }
+    }
     for (const element of [document.documentElement, panel, groups, ...groups.querySelectorAll('summary')]) {
       if (element.scrollWidth > element.clientWidth + 1) issues.push(`${element.className || element.tagName} horizontal overflow`);
       if (element !== document.documentElement && element.scrollHeight > element.clientHeight + 1) {
@@ -82,6 +101,17 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     const response = await page.goto(url, { waitUntil: 'networkidle' });
     assert.ok(response?.ok(), 'Website must load successfully');
     assert.equal(await page.locator('main > section').count(), 4);
+    const profiles = page.locator('#team .person');
+    assert.ok(await profiles.count() >= 2, 'Each team member needs a profile box');
+    for (const profile of await profiles.all()) {
+      assert.equal(await profile.locator('h3').count(), 1);
+      assert.ok(await profile.locator('.person-role').textContent());
+      assert.ok(await profile.locator('a').count(), 'Each profile needs a relevant website');
+    }
+    for (const image of await page.locator('main img').all()) {
+      await image.scrollIntoViewIfNeeded();
+      assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published portraits must load');
+    }
     const accordion = page.locator('#anwendungen');
     const summaries = accordion.locator('details > summary');
     assert.equal(await summaries.count(), 3, 'The three application areas must use native disclosures');
@@ -102,10 +132,15 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       if (name === 'chromium') await page.keyboard.press('Tab');
       else await page.locator('.skip-link').focus();
       assert.equal(await page.locator('.skip-link:focus-visible').count(), 1);
-      const teamLink = page.getByRole('navigation').getByRole('link', { name: 'Team' });
-      await teamLink.focus();
-      await teamLink.press('Enter');
-      assert.equal(new URL(page.url()).hash, '#team');
+      const navigation = page.getByRole('navigation').getByRole('link');
+      const anchors = ['#projekt', '#anwendungen', '#team', '#mitmachen'];
+      assert.equal(await navigation.count(), anchors.length);
+      for (const [index, anchor] of anchors.entries()) {
+        const link = navigation.nth(index);
+        await link.focus();
+        await link.press('Enter');
+        assert.equal(new URL(page.url()).hash, anchor);
+      }
     }
     await checkLayout(page);
     const geometry = await accordion.evaluate(element => {
@@ -135,6 +170,14 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await checkLayout(page);
     }
     await accordion.screenshot({ path: `${prefix}-accordion.png` });
+    if (mode === 'dark') {
+      const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
+      assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+      await toggle.press('Enter');
+      assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+      await page.reload({ waitUntil: 'networkidle' });
+      assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    }
     assert.deepEqual(failed, [], 'Website resources and scripts must load locally without errors');
     console.log(`${name} ${width}×${height} ${mode}: passed`);
     return geometry;
@@ -159,6 +202,7 @@ try {
     await checkPage(browser, 'chromium', 390, 844, 'large-text');
     await checkPage(browser, 'chromium', 390, 844, 'no-js');
     await checkPage(browser, 'chromium', 390, 844, 'dark');
+    await checkPage(browser, 'chromium', 1440, 900, 'dark');
   } finally {
     await browser.close();
   }
@@ -166,6 +210,7 @@ try {
   try {
     await checkPage(safari, 'webkit', 390, 844);
     await checkPage(safari, 'webkit', 844, 390);
+    await checkPage(safari, 'webkit', 390, 844, 'dark');
   } finally {
     await safari.close();
   }
