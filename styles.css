@@ -197,6 +197,36 @@ img.portrait {
   font-size: .875rem;
   margin-top: .25rem;
 }
+.affiliations {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.affiliations figcaption {
+  margin-bottom: .5rem;
+  color: var(--muted);
+  font-size: .875rem;
+}
+.affiliation-logos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: .75rem 1rem;
+  background: white;
+}
+.affiliation-logos a {
+  display: grid;
+  align-items: center;
+  max-width: 100%;
+  min-height: 44px;
+}
+.affiliation-logos img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 
 .site-footer {
   display: flex;

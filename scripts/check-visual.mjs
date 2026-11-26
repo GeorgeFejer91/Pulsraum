@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -208,6 +208,11 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     const george = profiles.filter({ has: page.getByRole('heading', { name: 'George Fejer' }) });
     assert.equal(await george.locator('img.portrait').getAttribute('src'), 'assets/team/crop_selfie.png');
+    const affiliations = george.locator('figure.affiliations');
+    assert.equal(await affiliations.getByRole('link', { name: 'Max-Planck-Institut für Bildungsforschung' })
+      .locator('img').getAttribute('src'), 'assets/team/mpib-de.svg');
+    assert.equal(await affiliations.getByRole('link', { name: 'Universität Konstanz' })
+      .locator('img').getAttribute('src'), 'assets/team/universitaet-konstanz.svg');
     const profileUrls = {
       'Forschungsprofil': 'https://www.georgefejer.com/',
       'Google Scholar': 'https://scholar.google.com/citations?user=GPARoloAAAAJ&hl=en',
@@ -225,7 +230,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     for (const image of await page.locator('main img').all()) {
       await image.scrollIntoViewIfNeeded();
-      assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published portraits must load');
+      assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published images must load');
     }
     const buildingBlocks = page.getByRole('region', { name: 'Grundlagen' });
     assert.equal(await buildingBlocks.count(), 1, 'The project must include a named research section');
@@ -409,6 +414,12 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await page.getByRole('link', { name: 'Vernier Go Direct Spirometer' }).count(), 1);
       assert.match(await page.locator('#h10-figure').textContent(), /ECG/);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
+      const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
+      assert.equal(await institute.getAttribute('href'), 'https://www.mpib-berlin.mpg.de/en');
+      assert.equal(await institute.locator('img').getAttribute('src'), 'assets/team/mpib-en.svg');
+      await institute.locator('img').evaluate(image => image.decode());
+      assert.equal(await affiliations.getByRole('link', { name: 'University of Konstanz' })
+        .getAttribute('href'), 'https://www.uni-konstanz.de/en/');
       await checkLayout(page);
       await page.screenshot({ path: `${prefix}-en.png`, fullPage: true });
       await page.reload({ waitUntil: 'networkidle' });

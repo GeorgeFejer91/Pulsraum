@@ -88,6 +88,8 @@ or person. Keep supporting text, images, and links with their subject.
 - **Team** gives each member a separate profile box with available details
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
+  His card identifies the Max Planck Institute for Human Development and the
+  University of Konstanz as his research affiliations using their official SVGs.
   A link in the footer opens GitHub for participation.
 
 Use consistent box boundaries and spacing in both themes. Let boxes grow with
