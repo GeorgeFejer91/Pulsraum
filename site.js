@@ -124,6 +124,6 @@ if ('IntersectionObserver' in window) {
       if (entry.target === figure) syncBreathPlayback();
     }
   });
-  document.querySelectorAll('.milestone-figure, .signal-figure').forEach(figure => drawings.observe(figure));
+  document.querySelectorAll('.idea-map, .milestone-figure, .signal-figure').forEach(element => drawings.observe(element));
   document.querySelectorAll('.motion-setting').forEach(control => { control.hidden = false; });
 }

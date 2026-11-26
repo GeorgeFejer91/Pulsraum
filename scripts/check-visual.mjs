@@ -135,7 +135,39 @@ async function checkBreathingPhases(drawing) {
 async function checkLayout(page) {
   const issues = await page.evaluate(() => {
     const issues = [];
-    for (const section of document.querySelectorAll('main > section')) {
+    const map = document.querySelector('.idea-map');
+    const nodes = [...map.querySelectorAll('.idea-node')];
+    if (nodes.length !== 4) issues.push('The overview needs four idea nodes');
+    const stacked = getComputedStyle(map).display === 'block';
+    const hub = map.querySelector('.map-hub').getBoundingClientRect();
+    const hubX = hub.left + hub.width / 2;
+    const hubY = hub.top + hub.height / 2;
+    const branches = map.querySelectorAll('.map-branch');
+    for (const [i, node] of nodes.entries()) {
+      const rect = node.getBoundingClientRect();
+      const css = getComputedStyle(node);
+      const pin = getComputedStyle(node, '::before');
+      const x = rect.x + parseFloat(pin.left);
+      const y = rect.y + parseFloat(pin.top);
+      const textFits = [...node.querySelectorAll('[data-measure]')].every(el => el.scrollWidth <= el.clientWidth + 1);
+      if (css.borderStyle !== 'none' || css.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
+          !node.querySelector('h2') || !textFits) {
+        issues.push('Each idea needs a readable, unboxed node');
+      }
+      if (stacked) {
+        if (Math.abs(hubX - x) > 1 || (i && nodes[i - 1].getBoundingClientRect().bottom > rect.top + 1)) {
+          issues.push('Narrow nodes must follow the hub in reading order along the rail');
+        }
+      } else {
+        const path = branches[i % 2].querySelectorAll('path')[i < 2 ? 0 : 1];
+        const start = path.getPointAtLength(0).matrixTransform(path.getScreenCTM());
+        const end = path.getPointAtLength(path.getTotalLength()).matrixTransform(path.getScreenCTM());
+        if (Math.hypot(start.x - x, start.y - y) > 4 || Math.hypot(end.x - hubX, end.y - hubY) > 1) {
+          issues.push('Each branch must meet its node and the central pulse');
+        }
+      }
+    }
+    for (const section of document.querySelectorAll('main > section:not(#projekt)')) {
       const boxes = [...section.querySelectorAll('.knowledge-box')];
       if (boxes.length < 2) issues.push(`${section.id} needs separate content boxes`);
       let previous;
@@ -278,8 +310,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
-    const signalPanel = page.locator('#projekt .knowledge-box').filter({ has: page.locator('.signal-figure') });
-    assert.equal(await signalPanel.count(), 1, 'Both time series belong in one panel');
+    const signalPanel = page.locator('#projekt .signal-panel');
+    assert.equal(await signalPanel.count(), 1, 'Both time series belong together');
     const signals = signalPanel.locator('.signal-figure');
     assert.equal(await signals.count(), 2);
     assert.deepEqual(await signals.getByRole('heading').allTextContents(), ['Atemsignal', 'EKG']);
@@ -290,6 +322,10 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.ok(breathingPlot.y + breathingPlot.height <= ecgPlot.y && Math.abs(breathingPlot.x - ecgPlot.x) < 1 &&
       Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const node = page.locator('#anwendungen');
+    const mapPause = page.getByRole('checkbox', { name: 'Bewegung der Karte pausieren' });
+    assert.equal(await mapPause.isVisible(), false);
+    assert.equal(await node.evaluate(el => el.getAnimations().length), 0);
     for (const figure of await signals.all()) {
       assert.ok(await figure.locator('figcaption .signal-organ').isVisible());
       const strip = figure.locator('.signal-trace');
@@ -347,6 +383,15 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       await page.waitForFunction(() => getComputedStyle(document.documentElement).scrollBehavior === 'smooth');
+      await node.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.waitForFunction(el => el.getAnimations()[0]?.playState === 'running', await node.elementHandle());
+      await mapPause.press('Space');
+      assert.ok(await mapPause.isChecked());
+      await signals.first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.waitForFunction(el => [el, ...el.querySelectorAll('.signal-trace, .organ-motion')].every(
+        part => part.getAnimations()[0]?.playState === 'paused'), await signals.first().elementHandle());
+      await mapPause.press('Space');
+      assert.equal(await mapPause.isChecked(), false);
       for (const figure of await signals.all()) {
         await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         const strip = await figure.locator('.signal-trace').elementHandle();

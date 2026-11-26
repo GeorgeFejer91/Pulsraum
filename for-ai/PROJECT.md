@@ -56,15 +56,18 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 
 ## Website layout
 
-Give each website section visibly distinct boxes, one per topic, milestone,
-or person. Keep supporting text, images, and links with their subject.
+Keep supporting text, images, and links with their subject. Use connected
+nodes in the overview and separate boxes for foundations, milestones and people.
 
 - **Auf einen Blick** presents the project, example uses, local data processing,
-  and two scrolling NeuroKit2 simulations in one box. The breathing trace
+  and two scrolling NeuroKit2 simulations as four unboxed idea nodes. On wide
+  screens each node branches from a central pulse. Narrow layouts connect the
+  nodes along one vertical rail in reading order. Visible nodes float by up
+  to three pixels. One control pauses the map and both signals. The breathing trace
   sits above the ECG. The lungs expand and contract with the breathing trace,
   and the heart pulses as each R peak arrives at the right edge. Each row
   shows its source and simulated rate. Reduced-motion and JavaScript-free
-  views show both organs and traces at rest.
+  views show the map, organs and traces at rest.
   The ECG models a resting chest-strap signal at 130 Hz with variable beat
   spacing, breathing-related baseline drift and intermittent contact noise.
   Regenerate the checked-in paths with `python scripts/generate-signals.py`.

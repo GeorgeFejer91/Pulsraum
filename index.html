@@ -40,18 +40,31 @@
         <h1 id="overview-title" data-measure>Pulsraum</h1>
         <p class="lead" data-measure data-en="Open biosensing for health and creative approaches to managing stress.">Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
       </div>
-      <div class="box-grid">
-        <article class="knowledge-box" id="anwendungen">
+      <div class="idea-map">
+        <svg class="map-branch branch-upper" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 50 C29 50 42 67 50 100"/>
+          <path class="signal-resp" d="M100 50 C69 50 59 68 50 100"/>
+        </svg>
+        <svg class="map-branch branch-lower" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 50 C34 50 39 30 50 0"/>
+          <path class="signal-ecg" d="M100 50 C72 50 57 30 50 0"/>
+        </svg>
+        <svg class="map-hub" viewBox="0 0 80 80" aria-hidden="true">
+          <circle class="hub-orbit" cx="40" cy="40" r="37"/>
+          <circle class="hub-core" cx="40" cy="40" r="26"/>
+          <path d="M19 40h11l5-9 8 19 6-12 3 2h9"/>
+        </svg>
+        <article class="idea-node" id="anwendungen">
           <h2 class="box-title" data-measure data-en="What we’re building">Was Pulsraum vorhat</h2>
           <p data-measure><span data-en="Pulsraum aims to make">Pulsraum soll</span> <span class="signal-ecg" data-en="ECG">EKG</span>, <span class="signal-resp" data-en="breathing measurements">Atemmessung</span> <span data-en="and personal biofeedback accessible in the browser using a smartphone and a Polar H10. We want to use these signals to guide breathing exercises and control games or visualizations.">und individuelles Biofeedback mit Smartphone und Polar H10 im Browser zugänglich machen. Damit wollen wir Atemübungen begleiten und Spiele oder Visualisierungen mit Körpersignalen steuern.</span></p>
           <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure data-en="View project on GitHub">Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
         </article>
-        <article class="knowledge-box">
+        <article class="idea-node" id="lokale-daten">
           <h2 class="box-title" data-measure data-en="Your data stays on your device">Daten auf deinem Gerät</h2>
           <p data-measure data-en="Our goal is to let you process and store your health data on your own device. The open-source software is designed to work without tying you to a provider or sharing your data.">Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
         </article>
-        <article id="signale" class="knowledge-box signal-panel" aria-labelledby="respiration-title ecg-title">
-          <figure class="signal-figure signal-resp">
+        <article id="signale" class="signal-panel" aria-labelledby="respiration-title ecg-title">
+          <figure class="idea-node signal-figure signal-resp">
             <figcaption>
               <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
                 <g class="organ-motion">
@@ -72,7 +85,7 @@
             </svg>
             <p class="signal-rate" data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</p>
           </figure>
-          <figure class="signal-figure signal-ecg">
+          <figure class="idea-node signal-figure signal-ecg">
             <figcaption>
               <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
                 <g class="organ-motion">
@@ -94,6 +107,10 @@
           </figure>
         </article>
       </div>
+      <label class="motion-setting map-motion" hidden>
+        <input type="checkbox" id="pause-map">
+        <span data-measure data-en="Pause map motion">Bewegung der Karte pausieren</span>
+      </label>
     </section>
     <section class="section wrap building-blocks" id="bausteine" aria-labelledby="building-blocks-title">
       <div class="section-heading">

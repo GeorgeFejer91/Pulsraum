@@ -99,13 +99,98 @@
 .signal-resp { color: var(--respiration); }
 .signal-ecg { color: var(--ecg); }
 
-.signal-panel {
-  grid-column: 1 / -1;
+.idea-map {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(6.5rem, 15%, 12rem) minmax(0, 1fr);
+  grid-template-areas: "project branches-a signals" "data branches-b signals";
+  align-items: center;
 }
-.signal-figure + .signal-figure {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--rule);
+.idea-node {
+  position: relative;
+  min-width: 0;
+  padding-block: clamp(1.25rem, 2.5vw, 2rem);
+}
+.idea-node p { color: var(--muted); }
+.idea-map > .idea-node { padding-inline-end: clamp(1.25rem, 2vw, 2rem); }
+#anwendungen { grid-area: project; }
+#lokale-daten { grid-area: data; padding-inline-start: clamp(0rem, 3vw, 3rem); --float-y: -3px; }
+.idea-node::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: .5rem;
+  height: .5rem;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--paper);
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 1px currentColor;
+}
+.map-branch {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  contain: size;
+  overflow: visible;
+  color: var(--box-rule);
+  fill: none;
+  pointer-events: none;
+}
+.branch-upper { grid-area: branches-a; }
+.branch-lower { grid-area: branches-b; }
+.map-branch path { stroke: currentColor; stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.map-branch .signal-resp, .map-branch .signal-ecg { opacity: .65; }
+.map-hub {
+  grid-area: branches-a;
+  align-self: end;
+  justify-self: center;
+  z-index: 1;
+  width: clamp(3.75rem, 6vw, 5rem);
+  transform: translateY(50%);
+  fill: none;
+  stroke: currentColor;
+  pointer-events: none;
+}
+.hub-orbit { stroke: var(--box-rule); stroke-dasharray: 1 4; stroke-linecap: round; }
+.hub-core { fill: var(--paper); }
+.map-hub path { stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.signal-panel {
+  grid-area: signals;
+  display: grid;
+  grid-template-rows: subgrid;
+  align-items: center;
+  align-self: stretch;
+  min-width: 0;
+}
+.signal-panel .idea-node {
+  padding-inline-start: clamp(1.25rem, 2vw, 2rem);
+  --float-y: -2px;
+}
+.signal-panel .signal-ecg { --float-y: 3px; }
+.signal-panel .idea-node::before { left: 0; }
+.map-motion { font-size: .8125rem; }
+
+@media (max-width: 55rem) {
+  .idea-map {
+    display: block;
+    padding-inline-start: 2.25rem;
+    background: linear-gradient(to bottom, transparent 1rem, var(--box-rule) 2rem, var(--box-rule) 85%, transparent) 1rem 0 / 1px 100% no-repeat;
+  }
+  .map-branch { display: none; }
+  .map-hub {
+    display: block;
+    justify-self: start;
+    width: 2rem;
+    margin-inline-start: -2.25rem;
+    transform: none;
+  }
+  .signal-panel { display: block; }
+  .idea-map > .idea-node, #lokale-daten, .signal-panel .idea-node { padding-inline: 0; }
+  .idea-node { padding-block: .9rem 1.15rem; }
+  .idea-node::before, .signal-panel .idea-node::before { left: -1.25rem; top: 1.7rem; }
+  .map-motion { margin-inline-start: 2.25rem; }
 }
 .signal-figure figcaption {
   display: grid;
@@ -135,11 +220,10 @@
   display: block;
   overflow: hidden;
   width: 100%;
-  height: clamp(4.75rem, 12vw, 8rem);
-  border: 1px solid var(--rule);
-  background-image: linear-gradient(var(--signal-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--signal-grid) 1px, transparent 1px);
-  background-size: 18px 18px;
+  height: clamp(4.75rem, 7.5vw, 6.5rem);
+  background-image: radial-gradient(circle, var(--signal-grid) .8px, transparent 1px);
+  background-size: 12px 12px;
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
 }
 .signal-baseline, .signal-trace {
   fill: none;
@@ -610,6 +694,13 @@ img.portrait {
 .breath-key text { font-size: 12px; fill: currentColor; }
 
 @media (prefers-reduced-motion: no-preference) {
+  .idea-map.in-view .idea-node {
+    animation: float-node 9s ease-in-out infinite alternate;
+  }
+  .idea-map.in-view .idea-node:is(:hover, :focus-within),
+  .hero:has(#pause-map:checked) .idea-map :is(.idea-node, .signal-trace, .organ-motion) {
+    animation-play-state: paused;
+  }
   .motion-setting:not([hidden]) {
     display: inline-flex;
     align-items: center;
@@ -662,6 +753,9 @@ img.portrait {
   #projektverlauf:has(#pause-animations:checked) .in-view * {
     animation: none;
   }
+}
+@keyframes float-node {
+  to { transform: translateY(var(--float-y, 2px)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .motion-setting { display: none; }
