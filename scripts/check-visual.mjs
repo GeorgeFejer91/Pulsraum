@@ -34,7 +34,7 @@ async function checkLayout(page) {
       if (boxes.length < 2) issues.push(`${section.id} needs separate content boxes`);
       let previous;
       for (const box of boxes) {
-        const label = box.querySelector('h3');
+        const label = box.querySelector('h2, h3');
         const bounds = box.getBoundingClientRect();
         const css = getComputedStyle(box);
         if (!label?.textContent.trim() || !label.getClientRects().length) issues.push(`${section.id} has an unlabeled box`);
@@ -125,10 +125,10 @@ async function checkPage(browser, name, width, height, mode = 'default') {
   try {
     const response = await page.goto(url, { waitUntil: 'networkidle' });
     assert.ok(response?.ok(), 'Website must load successfully');
-    const sections = page.locator('main > section > div:first-child h2');
-    assert.deepEqual(await sections.allTextContents(), ['Auf einen Blick', 'Grundlagen', 'Projektverlauf', 'Team']);
+    const sections = page.locator('main > section > div:first-child :is(h1, h2)');
+    assert.deepEqual(await sections.allTextContents(), ['Pulsraum', 'Grundlagen', 'Projektverlauf', 'Team']);
     const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
-    assert.deepEqual(await navigation.getByRole('link').allTextContents(), await sections.allTextContents());
+    assert.deepEqual(await navigation.getByRole('link').allTextContents(), ['Auf einen Blick', 'Grundlagen', 'Projektverlauf', 'Team']);
     assert.equal(await page.getByRole('contentinfo').getByRole('link', { name: 'Auf GitHub mitmachen' }).getAttribute('href'),
       'https://github.com/GeorgeFejer91/Pulsraum/issues');
     const profiles = page.locator('#team .person');
