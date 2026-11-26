@@ -62,6 +62,8 @@ or person. Keep supporting text, images, and links with their subject.
 - **Auf einen Blick** presents the project, example uses, local data processing,
   and two scrolling NeuroKit2 simulations. Each has a pause control. Reduced
   motion and JavaScript-free views show a still trace from the same samples.
+  The ECG models a resting chest-strap signal at 130 Hz with variable beat
+  spacing, breathing-related baseline drift and intermittent contact noise.
   Regenerate the checked-in paths with `python scripts/generate-signals.py`.
 - **Grundlagen** introduces the hardware, software, and published research that
   Pulsraum builds on. Each box links to its associated paper or software.
