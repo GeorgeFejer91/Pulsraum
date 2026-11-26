@@ -69,6 +69,9 @@ or person. Keep supporting text, images, and links with their subject.
   Each card illustrates its step with one inline SVG. Entering the viewport
   starts a continuous loop. One pause control covers all five illustrations.
   Reduced motion and JavaScript-free views show the complete still diagram.
+  In the smartphone breathing diagram, the plotted breath samples drive the
+  abdomen, phone and graph cursor together. Inhalation rises in blue and
+  exhalation falls in ochre. The phone waves use the active segment's color.
   The validation card links its editable spirometer scene in `assets/models/`.
   Its WebP atlas uses the side camera, frames 1 to 95 at every other frame,
   in four rows of twelve 356 × 258 px tiles. The web SVG draws the Bluetooth

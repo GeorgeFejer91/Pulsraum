@@ -163,27 +163,39 @@
               <p data-measure>Die Browseranwendung liest den Beschleunigungssensor des Smartphones aus, um Atembewegungen zu erfassen.</p>
             </div>
             <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="breath-figure">
-              <title id="breath-figure">Eine Person im Profil trägt ein Smartphone am Bauch. Beim Atmen hebt und senkt sich die Bauchdecke mit dem Gerät. Rechts entsteht die zugehörige Atemkurve.</title>
-              <g class="device">
-                <g class="abdomen-motion">
-                  <!-- The shirt follows the rib cage, then narrows below the chest. -->
-                  <path class="device-shell" d="M63 41Q71 47 78 42C81 47 87 49 90 54Q98 64 95 73C94 78 89 81 89 87C89 93 94 99 94 108Q94 117 90 129Q68 134 44 128C46 116 47 108 45 98L40 67Q38 55 49 49Z"/>
-                  <path class="detail" d="M76 50q8 1 12 6m-14 20q11 4 19-2"/>
-                  <path class="device-face" d="M46 97Q68 101 93 95L94 102Q70 109 47 104Z"/>
-                  <g transform="rotate(-6 93 98)">
-                    <rect class="device-shell" x="84" y="83" width="18" height="34" rx="3"/>
-                    <rect class="device-face" x="87" y="87" width="12" height="24" rx="1.5"/>
-                    <path class="detail" d="M92 114h3"/>
+              <title id="breath-figure">Simulierter Atemzug im Profil. Beim Einatmen bewegt sich der Bauch mit dem Smartphone nach außen, der Punkt steigt auf der blauen Kurve. Beim Ausatmen bewegt sich der Bauch nach innen, der Punkt sinkt auf der ockerfarbenen Kurve. Die Funkwellen zeigen die Farbe der jeweiligen Atemphase.</title>
+              <g class="device breathing-rig">
+                <!-- The front abdominal wall joins the fixed rib cage and hip at x=78. -->
+                <path class="device-shell" d="M78 124L79 128Q65 132 48 128C50 118 52 110 51 102L47 70Q46 57 54 51L61 47Q67 51 73 47C76 50 79 54 81 59C84 65 85 71 83 76C82 80 79 82 78 85"/>
+                <path class="abdomen-motion device-shell" d="M78 85C78 91 83 95 83 101C83 110 79 118 78 124"/>
+                <path class="detail" d="M73 53q5 2 7 5m-8 18q6 2 11-2"/>
+                <path class="breath-belt device-face" d="M51 97Q66 101 82 96L83 102Q67 106 51 103Z"/>
+                <g class="phone-assembly">
+                  <g transform="rotate(-5 83 99)">
+                    <rect class="device-shell" x="79" y="86" width="14" height="28" rx="2.5"/>
+                    <rect class="device-face" x="81.5" y="89" width="9" height="19" rx="1"/>
+                    <path class="detail" d="M85 111h2"/>
                   </g>
-                  <path class="detail" d="M108 94q3 4 2 8m3-12q5 6 4 15"/>
+                  <path class="phone-waves" d="M99 95q4 4 1 9m4-13q7 7 2 17m3-21q10 10 4 25"/>
                 </g>
-                <!-- A relaxed arm overlaps the strap on the near side. -->
-                <path class="device-face" d="M42 67Q39 79 39 92C38 102 33 117 32 128Q35 132 41 130C46 116 53 104 54 95L58 73Z"/>
-                <path class="device-shell" d="M62 44C49 44 42 49 40 58L37 75Q45 80 57 79L62 66"/>
-                <path class="device-face" d="M63 31C57 27 57 18 62 13C66 8 76 8 81 13Q85 17 84 23L88 29L85 30Q85 36 81 37L76 37Q75 41 79 44Q72 49 61 43Q66 38 63 31Z"/>
-                <path class="detail" d="M67 25q-3-3-4 0t3 5m14-8 2 .5"/>
-                <path class="guide" d="M140 77h161m-1-3v6"/>
-                <path class="trace signal-resp trace-draw" pathLength="100" d="M141 77c12 0 15-24 30-24s19 48 34 48 19-48 35-48 18 48 34 48c13 0 16-24 26-24"/>
+                <path class="device-face" d="M46 73C44 80 44 88 45 95C46 103 41 116 40 121L38 127Q37 131 40 133Q44 135 46 129L48 122C52 112 56 103 56 95L58 75Z"/>
+                <path class="device-shell" d="M61 48C53 48 47 52 45 60L42 75Q48 79 58 78L61 66"/>
+                <path class="device-face" d="M60 32C54 28 53 19 57 12C61 5 71 4 78 7C84 9 86 15 85 22L90 28Q91 30 86 30L86 33L84 34L85 36Q85 40 81 41L75 41Q73 44 75 48Q70 53 59 48C64 45 64 37 60 32Z"/>
+                <path class="detail" d="M66 24c-3-4-7-1-5 3q1 3 4 4m14-10q2-1 4 0m-2 14h3"/>
+                <g transform="translate(134 93)">
+                  <path class="guide" d="M0 0H167"/>
+                  <!-- One NeuroKit2 breath from signals.svg, sampled every 160 ms.
+                       The plotted points also drive the body, phone and cursor. -->
+                  <g class="breath-plot" data-sample-ms="160">
+                    <polyline class="trace" data-phase="inhale" points="0,0 6.4,-1.03 12.8,-3.71 19.2,-7.81 25.6,-12.92 32,-18.44 38.4,-24.25 44.8,-30.06 51.2,-35.56 57.6,-40 64,-42.89 70.4,-44"/>
+                    <polyline class="trace" data-phase="exhale" points="70.4,-44 76.8,-43.25 83.2,-40.70 89.6,-36.58 96,-31.39 102.4,-26.71 108.8,-23.72 115.2,-22.68 121.6,-22.37 128,-21.03 134.4,-17.68 140.8,-12.67 147.2,-7.42 153.6,-3.30 160,-.75 166.4,0"/>
+                  </g>
+                  <circle class="breath-cursor" r="3.6"/>
+                  <g class="breath-key" text-anchor="middle">
+                    <text data-phase="inhale" x="35" y="21">Einatmen</text>
+                    <text data-phase="exhale" x="119" y="21">Ausatmen</text>
+                  </g>
+                </g>
               </g>
             </svg>
           </div>

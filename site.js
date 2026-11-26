@@ -41,11 +41,45 @@ elements.forEach(element => observer.observe(element));
 observer.observe(navigation);
 measure();
 
+function createBreathAnimation(rig) {
+  const plot = rig.querySelector('.breath-plot');
+  const segments = [...plot.querySelectorAll('polyline')];
+  // The shared peak has two colors at the same instant and one displacement.
+  const intervals = segments.reduce((n, segment) => n + segment.points.length - 1, 0);
+  const frames = [];
+  let firstSample = 0;
+  for (const segment of segments) {
+    for (const [i, { x, y }] of Array.from(segment.points).entries()) {
+      frames.push({
+        offset: (firstSample + i) / intervals, '--breath-x': x, '--breath-y': y,
+        color: `var(--${segment.dataset.phase})`,
+      });
+    }
+    firstSample += segment.points.length - 1;
+  }
+  const effect = new KeyframeEffect(rig, frames, {
+    duration: intervals * Number(plot.dataset.sampleMs), iterations: Infinity,
+  });
+  return new Animation(effect, document.timeline);
+}
+
 // Run the demonstrations while any part of the drawing is visible.
 if ('IntersectionObserver' in window) {
+  const rig = document.querySelector('.breathing-rig');
+  const figure = rig.ownerSVGElement;
+  const breath = createBreathAnimation(rig);
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const pause = document.getElementById('pause-animations');
+  function syncBreathPlayback() {
+    if (figure.classList.contains('in-view') && !reducedMotion.matches && !pause.checked) breath.play();
+    else breath.cancel();
+  }
+  pause.addEventListener('change', syncBreathPlayback);
+  reducedMotion.addEventListener('change', syncBreathPlayback);
   const drawings = new IntersectionObserver(entries => {
     for (const entry of entries) {
       entry.target.classList.toggle('in-view', entry.isIntersecting);
+      if (entry.target === figure) syncBreathPlayback();
     }
   });
   document.querySelectorAll('.milestone-figure, .signal-figure').forEach(figure => drawings.observe(figure));

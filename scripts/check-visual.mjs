@@ -26,6 +26,55 @@ server.listen(0, '127.0.0.1');
 await once(server, 'listening');
 const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.address().port}/`;
 
+async function checkBreathingPhases(drawing) {
+  await drawing.evaluate(async svg => {
+    const rig = svg.querySelector('.breathing-rig');
+    const plot = rig.querySelector('.breath-plot');
+    const cursor = rig.querySelector('.breath-cursor');
+    const waves = rig.querySelector('.phone-waves');
+    const phone = rig.querySelector('.phone-assembly rect');
+    const belly = rig.querySelector('.abdomen-motion');
+    const segments = [...plot.querySelectorAll('polyline')];
+    const endX = segments.at(-1).points.getItem(segments.at(-1).points.length - 1).x;
+    const [clock] = rig.getAnimations();
+    const duration = clock.effect.getTiming().duration;
+    clock.pause();
+    await clock.ready;
+    const seek = x => { clock.currentTime = duration * x / endX; };
+    const edge = () => belly.getBoundingClientRect().right;
+    seek(0);
+    let lastEdge = edge();
+    const restEdge = lastEdge;
+    const phoneWidth = phone.getBoundingClientRect().width;
+    const restPhoneX = phone.getBoundingClientRect().x;
+    const colors = new Set();
+    for (const line of segments) {
+      const ink = getComputedStyle(line).stroke;
+      colors.add(ink);
+      const rising = line.dataset.phase === 'inhale';
+      for (let i = 1; i < line.points.length; i++) {
+        const a = line.points.getItem(i - 1), b = line.points.getItem(i);
+        const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
+        seek(x);
+        const point = new DOMPoint().matrixTransform(cursor.getScreenCTM()).matrixTransform(plot.getScreenCTM().inverse());
+        if (Math.abs(point.x - x) > .05 || Math.abs(point.y - y) > .05) throw Error('Cursor left the breath trace');
+        if (getComputedStyle(waves).stroke !== ink || getComputedStyle(cursor).fill !== ink) throw Error('Breath phase color mismatch');
+        const currentEdge = edge();
+        if (rising ? currentEdge <= lastEdge : currentEdge >= lastEdge) throw Error('Belly movement reversed relative to the graph');
+        if (Math.abs((phone.getBoundingClientRect().x - restPhoneX) - (currentEdge - restEdge)) > .05) throw Error('Phone drifted from the belly');
+        if (Math.abs(phone.getBoundingClientRect().width - phoneWidth) > .05) throw Error('The phone changed shape');
+        lastEdge = currentEdge;
+      }
+      // Start the next direction comparison at the actual turning point.
+      seek(line.points.getItem(line.points.length - 1).x);
+      lastEdge = edge();
+    }
+    if (colors.size !== 2 || Math.abs(lastEdge - restEdge) > .05 ||
+        getComputedStyle(waves).stroke !== getComputedStyle(segments[0]).stroke) throw Error('Breath did not loop back to inhalation');
+    clock.play();
+  });
+}
+
 async function checkLayout(page) {
   const issues = await page.evaluate(() => {
     const issues = [];
@@ -216,7 +265,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await scrollBehavior(), 'auto');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
-      assert.equal(await scrollBehavior(), 'smooth');
+      await page.waitForFunction(() => getComputedStyle(document.documentElement).scrollBehavior === 'smooth');
       for (const figure of await signals.all()) {
         await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         const strip = await figure.locator('.signal-trace').elementHandle();
@@ -284,6 +333,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
             return currentIteration >= 2 && progress > 0;
           });
         }, await drawing.elementHandle());
+        if (await drawing.locator('.breathing-rig').count()) await checkBreathingPhases(drawing);
       }
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
