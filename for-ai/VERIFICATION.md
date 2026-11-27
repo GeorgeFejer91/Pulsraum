@@ -59,6 +59,12 @@ keyboard focus, and the visibility of all milestone descriptions and statuses.
 Check navigation and theme switching by keyboard and verify the mobile menu
 with touch.
 
+Compare rendered outer insets and peer gaps in foundation and team cards,
+including the shorter card in a stretched row. Check both axes of each timeline
+cell, and measure the affiliation artwork against the card edges in single-row
+and stacked layouts. Check both languages and themes. Allow for pixel rounding
+and measure from margin boxes when the visitor increases text spacing.
+
 Include 320 CSS px reflow, portrait and landscape, doubled text, text spacing,
 and JavaScript disabled. The page must load its assets locally. Record the configurations
 and screenshots reviewed, the observed outcome for each rule, and any

@@ -1,13 +1,13 @@
 # Accordion stretch layout
 
-Use this optional mode for a bounded, user-resizable panel whose controls should occupy the available width and height without changing their basic order or introducing a panel scrollbar. The compact panel and the expanded panel are the same interface: extra space is distributed **between** meaningful groups and matrix cells. Do not use this mode merely because a page is responsive; ordinary document flow is better for content that should grow vertically.
+Use accordion stretch spacing for the visual units in the requested surface. A card can grow with its content in document flow. A bounded, resizable panel can use the same spacing while meeting a separate no-scrollbar requirement.
 
 Read [pretext.md](pretext.md) for the text API and font parity requirements. Pretext measures text; CSS Grid and Flexbox place the controls.
 
 ## Geometry contract
 
 1. Define the panel's supported minimum dimensions and name its anchors: usually header at the top, actions at the bottom, and ordered control groups between them. Group a label with its input so stretch never separates a pair. Keep DOM reading and keyboard order aligned with visual order.
-2. Give the shell a definite block size and use `grid-template-rows: auto minmax(0, 1fr) auto` (plus any required status row). Put the ordered groups in the flexible middle region. `align-content: space-between` distributes surplus height among groups; a small `gap` is the floor when height contracts. Use `min-width: 0` and `min-height: 0` where Grid/Flex children must shrink.
+2. Center each group in its available box on both axes. For unanchored peers, give the outer edges and internal gaps the same minimum, then share surplus equally among all those spaces. One group has equal space on either side. Unequal-width marks can have equal *visible gaps* even when their centers are different distances apart. Trim empty SVG canvas before measuring. For a bounded shell with anchored header and actions, use `grid-template-rows: auto minmax(0, 1fr) auto` and apply the rule inside the flexible middle region.
 3. Let width distribute columns and inline gaps with shrinkable tracks (`minmax(0, 1fr)`) or wrapped Flex rows. Reflow at a content-driven breakpoint when one row no longer fits. Preserve the same anchors and group order across the breakpoint.
 4. Derive spacing tokens from **both** dimensions, with lower and upper bounds. Use viewport units for a full-window panel; use container query units or a batched `ResizeObserver` for an embedded panel with definite dimensions. Let preferred type depend on the smaller width-derived and height-derived budget, so a wide but short panel does not suddenly acquire tall typography.
 
@@ -20,20 +20,33 @@ Read [pretext.md](pretext.md) for the text API and font parity requirements. Pre
 }
 .stretch-panel__body {
   display: grid;
-  align-content: space-between;
+  align-content: space-evenly;
+  justify-items: center;
   gap: var(--minimum-group-gap);
+  padding: var(--minimum-group-gap);
   min-block-size: 0;
   min-inline-size: 0;
 }
 .stretch-panel__choices {
-  display: grid;
-  grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-  column-gap: var(--inline-gap);
-  row-gap: var(--block-gap);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  inline-size: 100%;
+  box-sizing: border-box;
+  gap: var(--block-gap) var(--inline-gap);
+  padding-inline: var(--inline-gap);
 }
 ```
 
 These are geometry roles, not mandatory class names or universal numeric tokens. Choose each bound from the app's real controls and minimum window size. At the minimum, all required controls must fit with the minimum readable type and gaps. If they do not, change the arrangement or minimum dimensions; hiding overflow is not a fit strategy.
+
+Check rendered rectangles after fonts and images load. In a horizontal row,
+compare the leading space, each artwork-to-artwork gap and the trailing space.
+For a vertical stack, compare the corresponding block-axis distances. Check
+opposing margins on the cross axis as well. Allow for pixel rounding. Test a
+single item, unequal peers, a wrapped row, and a short unit stretched to the
+height of a taller sibling. Repeat across resize, language and text enlargement.
 
 ## Type and no-fit decisions
 

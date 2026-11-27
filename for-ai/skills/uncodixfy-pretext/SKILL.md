@@ -1,6 +1,6 @@
 ---
 name: uncodixfy-pretext
-description: Design, build, or revise text-bearing HTML interfaces for browsers, phones, and Tauri WebViews using restrained Uncodixfy aesthetics, box-first geometry, and required Pretext measurement. Use when control labels, responsive text, or bounded regions must remain legible through resizing and localization. Includes an optional accordion stretch layout for bounded panels that must adapt to width and height without panel scrollbars. Do not use for native-only UI or canvas-only rendering.
+description: Design, build, or revise text-bearing HTML interfaces for browsers, phones, and Tauri WebViews using restrained Uncodixfy aesthetics and required Pretext measurement. Use for centered visual groups, even two-axis accordion stretch spacing in cards and panels, and readable controls through resizing and localization.
 ---
 
 # Uncodixfy Pretext
@@ -25,6 +25,15 @@ This skill keeps [Uncodixfy's](https://github.com/cyxzdev/uncodixfy) resistance 
 
 Keep a small type and spacing scale. Preserve readable minimum sizes, contrast, visible focus, input labels, and touch target sizes appropriate to the device. A narrow phone layout may rearrange actions or shorten a noncritical visible label while preserving its accessible name; it should not merely shrink a desktop window.
 
+Center each content group inside its visual unit on both axes, including cards,
+rows, cells and nested boxes. Match left and right insets, and top and bottom
+insets. Distribute spare space evenly around peer groups, including both ends
+of each row or column. Repeat this after wrapping, including a final row with
+one item. Keep related parts such as an emblem and its institutional lettering
+together. A paragraph may keep a reading edge inside a centered text block.
+Reserve space for explicit corner or edge anchors, then center the remaining
+content in the available region.
+
 ```css
 .action { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; text-align: center; }
 .action > svg { display: block; flex: none; }
@@ -35,7 +44,12 @@ Use the same centering for text-only and icon-only controls. Center the group, t
 
 ## Optional mode: accordion stretch layout
 
-When the user requests an accordion stretch layout, or describes a bounded panel whose control spacing and type should expand and compress with both width and height while preserving group order, read [references/accordion-stretch.md](references/accordion-stretch.md). Apply that mode only to the requested surface; keep the ordinary box-first layout for other pages. Its no-scrollbar contract applies to the bounded panel, with dialogs and overlays handled by their own content policy.
+When the user requests accordion stretch spacing in cards or panels, read [references/accordion-stretch.md](references/accordion-stretch.md). Preserve reading order as the available width and height change. Apply the no-scrollbar checks when the surface is a bounded panel that requires them.
+
+For stretch geometry in document cards, apply the same two-axis spacing rule
+and let the card grow with its contents. Check the visible artwork bounds,
+outer insets and adjacent gaps at narrow and wide widths and at different
+heights. Include unequal-size peers and a short card beside a tall card.
 
 ## Pretext decision rule
 

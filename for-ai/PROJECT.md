@@ -112,13 +112,19 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
   His card identifies the Max Planck Institute for Human Development and the
-  University of Konstanz as his research affiliations. Their SVG emblems show
-  the Minerva and the square Konstanz signet directly on the profile background,
-  with dark lines in light mode and light lines in dark mode.
+  University of Konstanz as his research affiliations. Each transparent SVG
+  includes the institution's emblem and lettering. Use the German or English
+  institute wordmark with the page language and the university's German mark
+  in both languages. Keep the marks legible against the profile in both themes.
   A link in the footer opens GitHub for participation.
 
-Use consistent box boundaries and spacing in both themes. Let boxes grow with
-their contents and stack them in reading order on narrow screens.
+Apply the [accordion stretch geometry](skills/uncodixfy-pretext/references/accordion-stretch.md)
+throughout the site. Center content groups on both axes within their boxes.
+In stretched cards, share extra height equally above, between and below peer
+groups. For the affiliation row, equalize the visible gaps from the card edges
+and between the two full logos. Center each logo on its own row when they wrap.
+Center milestone copy and art within their cells below the corner markers.
+Let boxes grow with their contents and preserve reading order on narrow screens.
 
 ## Architecture and ownership
 

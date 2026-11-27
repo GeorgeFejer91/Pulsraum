@@ -225,6 +225,46 @@ async function checkMapMotion(map) {
 async function checkLayout(page) {
   const issues = await page.evaluate(() => {
     const issues = [];
+    const centeredX = rect => (rect.left + rect.right) / 2;
+    const centeredY = rect => (rect.top + rect.bottom) / 2;
+    const evenlySpaced = distances => Math.max(...distances) - Math.min(...distances) <= 1.5;
+    for (const card of document.querySelectorAll('.box-grid > .knowledge-box')) {
+      const frame = card.getBoundingClientRect();
+      let previousBottom = frame.top + card.clientTop;
+      const gaps = [];
+      for (const child of card.children) {
+        const rect = child.getBoundingClientRect();
+        const style = getComputedStyle(child);
+        gaps.push(rect.top - parseFloat(style.marginTop) - previousBottom);
+        previousBottom = rect.bottom + parseFloat(style.marginBottom);
+        if (Math.abs(centeredX(frame) - centeredX(rect)) > 1) {
+          issues.push(`Off-center group in ${card.querySelector('h3').textContent}`);
+        }
+      }
+      gaps.push(frame.bottom - card.clientTop - previousBottom);
+      if (!evenlySpaced(gaps)) issues.push(`Uneven vertical gaps in ${card.querySelector('h3').textContent}: ${gaps}`);
+    }
+    const logoRow = document.querySelector('.affiliation-logos');
+    const edges = logoRow.closest('article').getBoundingClientRect();
+    const [mpi, konstanz] = [...logoRow.querySelectorAll('img')].map(img => img.getBoundingClientRect());
+    if (konstanz.top >= mpi.bottom) {
+      if ([mpi, konstanz].some(logo => Math.abs(centeredX(edges) - centeredX(logo)) > 1)) {
+        issues.push('Each stacked wordmark must be centered in the card');
+      }
+    } else if (!evenlySpaced([mpi.left - edges.left, konstanz.left - mpi.right, edges.right - konstanz.right]) ||
+               Math.abs(centeredY(mpi) - centeredY(konstanz)) > 1) {
+      issues.push('Both wordmarks must share a centerline and equal visible gaps to each other and the card edges');
+    }
+    for (const row of document.querySelectorAll('.milestone-layout')) {
+      const frame = row.getBoundingClientRect();
+      const [copy, art] = [...row.children].map(el => el.getBoundingClientRect());
+      if (art.top >= copy.bottom) {
+        if ([copy, art].some(rect => Math.abs(centeredX(rect) - centeredX(frame)) > 1)) issues.push('Off-center stacked milestone');
+      } else if (!evenlySpaced([centeredX(copy) - frame.left, frame.right - centeredX(art)]) ||
+                 Math.abs(centeredY(copy) - centeredY(art)) > 1) {
+        issues.push('Milestone copy and illustration must be centered in opposing cells');
+      }
+    }
     const map = document.querySelector('.idea-map');
     const nodes = [...map.querySelectorAll('.idea-node')];
     const expectedIcons = ['open-source', 'lungs', 'local-data', 'heart', 'biofeedback'];
@@ -381,9 +421,9 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await george.locator('img.portrait').getAttribute('src'), 'assets/team/crop_selfie.png');
     const affiliations = george.locator('figure.affiliations');
     assert.equal(await affiliations.getByRole('link', { name: 'Max-Planck-Institut für Bildungsforschung' })
-      .locator('img').getAttribute('src'), 'assets/team/mpib-minerva.svg');
+      .locator('img').getAttribute('src'), 'assets/team/mpib-de.svg');
     assert.equal(await affiliations.getByRole('link', { name: 'Universität Konstanz' })
-      .locator('img').getAttribute('src'), 'assets/team/konstanz-signet.svg');
+      .locator('img').getAttribute('src'), 'assets/team/universitaet-konstanz.svg');
     assert.equal(await affiliations.locator('.affiliation-logos').evaluate(row => getComputedStyle(row).backgroundColor),
       'rgba(0, 0, 0, 0)', 'The profile surface must show through the affiliation row');
     const profileUrls = {
@@ -648,6 +688,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simulated · 15 breaths/min', 'Simulated · 72 beats/min']);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
+      assert.equal(await institute.locator('img').getAttribute('src'), 'assets/team/mpib-en.svg');
+      await institute.locator('img').evaluate(image => image.decode());
       assert.equal(await institute.getAttribute('href'), 'https://www.mpib-berlin.mpg.de/en');
       assert.equal(await institute.getAttribute('title'), 'Max Planck Institute for Human Development');
       assert.equal(await affiliations.getByRole('link', { name: 'University of Konstanz' })

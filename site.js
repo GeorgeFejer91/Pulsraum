@@ -7,7 +7,7 @@ const languageToggle = navigation.querySelector('.language-toggle');
 const languageKey = 'pulsraum.language';
 const translations = [];
 // The German text is the source for the static page and for switching back.
-for (const attribute of [null, 'aria-label', 'title', 'content', 'lang', 'alt', 'href']) {
+for (const attribute of [null, 'aria-label', 'title', 'content', 'lang', 'alt', 'href', 'src']) {
   const source = attribute ? `data-en-${attribute}` : 'data-en';
   for (const element of document.querySelectorAll(`[${source}]`)) {
     const de = attribute ? element.getAttribute(attribute) : element.textContent;
