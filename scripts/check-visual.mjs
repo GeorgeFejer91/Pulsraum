@@ -125,6 +125,8 @@ async function checkMapMotion(map) {
     const breath = figure.getAnimations()[0];
     const lungs = document.querySelector('.signal-resp .organ-motion').getAnimations()[0];
     const nodes = [...figure.querySelectorAll('.idea-node, .map-hub')];
+    const paths = [...figure.querySelectorAll('.map-spoke')];
+    const paint = () => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
     const periods = new Set();
     for (const node of nodes) {
       const axes = ['drift-across', 'drift-vertically'].map(name => node.getAnimations().find(a => a.animationName === name));
@@ -133,11 +135,13 @@ async function checkMapMotion(map) {
       periods.add(axes[0].effect.getTiming().duration);
       axes.forEach(a => a.pause());
       await Promise.all(axes.map(a => a.ready));
-      const positions = [0, .5].map(phase => {
+      const positions = [];
+      for (const phase of [0, .5]) {
         for (const a of axes) {
           const { duration, delay } = a.effect.getTiming();
           a.currentTime = duration * (1 + phase) + delay;
         }
+        await paint();
         const frame = figure.getBoundingClientRect();
         for (const part of node.querySelectorAll('[data-measure], .map-icon')) {
           const r = part.getBoundingClientRect();
@@ -145,13 +149,19 @@ async function checkMapMotion(map) {
           if (r.left < frame.left - 1 || r.right > frame.right + 1 ||
               r.top < frame.top - 1 || r.bottom > frame.bottom + 1) throw Error('Floating labels and icons must fit inside the map');
         }
+        const isHub = node.classList.contains('map-hub');
+        const icon = node.querySelector('.map-icon').getBoundingClientRect();
+        for (const path of isHub ? paths : [paths[nodes.indexOf(node) - 1]]) {
+          const point = path.getPointAtLength(isHub ? path.getTotalLength() : 0).matrixTransform(path.getScreenCTM());
+          const offset = Math.hypot(point.x - (icon.left + icon.width / 2), point.y - (icon.top + icon.height / 2));
+          if (offset > 1) throw Error(`${path.classList} must meet the ${isHub ? 'hub' : 'node'} center while floating (${offset.toFixed(2)}px off)`);
+        }
         const css = getComputedStyle(node);
-        return { x: new DOMMatrix(css.transform).e, y: parseFloat(css.translate.split(' ')[1]) || 0 };
-      });
+        positions.push({ x: new DOMMatrix(css.transform).e, y: parseFloat(css.translate.split(' ')[1]) || 0 });
+      }
       const [a, b] = positions;
-      const radius = node.querySelector('.map-icon').clientWidth / 2;
-      if (a.x - b.x < 3 || b.y - a.y < 8 || positions.some(p => Math.hypot(p.x, p.y) >= radius)) {
-        throw Error('Each node must visibly float on both axes and stay connected to its spoke');
+      if (a.x - b.x < 3 || b.y - a.y < 8) {
+        throw Error('Each node must visibly float on both axes');
       }
       axes.forEach((animation, i) => { animation.startTime = starts[i]; });
     }
@@ -164,7 +174,6 @@ async function checkMapMotion(map) {
     breath.pause();
     ecg.pause();
     await Promise.all([breath.ready, ecg.ready]);
-    const paint = () => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
     try {
       const duration = breath.effect.getTiming().duration;
       breath.currentTime = duration * .17;

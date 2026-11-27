@@ -94,7 +94,7 @@ function measure() {
       lines: stats.lineCount, natural: entry.natural,
     });
   }
-  // Reserve room for each wrapped label and keep the spoke endpoint inside its icon.
+  // Reserve room for each wrapped label as the circles drift.
   const travel = cloudNodes.map(node => {
     const icon = parseFloat(getComputedStyle(node.querySelector('.map-icon')).width);
     const labels = [...node.querySelectorAll('[data-measure]')].map(el => measurements.get(el));
@@ -292,6 +292,59 @@ function createBreathAnimation(rig) {
   return new Animation(effect, document.timeline);
 }
 
+function trackMapSpokes() {
+  const links = map.querySelector('.map-links');
+  const wave = map.querySelector('.map-ecg-wave');
+  const [hub, ...icons] = cloudNodes.map(node => node.querySelector('.map-icon'));
+  const branches = [...links.querySelectorAll('.map-spoke')].map((path, i) => {
+    const start = path.getPointAtLength(0);
+    const end = path.getPointAtLength(path.getTotalLength());
+    return { path, icon: icons[i], start, dx: end.x - start.x, dy: end.y - start.y };
+  });
+  let frame;
+
+  function align() {
+    // Read the painted circles in the wheel's SVG coordinates before moving any spokes.
+    const toWheel = links.getScreenCTM().inverse();
+    const center = icon => {
+      const { left, top, width, height } = icon.getBoundingClientRect();
+      return new DOMPoint(left + width / 2, top + height / 2).matrixTransform(toWheel);
+    };
+    const end = center(hub);
+    const starts = branches.map(({ icon }) => center(icon));
+    const sx = links.clientWidth / links.viewBox.baseVal.width;
+    const sy = links.clientHeight / links.viewBox.baseVal.height;
+    branches.forEach(({ path, start, dx, dy }, i) => {
+      const target = starts[i];
+      const x = end.x - target.x, y = end.y - target.y;
+      const spanSquared = dx * dx + dy * dy;
+      // Rotate and scale the original curve to span the two moving centers.
+      const a = (dx * x + dy * y) / spanSquared;
+      const b = (dx * y - dy * x) / spanSquared;
+      const e = target.x - a * start.x + b * start.y;
+      const f = target.y - b * start.x - a * start.y;
+      path.setAttribute('transform', `matrix(${a} ${b} ${-b} ${a} ${e} ${f})`);
+      if (path.classList.contains('signal-ecg')) {
+        wave.style.transform = `matrix(${a}, ${b * sy / sx}, ${-b * sx / sy}, ${a}, ${e * sx}, ${f * sy})`;
+      }
+    });
+    frame = requestAnimationFrame(align);
+  }
+
+  function sync() {
+    cancelAnimationFrame(frame);
+    if (hero.classList.contains('in-view') && !reducedMotion.matches && !document.hidden) {
+      frame = requestAnimationFrame(align);
+    } else {
+      for (const { path } of branches) path.removeAttribute('transform');
+      wave.style.transform = '';
+    }
+  }
+  reducedMotion.addEventListener('change', sync);
+  document.addEventListener('visibilitychange', sync);
+  return sync;
+}
+
 // Sample the connector once per layout. Its normals are in screen pixels so a
 // heartbeat stays legible when the SVG viewBox stretches on a narrow phone.
 function mapEcgStations(curve, sx, sy, left, top) {
@@ -349,7 +402,8 @@ async function animateMapEcg(reducedMotion) {
         while (samples[index + 1].x < t) index++;
         const a = samples[index], b = samples[index + 1];
         const y = a.y + (b.y - a.y) * (t - a.x) / (b.x - a.x);
-        const amplitude = (baseline - y) * gain;
+        const envelope = Math.min(1, station.fraction * 20, (1 - station.fraction) * 20);
+        const amplitude = (baseline - y) * gain * envelope;
         ctx.lineTo(station.x + station.nx * amplitude, station.y + station.ny * amplitude);
       }
       ctx.stroke();
@@ -377,7 +431,10 @@ async function animateMapEcg(reducedMotion) {
     const width = Math.ceil((bounds.x + bounds.width) * sx) + gutter - left;
     const height = Math.ceil((bounds.y + bounds.height) * sy) + gutter - top;
     stations = mapEcgStations(curve, sx, sy, left, top);
-    Object.assign(wave.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
+    Object.assign(wave.style, {
+      left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px`,
+      transformOrigin: `${-left}px ${-top}px`,
+    });
     const ratio = Math.min(window.devicePixelRatio, 2);
     wave.width = Math.round(width * ratio);
     wave.height = Math.round(height * ratio);
@@ -401,6 +458,7 @@ if ('IntersectionObserver' in window) {
   const rig = document.querySelector('.breathing-rig');
   const figure = rig.ownerSVGElement;
   const breath = createBreathAnimation(rig);
+  const syncSpokes = trackMapSpokes();
   animateMapEcg(reducedMotion).catch(() => {
     // The original curved connection remains visible if the sample asset is unavailable.
   });
@@ -414,7 +472,10 @@ if ('IntersectionObserver' in window) {
   const drawings = new IntersectionObserver(entries => {
     for (const entry of entries) {
       entry.target.classList.toggle('in-view', entry.isIntersecting);
-      if (entry.target === hero) scheduleNextTopic();
+      if (entry.target === hero) {
+        syncSpokes();
+        scheduleNextTopic();
+      }
       if (entry.target === figure) syncBreathPlayback();
     }
   });

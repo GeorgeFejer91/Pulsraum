@@ -76,10 +76,11 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   `artwork/overview-pictograms.png`. The whole map expands and contracts in
   time with the breathing trace, while all five nodes and the central suite
   float at individual horizontal and vertical speeds. Pretext measures the
-  labels on layout and language changes to set each node’s travel within
-  reach of its connector. The ECG plot and spoke share the same NeuroKit2
+  labels on layout and language changes to reserve room for their travel.
+  Every spoke follows the geometric centers of its node and the hub as they
+  float. The ECG plot and spoke share the same NeuroKit2
   samples and playback clock. A canvas sized to the spoke draws the signal
-  from the ECG node toward the suite along the original curve.
+  from the ECG node toward the suite along the moving spoke.
   The breathing trace sits above the ECG. The lungs expand and contract with it,
   and the heart pulses as each R peak arrives at the right edge. Each row
   shows its source and simulated rate. Reduced-motion and JavaScript-free
