@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', mp4: 'video/mp4', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|polar-h10-worn\.mp4|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|(?:signals|overview-icons)\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/polar-h10-worn\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|polar-h10-worn\.mp4|vernier-go-direct-spirometer\.svg|breathing-validation\.webp|(?:signals|overview-icons)\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -26,51 +26,27 @@ server.listen(0, '127.0.0.1');
 await once(server, 'listening');
 const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.address().port}/`;
 
-async function checkValidationBelt(drawing) {
-  const samples = [];
-  for (const time of [0, 1000, 2000, 3000, 4000]) {
-    await drawing.evaluate(async (svg, ms) => {
-      for (const animation of svg.getAnimations({ subtree: true })) {
-        animation.pause();
-        await animation.ready;
-        animation.currentTime = ms;
-      }
-    }, time);
-    const frame = await drawing.screenshot();
-    samples.push(await drawing.evaluate(async (svg, base64) => {
-      const image = new Image();
-      image.src = 'data:image/png;base64,' + base64;
-      await image.decode();
-      const canvas = document.createElement('canvas');
-      canvas.width = 380;
-      canvas.height = 218;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0, 380, 218);
-      // Measure the silhouette above the phone, clear of the Bluetooth symbol.
-      const { data, width } = ctx.getImageData(30, 10, 170, 62);
-      let left = width, right = -1;
-      let podBottom = -1;
-      for (let i = 0; i < data.length; i += 4) {
-        if (Math.max(data[i], data[i + 1], data[i + 2]) >= 100) continue;
-        const x = (i / 4) % width;
-        left = Math.min(left, x);
-        right = Math.max(right, x);
-        // The central strip crosses the pod's lower rim in every phase.
-        if (x >= 66 && x <= 84) podBottom = Math.max(podBottom, Math.floor(i / 4 / width));
-      }
-      return { width: right - left, podBottom };
-    }, frame.toString('base64')));
+async function checkValidationBreath(drawing) {
+  const samples = await drawing.evaluate(async svg => {
+    const [clock] = svg.getAnimations();
+    clock.pause();
+    await clock.ready;
+    const position = selector => new DOMMatrix(getComputedStyle(svg.querySelector(selector)).transform);
+    return [0, 750, 1749, 1750, 3000, 4500].map(ms => {
+      clock.currentTime = ms;
+      const avatar = position('.avatar-frames');
+      return { tile: [-avatar.e / 186, -avatar.f / 248].map(Math.round),
+        caption: position('.validation-phase').f, shift: position('.validation-sweep').e };
+    });
+  });
+  for (const [i, ms] of [0, 750, 1749, 1750, 3000, 4500].entries()) {
+    const tile = Math.floor(ms * 12 / 1000) % 54;
+    assert.deepEqual(samples[i].tile.map(v => v || 0), [tile % 9, Math.floor(tile / 9)],
+      'The worn instruments and avatar must advance through the rendered breathing cycle');
+    assert.equal(samples[i].caption, tile < 21 ? 0 : -40, 'The caption must switch at the airflow reversal');
+    assert.ok(Math.abs(samples[i].shift + 160 * (ms % 4500) / 4500) < .01,
+      'The phone must receive samples on the same clock as the avatar');
   }
-  const widths = samples.map(sample => sample.width);
-  const [rest, inhaling, full, exhaling, end] = widths;
-  assert.ok(inhaling > rest + 4 && full > inhaling + 4 && exhaling < full - 4 &&
-    exhaling > end + 4 && Math.abs(end - rest) <= 1,
-  `Belt must expand on inhale and contract on exhale, observed widths ${widths}`);
-  const podEdges = samples.map(sample => sample.podBottom);
-  const [start, rising, peak, falling, finish] = podEdges;
-  assert.ok(rising > start && peak >= start + 4 && peak > rising &&
-    falling < peak && falling > finish && Math.abs(finish - start) <= 1,
-  `The front pod must advance on inhalation and return on exhalation, observed edges ${podEdges}`);
 }
 
 async function checkBreathingPhases(drawing) {
@@ -647,8 +623,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
       'https://www.vernier.com/product/go-direct-spirometer/');
     if (width === 1440 && mode === 'default') {
-      const film = stages.nth(2).getByRole('link', { name: 'Brustgurt am Körper ansehen (3D-Animation)' });
-      assert.equal(await film.count(), 1, 'The worn strap animation must be available from the validation card');
+      const film = stages.nth(2).getByRole('link', { name: 'Atemsimulation ansehen' });
+      assert.equal(await film.count(), 1, 'The synchronized film must be available from the validation card');
       const video = await page.request.get(new URL(await film.getAttribute('href'), url).href);
       assert.equal(video.status(), 200);
       assert.match(video.headers()['content-type'], /^video\/mp4/);
@@ -785,7 +761,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
           });
         }, await drawing.elementHandle());
         if (await drawing.locator('.breathing-rig').count()) await checkBreathingPhases(drawing);
-        if (await drawing.evaluate(svg => svg.matches('.validation-phone'))) await checkValidationBelt(drawing);
+        if (await drawing.evaluate(svg => svg.matches('.validation-phone'))) await checkValidationBreath(drawing);
       }
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -793,22 +769,25 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     await checkLayout(page);
     const validation = stages.nth(2).locator('.validation-phone');
     const streams = await validation.locator('.trace').evaluateAll(paths => paths.map(path => {
-      const label = path.parentElement.querySelector('.plot-label');
+      const label = path.parentElement.parentElement.querySelector('.plot-label');
       return {
         color: getComputedStyle(path).stroke,
         pattern: getComputedStyle(path).strokeDasharray,
         labelColor: getComputedStyle(label).fill,
-        labelFits: label.getBoundingClientRect().right < path.getBoundingClientRect().left,
+        labelFits: label.getBoundingClientRect().bottom < path.getBoundingClientRect().top + 1,
       };
     }));
     assert.equal(streams.length, 3);
     assert.equal(new Set(streams.map(stream => stream.color)).size, 3, 'Each device needs a distinct trace color');
     assert.equal(new Set(streams.map(stream => stream.pattern)).size, 3, 'Each device needs a distinct line pattern');
     assert.ok(streams.every(stream => stream.labelFits && stream.labelColor === stream.color),
-      'Each label must match its trace and leave the plot clear');
+      'Each phone label must match its trace and leave the plot clear');
     const phoneShell = await validation.locator('.device-shell').boundingBox();
-    const spirometerLeft = await validation.locator('.spirometer-art').evaluate(g => g.getScreenCTM().e);
-    assert.ok(spirometerLeft > phoneShell.x + phoneShell.width, 'The spirometer belongs to the right of the phone');
+    const avatarEdge = await validation.locator('#validation-avatar-frame rect').evaluate(rect => {
+      const group = document.querySelector('.validation-avatar');
+      return new DOMPoint(rect.width.baseVal.value, 0).matrixTransform(group.getScreenCTM()).x;
+    });
+    assert.ok(avatarEdge < phoneShell.x, 'The unified breathing model must appear to the left of the phone');
     assert.deepEqual(await buildingBlocks.locator('[data-measure]').evaluateAll(elements => elements
       .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
       .map(element => element.textContent.trim())), [], 'Research text must fit inside its boxes');

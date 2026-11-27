@@ -772,15 +772,29 @@ img.portrait {
 }
 .validation-phone .polar-stream { color: var(--validation-polar); }
 .validation-phone .flow-stream { color: var(--validation-flow); }
-.validation-phone .device-link { stroke: currentColor; }
+@property --validation-frame { syntax: '<number>'; inherits: true; initial-value: 0; }
+/* The 54 rendered poses, breathing caption and incoming samples share one clock. */
+.validation-phone .avatar-frames {
+  --tile: round(down, var(--validation-frame), 1);
+  transform: translate(calc(-186px * mod(var(--tile), 9)), calc(-248px * round(down, calc(var(--tile) / 9), 1)));
+}
+.validation-sweep { transform: translateX(calc(-160px * var(--validation-frame) / 54)); }
+.validation-phase {
+  transform: translateY(calc(-40px * clamp(0, calc(round(down, var(--validation-frame), 1) - 20), 1)));
+}
+.validation-phone .phone-heading { font-size: 13px; fill: var(--muted); }
+.validation-phone .phase-name { font-size: 17px; font-weight: 600; }
+.validation-phone .phase-in { fill: var(--respiration); }
+.validation-phone .phase-out { fill: var(--validation-polar); }
+.validation-phone .phase-detail { fill: var(--muted); font-size: 14px; }
 .validation-phone .plot-label { fill: currentColor; font-weight: 600; }
-.validation-phone .time-marker { color: var(--muted); stroke: currentColor; stroke-width: 1; opacity: .65; }
+.validation-now { stroke: var(--muted); stroke-width: .9; opacity: .55; }
 .h10-light rect {
   fill: color-mix(in srgb, currentColor 76%, white);
   stroke: none;
   opacity: 0;
 }
-.validation-phone .breath-phase text { fill: currentColor; font-size: 14px; }
+
 
 /* Both coordinates are inherited from the single animation on the rig. */
 @property --breath-x { syntax: '<number>'; inherits: true; initial-value: 0; }
@@ -859,17 +873,9 @@ img.portrait {
     animation: receive-measurement var(--analysis-period) linear infinite;
   }
   .in-view .metric-values { animation: show-metrics var(--analysis-period) ease-out infinite; }
-  .in-view .time-marker { animation: compare-recordings 8s linear infinite; }
+  .validation-phone.in-view { animation: validation-breath 4.5s linear infinite; }
   .in-view .pod-breath { animation: h10-breath 4s ease-in-out infinite; }
   .in-view .pod-beat { animation: h10-beat 3.8s linear infinite; }
-  .in-view .stream-route { animation: transmit-stream 1s linear infinite; }
-  .in-view .polar-stream .stream-route { --dash-period: 9; }
-  .in-view .flow-stream .stream-route { --dash-period: 5; }
-  .in-view .h10-breath-frames { animation: expand-strap 2s steps(48) infinite alternate; }
-  /* The Blender render has four rows of twelve frames, played at 12 fps. */
-  .in-view .spirometer-frame-row { animation: spirometer-row 4s steps(4) infinite; }
-  .in-view .spirometer-frame-column { animation: spirometer-column 1s steps(12) infinite; }
-  .in-view .breath-phase { animation: breath-label 4s step-end infinite; }
   .in-view .sleep-breath {
     transform-origin: 69px 96px;
     animation: sleeping-breath 3.8s ease-in-out infinite;
@@ -917,16 +923,7 @@ img.portrait {
   0%, 56%, 100% { opacity: 0; }
   64%, 96% { opacity: 1; }
 }
-@keyframes compare-recordings {
-  from { transform: translateX(-54px); }
-  to { transform: translateX(57px); }
-}
-@keyframes transmit-stream { to { stroke-dashoffset: calc(-1 * var(--dash-period)); } }
-@keyframes spirometer-row { from { transform: translateY(0); } to { transform: translateY(-1200px); } }
-/* Reversing the 49 poses plays exhalation on the same clock as the phase label. */
-@keyframes expand-strap { to { transform: translateY(-6720px); } }
-@keyframes spirometer-column { from { transform: translateX(0); } to { transform: translateX(-3072px); } }
-@keyframes breath-label { 50%, 100% { transform: translateY(-25px); } }
+@keyframes validation-breath { from { --validation-frame: 0; } to { --validation-frame: 54; } }
 /* Follow the two respiratory crests crossed by the comparison cursor. */
 @keyframes h10-breath {
   0%, 47%, 85%, 100% { opacity: 0; }

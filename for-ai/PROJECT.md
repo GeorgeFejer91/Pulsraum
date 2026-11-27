@@ -103,22 +103,21 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   abdomen, phone, mouth airflow and graph cursor together. The cursor draws
   the blue rising trace as particles enter the mouth and the ochre falling
   trace as they leave. The phone waves use the active segment's color.
-  The validation card links its editable spirometer scene in `assets/models/`.
-  The phone compares three labeled streams on one time axis. Its own signal is
-  solid blue. The Polar H10 above it uses ochre dashes and the spirometer to
-  its right uses teal dots, with matching Bluetooth paths into the display.
-  The Polar strap expands through the two-second inhale and contracts through
-  the two-second exhale. Its rigid sensor pod moves toward the viewer as the
-  chest rises and recedes as the chest settles. Regenerate its frame
-  strip with `python scripts/generate-belt.py`.
-  The card also links a separate 3D film of the strap on a translucent adult
-  torso. In `assets/models/polar-h10-worn.blend` the chest-wall shape key
-  drives the fitted underbust band and its rigid sternal pod. Frames 1–108 at
-  24 fps illustrate one upright breath with a longer expiration. The scene
-  contains its anatomical sources and product dimensions.
-  The WebP atlas uses the Blender camera `Webansicht · Messkopf und Griff`,
-  frames 1 to 95 at every other frame, in four rows of twelve 256 × 300 px
-  tiles. Hide the Bluetooth/receiver collection for this export.
+  The validation card places a translucent breathing adult with both sensors
+  on the left and an enlarged view of the same phone on the right.
+  The editable scene in `assets/models/polar-h10-worn.blend` contains the
+  worn underbust band, rigid H10 pod and upright Vernier spirometer. The
+  adult has closed eyes and a lip seal on the mouthpiece. The other hand
+  holds the phone against the upper abdomen and follows its breathing travel.
+  Its 108 frames at 24 fps show a quiet breath through external motion.
+  Inhalation lasts 1.75 s. The chest expands and blue tracers travel through
+  the instrument to the lips. Expiration reverses the motion,
+  with amber tracers. The inline figure uses 54 poses from this render,
+  arranged in six rows of nine in `breathing-validation.webp`. One clock
+  advances the atlas, the phase caption and the phone traces. The traces
+  illustrate displacement, filtered chest acceleration and spirometer flow.
+  Flow is negative during inspiration and positive during expiration.
+  The film and editable-scene links open the combined demonstration and model.
   The local-analysis card shows a measurement moving directly from the user's
   smartphone to their home PC. Both devices and the one-way arrow remain
   visible in the still diagram. The planned sync uses no cloud service. A
