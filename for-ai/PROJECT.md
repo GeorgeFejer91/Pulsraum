@@ -76,8 +76,7 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   reach of its connector. The ECG plot and spoke share the same NeuroKit2
   samples and playback clock. A canvas sized to the spoke draws the signal
   from the ECG node toward the suite along the original curve.
-  One control pauses the map and both simulations. The breathing trace
-  sits above the ECG. The lungs expand and contract with the breathing trace,
+  The breathing trace sits above the ECG. The lungs expand and contract with it,
   and the heart pulses as each R peak arrives at the right edge. Each row
   shows its source and simulated rate. Reduced-motion and JavaScript-free
   views show the map, organs and traces at rest.
@@ -93,7 +92,7 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Visitors can read these statuses in either language. Keep the
   distinction between completed prototypes and planned measurement validation.
   Each card illustrates its step with one inline SVG. Entering the viewport
-  starts a continuous loop. One pause control covers all five illustrations.
+  starts a continuous loop when the visitor allows motion.
   Reduced motion and JavaScript-free views show the complete still diagram.
   In the smartphone breathing diagram, the plotted breath samples drive the
   abdomen, phone, mouth airflow and graph cursor together. The cursor draws

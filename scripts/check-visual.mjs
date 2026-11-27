@@ -514,8 +514,10 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
     const wave = map.locator('.map-ecg-wave');
-    const mapPause = page.getByRole('checkbox', { name: 'Bewegung der Karte pausieren' });
-    assert.equal(await mapPause.isVisible(), false);
+    const pauseOptions = page.locator('label').filter({
+      hasText: /Bewegung der Karte pausieren|Animationen pausieren|Pause map motion|Pause animations/i,
+    });
+    assert.equal(await pauseOptions.count(), 0, 'The site must omit animation pause options');
     assert.equal(await map.evaluate(el => el.getAnimations().length), 0);
     assert.equal(await map.evaluate(el => el.getAnimations({ subtree: true }).length), 0);
     assert.ok(await wave.isHidden());
@@ -533,8 +535,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await details.locator('.fallback-close').click();
     } else await details.locator('button.close-topic').press('Enter');
-    const pause = milestones.getByRole('checkbox', { name: 'Animationen pausieren' });
-    assert.equal(await pause.isVisible(), false);
     const stages = milestones.getByRole('listitem');
     assert.equal(await stages.count(), 5);
     for (const [index, stage] of (await stages.all()).entries()) {
@@ -607,22 +607,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       });
       await details.locator('button.close-topic').press('Enter');
       await hub.press('Enter');
-      await mapPause.press('Space');
-      assert.ok(await mapPause.isChecked());
-      await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await wave.evaluate(async el => {
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        const held = el.toDataURL();
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        if (el.hidden || el.toDataURL() !== held) throw Error('Pausing the map must hold the ECG in place');
-      });
-      await signals.first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await page.waitForFunction(el => [...el.querySelectorAll('.signal-trace, .organ-motion')].every(
-        part => part.getAnimations()[0]?.playState === 'paused'), await signals.first().elementHandle());
-      assert.equal(await map.evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
-      assert.ok(await map.evaluate(el => el.getAnimations({ subtree: true }).every(a => a.playState === 'paused')));
-      await mapPause.press('Space');
-      assert.equal(await mapPause.isChecked(), false);
       await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await page.waitForFunction(el => el.getAnimations()[0]?.playState === 'running', await map.elementHandle());
       await checkMapMotion(map);
@@ -678,16 +662,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
           'The second copy must align with the first at the loop boundary');
       }
       await details.locator('button.close-topic').press('Enter');
-      await pause.waitFor({ state: 'visible' });
-      await pause.press('Space');
-      assert.equal(await pause.isChecked(), true);
-      const firstDrawing = stages.first().locator('svg');
-      await firstDrawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await stages.first().locator('svg.in-view').waitFor();
-      assert.equal(await firstDrawing.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0);
-      if (phone) await pause.tap();
-      else await pause.press('Space');
-      assert.equal(await pause.isChecked(), false);
       for (const stage of await stages.all()) {
         const drawing = stage.locator('svg');
         await drawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
@@ -755,6 +729,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       if (phone) await language.tap();
       else await language.press('Enter');
       assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+      assert.equal(await pauseOptions.count(), 0, 'The English site must omit animation pause options');
       assert.match(await page.title(), /Open biosensing/i);
       assert.deepEqual(await sections.allTextContents(), ['Pulsraum', 'Foundations', 'Project timeline', 'Team']);
       const englishMenu = page.getByRole('navigation', { name: 'Main navigation' });

@@ -160,7 +160,6 @@ function alignSignalClocks() {
     else if (source.currentTime != null) plot.currentTime = source.currentTime;
   }
 }
-document.getElementById('pause-map').addEventListener('change', () => requestAnimationFrame(alignSignalClocks));
 
 function showTopic(button, focusDetail = false) {
   const previous = selected;
@@ -263,7 +262,6 @@ async function animateMapEcg(reducedMotion) {
   const period = samples.at(-1).x;
   const rightEdge = period / 2;
   const baseline = trace.querySelector('.signal-baseline').getPointAtLength(0).y;
-  const pause = document.getElementById('pause-map');
   const gain = .32;
   const gutter = 2 + Math.ceil(gain * Math.max(...samples.map(p => Math.abs(baseline - p.y))));
   let stations = [];
@@ -298,7 +296,7 @@ async function animateMapEcg(reducedMotion) {
       ctx.stroke();
       if (wave.hidden) wave.hidden = false;
     }
-    if (!pause.checked) frame = requestAnimationFrame(draw);
+    frame = requestAnimationFrame(draw);
   }
   function sync() {
     cancelAnimationFrame(frame);
@@ -336,7 +334,6 @@ async function animateMapEcg(reducedMotion) {
     sync();
   }).observe(links);
   reducedMotion.addEventListener('change', sync);
-  pause.addEventListener('change', sync);
   document.addEventListener('visibilitychange', sync);
 }
 
@@ -349,14 +346,12 @@ if ('IntersectionObserver' in window) {
   animateMapEcg(reducedMotion).catch(() => {
     // The original curved connection remains visible if the sample asset is unavailable.
   });
-  const pause = document.getElementById('pause-animations');
   function syncBreathPlayback() {
-    const recording = figure.classList.contains('in-view') && !reducedMotion.matches && !pause.checked;
+    const recording = figure.classList.contains('in-view') && !reducedMotion.matches;
     rig.classList.toggle('is-recording', recording);
     if (recording) breath.play();
     else breath.cancel();
   }
-  pause.addEventListener('change', syncBreathPlayback);
   reducedMotion.addEventListener('change', syncBreathPlayback);
   const drawings = new IntersectionObserver(entries => {
     for (const entry of entries) {
@@ -365,5 +360,4 @@ if ('IntersectionObserver' in window) {
     }
   });
   document.querySelectorAll('.hero, .milestone-figure').forEach(element => drawings.observe(element));
-  document.querySelectorAll('.motion-setting').forEach(control => { control.hidden = false; });
 }

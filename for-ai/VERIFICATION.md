@@ -51,8 +51,9 @@ sections at desktop and phone sizes in light and dark themes. Check each
 [architecture and ownership](./PROJECT.md#architecture-and-ownership). Check
 the circular cloud on desktop and phone. Open each node’s details, switch
 between signals, open both at the hub, and check dismissal and focus.
-Verify the rotating nodes, upright labels, paused and reduced-motion states. Verify that each box in the remaining
-sections has a single subject and a title, each team member has a separate
+Verify the rotating nodes, upright labels and reduced-motion states. Check that
+both languages omit the animation pause checkboxes. Verify that each box in
+the remaining sections has a single subject and a title, each team member has a separate
 profile with the confirmed details available for publication, and the boxes
 have visible boundaries and stack in reading order on narrow screens. Review
 type, wrapping, spacing, signal labels and colors, link and button labels,

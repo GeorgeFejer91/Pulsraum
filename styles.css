@@ -268,8 +268,6 @@
 .signal-panel, .signal-figure { width: 100%; min-width: 0; }
 .overview-details .signal-panel { gap: 1.5rem; }
 .signal-figure figcaption { display: grid; gap: .3rem; margin-bottom: .75rem; }
-.map-motion { font-size: .8125rem; }
-.hero .map-motion { justify-self: center; }
 @container (max-width: 25rem) {
   .idea-node, .map-hub { font-size: .8125rem; }
   .hub-label span { display: none; }
@@ -282,7 +280,7 @@
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
-    grid-template-rows: 1fr auto 1fr auto;
+    grid-template-rows: 1fr auto 1fr;
     column-gap: clamp(1rem, 3vw, 3rem);
     align-items: center;
   }
@@ -294,16 +292,15 @@
   .idea-map { grid-area: 1 / 2 / 4; }
   .overview-details { grid-column: 1; }
   .hero:is(.is-reading, :not(.interactive-map):has(.overview-details :target)) .overview-details { grid-row: 2; }
-  .map-motion { grid-area: 4 / 2; }
 }
 @media (max-width: 67.99rem) {
   .hero { display: grid; grid-template-columns: minmax(0, 1fr); }
   .hero.is-reading .overview-details { scroll-margin-bottom: calc(var(--navigation-block-size, 0px) + 1rem); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .hero:not(:has(#pause-map:checked)) .map-wheel { transition: transform .62s ease-in-out; }
-  .hero:not(:has(#pause-map:checked)) :is(.idea-node, .map-hub) { transition: rotate .62s ease-in-out; }
-  .hero.is-reading:not(:has(#pause-map:checked)) .overview-details article:not([hidden]) { animation: reveal-topic .32s ease-out both; }
+  .hero .map-wheel { transition: transform .62s ease-in-out; }
+  .hero :is(.idea-node, .map-hub) { transition: rotate .62s ease-in-out; }
+  .hero.is-reading .overview-details article:not([hidden]) { animation: reveal-topic .32s ease-out both; }
 }
 @keyframes reveal-topic {
   from { opacity: 0; transform: translateY(6px); }
@@ -820,20 +817,6 @@ img.portrait {
     animation: drift-across var(--drift-period) ease-in-out var(--drift-phase, 0s) infinite,
       drift-vertically calc(var(--drift-period) * 1.19) ease-in-out calc(var(--drift-phase, 0s) - 1.8s) infinite;
   }
-  .hero:has(#pause-map:checked) :is(.idea-map, .idea-node, .map-hub, .signal-trace, .organ-motion) {
-    animation-play-state: paused;
-  }
-  .motion-setting:not([hidden]) {
-    display: inline-flex;
-    align-items: center;
-    gap: .5em;
-    min-height: 44px;
-    margin-top: .5rem;
-    color: var(--muted);
-    cursor: pointer;
-  }
-  .motion-setting input { margin: 0; accent-color: var(--ink); }
-  .motion-setting input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   .hero.in-view .signal-trace {
     animation: scroll-signal var(--signal-period, 16s) linear infinite;
   }
@@ -875,12 +858,6 @@ img.portrait {
     transform-origin: 69px 96px;
     animation: sleeping-breath 3.8s ease-in-out infinite;
   }
-  #projektverlauf:has(#pause-animations:checked) .in-view * {
-    animation: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .motion-setting { display: none; }
 }
 /* The second copy takes the first copy's place at the end of each period. */
 @keyframes scroll-signal {
