@@ -560,6 +560,38 @@ async function checkOverviewAutoplay(browser) {
   }
 }
 
+async function checkTopicTeam(details, topic, { english = false, measured = true } = {}) {
+  const scientists = ['George Fejer', 'Dr. Alexandros Kastrinogiannis'];
+  const hardware = 'Alex Cuthbertson';
+  const software = 'Daniel Artamendi';
+  const teams = {
+    anwendungen: [software],
+    'lokale-daten': [software],
+    atemsignal: [...scientists, hardware],
+    herzsignal: [...scientists, hardware],
+    'kreatives-biofeedback': [...scientists, software],
+    signale: [...scientists, hardware, software],
+  };
+  const team = details.getByRole('list', { name: english ? 'Responsible team members' : 'Verantwortliche Teammitglieder' });
+  assert.equal(await team.count(), 1, `${topic} must show its own team at the bottom`);
+  assert.deepEqual(await team.locator('.topic-person-name:visible').allInnerTexts(), teams[topic]);
+  const rows = await team.locator('li:visible').evaluateAll(items => items.map(item => {
+    const portrait = item.querySelector('.portrait');
+    const bio = item.querySelector('p:last-child');
+    const photo = portrait.getBoundingClientRect();
+    const text = bio.getBoundingClientRect();
+    return {
+      sideBySide: photo.width > 0 && Math.abs(photo.width - photo.height) < 1 && photo.right < text.left,
+      avatar: portrait instanceof HTMLImageElement ? portrait.complete && portrait.naturalWidth > 0 : portrait.textContent === 'DA',
+      fits: bio.scrollWidth <= bio.clientWidth + 1 && bio.scrollHeight <= bio.clientHeight + 1,
+      measured: Number(bio.dataset.measuredLines) > 0,
+      translated: bio.textContent === bio.dataset.en,
+    };
+  }));
+  assert.ok(rows.every(row => row.sideBySide && row.avatar && row.fits &&
+    (!measured || row.measured) && row.translated === english), `${topic} must show readable, localized profiles beside portraits`);
+}
+
 async function checkPage(browser, name, width, height, mode = 'default') {
   const phone = width <= 844;
   const page = await browser.newPage({
@@ -646,7 +678,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const bounds = await link.boundingBox();
       assert.ok(bounds?.height >= 44, `${name} needs a full touch target`);
     }
-    for (const image of await page.locator('main img').all()) {
+    for (const image of await page.locator('#team img').all()) {
       await image.scrollIntoViewIfNeeded();
       assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published images must load');
     }
@@ -670,12 +702,14 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.ok(await details.isHidden());
       for (const node of await map.locator('.idea-node').all()) {
         await node.press('Enter');
-        const target = page.locator('#' + await node.getAttribute('aria-controls'));
+        const topic = await node.getAttribute('aria-controls');
+        const target = page.locator('#' + topic);
         assert.ok(await target.isVisible());
         assert.equal(await node.getAttribute('aria-expanded'), 'true');
         assert.equal(await details.locator(':scope > article:visible').count(), 1);
         if (await target.evaluate(el => el.matches('.signal-figure'))) assert.equal(await details.locator('.signal-figure:visible').count(), 1);
         assert.ok(await target.locator('h2').evaluate(el => el === document.activeElement));
+        await checkTopicTeam(details, topic);
       }
       await page.keyboard.press('Escape');
       assert.ok(await details.isHidden());
@@ -686,8 +720,10 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await map.locator('.idea-node.signal-ecg').click();
       assert.ok(await page.locator('#herzsignal').isVisible());
       assert.ok(await page.locator('#atemsignal').isHidden());
+      await checkTopicTeam(details, 'herzsignal', { measured: false });
       await hub.click();
     }
+    await checkTopicTeam(details, 'signale', { measured: mode !== 'no-js' });
     const signalPanel = page.locator('#projekt .signal-panel');
     assert.equal(await signalPanel.count(), 1, 'Both time series belong together');
     const signals = signalPanel.locator('.signal-figure');
@@ -758,10 +794,13 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     if (mode === 'dark') assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     if (mode === 'spacing') {
       await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-block-end: 2em !important; }' });
+      await hub.press('Space');
+      await checkTopicTeam(details, 'signale');
+      await details.locator('button.close-topic').press('Enter');
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status, .milestone-phase, .menu-switch')];
+        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status, .milestone-phase, .menu-switch, .topic-person-name')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -770,6 +809,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await picker.selectOption('atemsignal');
       assert.ok(await page.locator('#atemsignal').isVisible());
       assert.ok(await page.locator('#herzsignal').isHidden());
+      await checkTopicTeam(details, 'atemsignal');
       await details.locator('button.close-topic').press('Enter');
     }
     const phaseLabels = milestones.getByText('Phase', { exact: true });
@@ -985,6 +1025,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await creative.getAttribute('aria-expanded'), 'true');
       assert.ok(await page.locator('#kreatives-biofeedback').isVisible());
       assert.equal(await page.locator('#kreatives-biofeedback h2').innerText(), 'Creative biofeedback');
+      await checkTopicTeam(details, 'kreatives-biofeedback', { english: true });
       await page.evaluate(() => window.scrollTo(0, 0));
       await checkLayout(page);
       await page.screenshot({ path: `${prefix}-en.png`, fullPage: true });

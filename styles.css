@@ -252,6 +252,30 @@ main { container: content / inline-size; }
 .hero.is-reading .topic-hint, .signal-panel:has(.signal-figure[hidden]) .suite-intro { display: none; }
 .hero.is-reading .signal-panel:not(:has(.signal-figure[hidden])) .signal-note { display: none; }
 .signal-note { max-width: 40ch; margin: .75rem auto 0; }
+.topic-team {
+  display: grid;
+  gap: var(--box-gap);
+  width: min(100%, 29rem);
+  margin: 0;
+  padding: var(--box-gap) 0 0;
+  border-block-start: 1px solid var(--rule);
+  list-style: none;
+  text-align: start;
+  font-size: .9375rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.topic-team li {
+  display: grid;
+  grid-template-columns: min(3.25rem, 18%) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--box-gap);
+}
+.topic-team .portrait { width: 100%; }
+.topic-team .portrait-initial { font-size: .875rem; }
+.topic-person-name { display: block; }
+.signal-panel:has(.signal-figure[hidden]) .suite-profile,
+.hero:not(.interactive-map) .signal-panel:has(.signal-figure:target) .suite-profile { display: none; }
 .hero.is-reading .overview-details article { width: 100%; }
 .hero.is-reading .overview-details .box-title {
   justify-self: center;

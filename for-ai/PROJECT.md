@@ -42,6 +42,9 @@ Current website update:
   portraits and an initials placeholder for Daniel. Local Chromium and WebKit
   checks measured the golden-ratio portrait and spacing proportions and
   verified the narrow single-column layout in both languages and themes.
+- [x] Show the responsible team members below each overview topic and the hub.
+  The rendered suite checks the visible assignments, bilingual descriptions,
+  and portrait-and-text layout, including enlarged text and text spacing.
 
 Use the most recent successful [Pages workflow run](https://github.com/GeorgeFejer91/Pulsraum/actions/workflows/pages.yml) and the live visual review to verify publication.
 
@@ -73,6 +76,12 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   and starts a fresh countdown after a manual selection. It preserves keyboard
   focus and scroll position, and honors reduced motion. On desktop, the title
   moves and scales into place as the explanation appears.
+  Each topic ends with two-sentence profiles beside circular portraits.
+  Daniel appears for open-source development and local data. George and
+  Alexandros cover the science and signal processing, joined by Alex for
+  hardware ergonomics on the breathing and ECG topics and by Daniel for
+  creative biofeedback. The hub shows all four. The site reuses the Team
+  portraits and Daniel’s initials badge.
   The heart and lungs animate inside their nodes. Each reveals its own trace.
   The hub shows both stacked traces. The close control or Escape
   returns focus to the selected node. With enlarged text, a labeled picker
