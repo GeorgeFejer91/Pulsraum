@@ -125,6 +125,15 @@
   vector-effect: non-scaling-stroke;
 }
 .map-spoke { opacity: .72; }
+.map-ecg-wave {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.map-links:has(.map-ecg-wave[points]) .map-spoke.signal-ecg { opacity: .25; }
 .map-crosslinks {
   color: var(--box-rule);
   stroke-dasharray: 2 5;
@@ -132,12 +141,12 @@
 }
 .map-data { color: var(--validation-flow); }
 .map-creative { color: var(--validation-polar); }
-.map-source { grid-area: 1 / 2 / span 2; }
-.idea-node.signal-resp { grid-area: 2 / 1 / span 2; }
-.idea-node.map-data { grid-area: 2 / 3 / span 2; }
-.idea-node.signal-ecg { grid-area: 5 / 1 / span 2; }
-.idea-node.map-creative { grid-area: 5 / 3 / span 2; }
-.map-hub { grid-area: 3 / 2 / span 2; }
+.map-source { grid-area: 1 / 2 / span 2; --drift-period: 8s; }
+.idea-node.signal-resp { grid-area: 2 / 1 / span 2; --drift-period: 9.5s; --drift-phase: -3s; }
+.idea-node.map-data { grid-area: 2 / 3 / span 2; --drift-period: 8.5s; --drift-phase: -5s; }
+.idea-node.signal-ecg { grid-area: 5 / 1 / span 2; --drift-period: 7.5s; --drift-phase: -1s; }
+.idea-node.map-creative { grid-area: 5 / 3 / span 2; --drift-period: 10s; --drift-phase: -7s; }
+.map-hub { grid-area: 3 / 2 / span 2; --drift-period: 11s; --drift-phase: -4s; --drift-radius: 2.5px; }
 .idea-node, .map-hub {
   display: grid;
   grid-template-rows: 1fr auto 1fr;
@@ -723,12 +732,19 @@ img.portrait {
 }
 .breath-key text { font-size: 12px; fill: currentColor; }
 
+@property --inhalation { syntax: '<number>'; inherits: false; initial-value: 0; }
+
 @media (prefers-reduced-motion: no-preference) {
-  .idea-map.in-view .idea-node {
-    animation: float-node 9s ease-in-out infinite alternate;
+  .hero.in-view .idea-map, .hero.in-view .signal-resp .organ-motion {
+    animation: inhale-exhale 16s ease-in-out infinite;
   }
-  .idea-map.in-view .idea-node:is(:hover, :focus-within),
-  .hero:has(#pause-map:checked) :is(.idea-node, .signal-trace, .organ-motion) {
+  .hero.in-view .idea-map {
+    transform: scale(calc(.97 + .05 * var(--inhalation)));
+  }
+  .hero.in-view .idea-map :is(.idea-node, .map-hub) {
+    animation: drift-node var(--drift-period) ease-in-out var(--drift-phase, 0s) infinite;
+  }
+  .hero:has(#pause-map:checked) :is(.idea-map, .idea-node, .map-hub, .signal-trace, .organ-motion) {
     animation-play-state: paused;
   }
   .motion-setting:not([hidden]) {
@@ -742,15 +758,15 @@ img.portrait {
   }
   .motion-setting input { margin: 0; accent-color: var(--ink); }
   .motion-setting input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-  .signal-figure.in-view .signal-trace {
+  .hero.in-view .signal-trace {
     animation: scroll-signal var(--signal-period, 16s) linear infinite;
   }
   .signal-figure.signal-ecg { --signal-period: 6.666667s; }
-  .signal-resp.in-view .organ-motion {
+  .hero.in-view .signal-resp .organ-motion {
     transform-origin: 24px 17px;
-    animation: fill-lungs var(--signal-period, 16s) ease-in-out infinite;
+    transform: scale(calc(.83 + .24 * var(--inhalation)), calc(.89 + .17 * var(--inhalation)));
   }
-  .signal-ecg.in-view .organ-motion {
+  .hero.in-view .signal-ecg .organ-motion {
     transform-origin: 24px 24px;
     animation: beat-heart var(--signal-period) ease-out infinite;
   }
@@ -784,9 +800,6 @@ img.portrait {
     animation: none;
   }
 }
-@keyframes float-node {
-  to { transform: translateY(var(--float-y, 2px)); }
-}
 @media (prefers-reduced-motion: reduce) {
   .motion-setting { display: none; }
 }
@@ -794,12 +807,18 @@ img.portrait {
 @keyframes scroll-signal {
   to { transform: translateX(-880px); }
 }
+@keyframes drift-node {
+  0%, 100% { transform: translateX(var(--drift-radius, 4px)); }
+  25% { transform: translateY(var(--drift-radius, 4px)); }
+  50% { transform: translateX(calc(-1 * var(--drift-radius, 4px))); }
+  75% { transform: translateY(calc(-1 * var(--drift-radius, 4px))); }
+}
 /* Match the breath extrema, holds and R peaks arriving at the right edge of the plot. */
-@keyframes fill-lungs {
-  0%, 100% { transform: scale(.84, .90); }
-  8.3%, 30.9%, 62.8%, 84.1% { transform: scale(1.07, 1.06); }
-  17%, 45.6%, 73.5%, 98.6% { transform: scale(.83, .89); }
-  22.5%, 25.5%, 36%, 40%, 50%, 56%, 91.5% { transform: scale(.95, .98); }
+@keyframes inhale-exhale {
+  0%, 100% { --inhalation: .05; }
+  8.3%, 30.9%, 62.8%, 84.1% { --inhalation: 1; }
+  17%, 45.6%, 73.5%, 98.6% { --inhalation: 0; }
+  22.5%, 25.5%, 36%, 40%, 50%, 56%, 91.5% { --inhalation: .5; }
 }
 @keyframes beat-heart {
   0%, 1.7%, 7%, 13.7%, 19%, 24.7%, 30%, 36.1%, 41.5%, 48.8%, 54.2%,

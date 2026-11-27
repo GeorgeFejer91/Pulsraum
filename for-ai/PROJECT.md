@@ -63,8 +63,11 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   software suite on both desktop and phone. Open source, breathing, local data,
   ECG and creative biofeedback each link to the relevant explanation or signal.
   The SVG symbols in `assets/illustrations/overview-icons.svg` were traced from
-  `artwork/overview-pictograms.png`. Visible nodes float slightly. One control
-  pauses the map and both scrolling NeuroKit2 simulations. The breathing trace
+  `artwork/overview-pictograms.png`. The whole map expands and contracts in
+  time with the breathing trace, while all five nodes and the central suite
+  drift independently within reach of their connectors. The ECG spoke carries the same NeuroKit2
+  samples as the ECG plot, from the outer node toward the suite along the
+  original curve. One control pauses the map and both simulations. The breathing trace
   sits above the ECG. The lungs expand and contract with the breathing trace,
   and the heart pulses as each R peak arrives at the right edge. Each row
   shows its source and simulated rate. Reduced-motion and JavaScript-free

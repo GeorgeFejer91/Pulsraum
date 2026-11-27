@@ -25,7 +25,7 @@ def signal_path(name, samples, peaks, cycles, crossing, baseline, gain):
         raise ValueError(f"{name} exceeds the plot bounds")
     points = [f"{a:.2f},{b:.2f}" for a, b in zip(x, y)]
     lines = [" ".join(points[i:i + 10]) for i in range(0, len(points), 10)]
-    return f'  <path id="{name}" vector-effect="non-scaling-stroke" d="M' + "\n    ".join(lines) + '"/>'
+    return f'  <polyline id="{name}" vector-effect="non-scaling-stroke" points="' + "\n    ".join(lines) + '"/>'
 
 
 def main():

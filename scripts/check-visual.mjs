@@ -132,6 +132,73 @@ async function checkBreathingPhases(drawing) {
   });
 }
 
+async function checkMapMotion(map) {
+  await map.evaluate(async figure => {
+    const wave = figure.querySelector('.map-ecg-wave');
+    const curve = figure.querySelector('.map-spoke.signal-ecg');
+    const trace = document.querySelector('.signal-figure.signal-ecg .signal-trace');
+    const breath = figure.getAnimations()[0];
+    const lungs = document.querySelector('.signal-resp .organ-motion').getAnimations()[0];
+    const nodes = [...figure.querySelectorAll('.idea-node, .map-hub')];
+    const drifts = nodes.map(node => node.getAnimations()[0]);
+    if (drifts.length !== 6 || drifts.some(a => a?.playState !== 'running') ||
+        new Set(drifts.map(a => a.effect.getTiming().duration)).size !== 6) throw Error('All six cloud nodes must drift independently');
+    for (const drift of drifts) {
+      const start = drift.startTime;
+      drift.pause();
+      await drift.ready;
+      const duration = drift.effect.getTiming().duration;
+      drift.currentTime = duration + drift.effect.getTiming().delay;
+      const target = drift.effect.target;
+      const x = new DOMMatrix(getComputedStyle(target).transform).e;
+      drift.currentTime += duration / 2;
+      if (x - new DOMMatrix(getComputedStyle(target).transform).e < 4) throw Error('Each node must visibly move');
+      drift.startTime = start;
+    }
+    if (Math.abs(breath.startTime - lungs.startTime) > 1 || breath.effect.getTiming().duration !== lungs.effect.getTiming().duration) {
+      throw Error('The whole map and lungs must share the breathing cycle');
+    }
+    const ecg = trace.getAnimations()[0];
+    const breathStart = breath.startTime, ecgStart = ecg.startTime;
+    breath.pause();
+    ecg.pause();
+    await Promise.all([breath.ready, ecg.ready]);
+    const paint = () => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
+    try {
+      const duration = breath.effect.getTiming().duration;
+      breath.currentTime = duration * .17;
+      const rest = figure.getBoundingClientRect();
+      breath.currentTime = duration * .083;
+      const full = figure.getBoundingClientRect();
+      if (full.width < rest.width * 1.035 || full.height < rest.height * 1.035 ||
+          Math.abs(full.x + full.width / 2 - rest.x - rest.width / 2) > 1) throw Error('The map must breathe around its center');
+
+      const source = trace.querySelector('use').getAttribute('href');
+      const svg = new DOMParser().parseFromString(await (await fetch(source)).text(), 'image/svg+xml');
+      const samples = Array.from(svg.getElementById('ecg').points);
+      const peak = samples.filter(p => p.x > 440 && p.x < 520).reduce((a, b) => a.y < b.y ? a : b);
+      const length = curve.getTotalLength();
+      function offsetAt(fraction) {
+        const point = wave.points.getItem(Math.round((wave.points.length - 1) * fraction));
+        const base = curve.getPointAtLength(length * fraction);
+        const matrix = curve.getScreenCTM();
+        return Math.hypot((point.x - base.x) * matrix.a, (point.y - base.y) * matrix.d);
+      }
+      for (const fraction of [.3, .7]) {
+        // A sample takes a quarter of the eight-beat loop to cross the whole spoke.
+        ecg.currentTime = ecg.effect.getTiming().duration * ((peak.x - 440) / 880 + fraction / 4);
+        await paint();
+        if (offsetAt(fraction) < 12 || offsetAt(fraction - .075) > offsetAt(fraction) * .65) {
+          throw Error('The sampled R peak must travel from ECG toward the hub on the original curve');
+        }
+      }
+    } finally {
+      ecg.startTime = ecgStart;
+      breath.startTime = breathStart;
+    }
+  });
+}
+
 async function checkLayout(page) {
   const issues = await page.evaluate(() => {
     const issues = [];
@@ -333,10 +400,13 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.ok(breathingPlot.y + breathingPlot.height <= ecgPlot.y && Math.abs(breathingPlot.x - ecgPlot.x) < 1 &&
       Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
-    const node = page.locator('.idea-map .map-source');
+    const map = page.locator('.idea-map');
+    const wave = map.locator('.map-ecg-wave');
     const mapPause = page.getByRole('checkbox', { name: 'Bewegung der Karte pausieren' });
     assert.equal(await mapPause.isVisible(), false);
-    assert.equal(await node.evaluate(el => el.getAnimations().length), 0);
+    assert.equal(await map.evaluate(el => el.getAnimations().length), 0);
+    assert.equal(await map.evaluate(el => el.getAnimations({ subtree: true }).length), 0);
+    assert.equal(await wave.getAttribute('points'), null);
     for (const figure of await signals.all()) {
       assert.ok(await figure.locator('figcaption .signal-organ').isVisible());
       const strip = figure.locator('.signal-trace');
@@ -394,16 +464,27 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       await page.waitForFunction(() => getComputedStyle(document.documentElement).scrollBehavior === 'smooth');
-      await node.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await page.waitForFunction(el => el.getAnimations()[0]?.playState === 'running', await node.elementHandle());
+      await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.waitForFunction(el => el.points.length > 0, await wave.elementHandle());
       await mapPause.press('Space');
       assert.ok(await mapPause.isChecked());
+      await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await wave.evaluate(async el => {
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const held = el.getAttribute('points');
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        if (!held || el.getAttribute('points') !== held) throw Error('Pausing the map must hold the ECG in place');
+      });
       await signals.first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await page.waitForFunction(el => [...el.querySelectorAll('.signal-trace, .organ-motion')].every(
         part => part.getAnimations()[0]?.playState === 'paused'), await signals.first().elementHandle());
-      assert.equal(await node.evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
+      assert.equal(await map.evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
+      assert.ok(await map.evaluate(el => el.getAnimations({ subtree: true }).every(a => a.playState === 'paused')));
       await mapPause.press('Space');
       assert.equal(await mapPause.isChecked(), false);
+      await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.waitForFunction(el => el.getAnimations()[0]?.playState === 'running', await map.elementHandle());
+      await checkMapMotion(map);
       for (const figure of await signals.all()) {
         await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         const strip = await figure.locator('.signal-trace').elementHandle();
@@ -414,7 +495,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         const organWidths = await organ.evaluate(async (g, peak) => {
           const animation = g.getAnimations()[0];
           const trace = g.closest('figure').querySelector('.signal-trace').getAnimations()[0];
-          if (animation.startTime !== trace.startTime || animation.effect.getTiming().duration !== trace.effect.getTiming().duration)
+          if (Math.abs(animation.startTime - trace.startTime) > 1 || animation.effect.getTiming().duration !== trace.effect.getTiming().duration)
             throw Error('The organ and trace must share their playback timing');
           animation.pause();
           await animation.ready;
