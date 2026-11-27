@@ -649,11 +649,20 @@ img.portrait {
 .milestones > li {
   counter-increment: milestone;
   display: grid;
+  gap: inherit;
+}
+.milestone-phase {
+  color: var(--muted);
+  font-weight: 600;
+  text-align: center;
+}
+.milestone-card {
+  display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--card-space);
 }
-.milestones > li::before {
+.milestone-card::before {
   align-self: start;
   content: counter(milestone, decimal-leading-zero) / "";
   font: bold italic clamp(2.25rem, 4vw, 3rem)/1 Georgia, serif;

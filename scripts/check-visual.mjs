@@ -542,7 +542,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const status = stage.getByRole('checkbox', { name: completed ? 'Abgeschlossen' : 'Geplant', exact: true });
       assert.equal(await status.isChecked(), completed);
       assert.ok(await status.isDisabled(), 'Milestone progress is read-only');
-      const card = await stage.boundingBox();
+      const card = await stage.locator('.milestone-card').boundingBox();
       const mark = await status.boundingBox();
       const heading = await stage.getByRole('heading').boundingBox();
       assert.ok(mark.width >= 44 && mark.height >= 44 && mark.y > card.y &&
@@ -571,7 +571,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status')];
+        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status, .milestone-phase')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -581,6 +581,16 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.ok(await page.locator('#atemsignal').isVisible());
       assert.ok(await page.locator('#herzsignal').isHidden());
       await details.locator('button.close-topic').press('Enter');
+    }
+    const phaseLabels = milestones.getByText('Phase', { exact: true });
+    assert.equal(await phaseLabels.count(), 4, 'Every gap between timeline cards needs a Phase label');
+    const cards = milestones.locator('.knowledge-box');
+    for (const [index, phase] of (await phaseLabels.all()).entries()) {
+      const label = await phase.boundingBox();
+      const previous = await cards.nth(index).boundingBox();
+      const next = await cards.nth(index + 1).boundingBox();
+      assert.ok(label && previous.y + previous.height < label.y && label.y + label.height < next.y,
+        'The Phase label must sit between the cards');
     }
     await checkNavigation(page, phone);
     if (mode === 'default' && (width === 1440 || (name === 'webkit' && width === 390))) {
