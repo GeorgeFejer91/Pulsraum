@@ -112,15 +112,19 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   worn underbust band, rigid H10 pod and upright Vernier spirometer. The
   adult has closed eyes and a lip seal on the mouthpiece. The other hand
   holds the phone against the upper abdomen and follows its breathing travel.
-  Its 108 frames at 24 fps show a quiet breath through external motion.
-  Inhalation lasts 1.75 s. The chest expands and blue tracers travel through
-  the instrument to the lips. Expiration reverses the motion,
-  with amber tracers. The inline figure uses 54 poses from this render,
+  Its 108 frames at 24 fps show a breath through external motion. Chest
+  excursion and elbow movement are amplified for the inline figure. Both
+  arms articulate at the shoulder and elbow while preserving their grips.
+  Inhalation lasts 1.75 s. The chest lifts and widens as blue tracers travel through
+  the mouthpiece and throat into both sides of the chest. One translucent
+  material covers the whole avatar. A blue arrow points away from the abdomen.
+  Expiration reverses the motion, with amber tracers and an amber arrow
+  pointing back toward the abdomen. The inline figure uses 54 poses from this render,
   arranged in six rows of nine in `breathing-validation.webp`. One clock
-  advances the atlas, the phase caption and the phone traces. The traces
+  advances the atlas and the phone traces. The traces
   illustrate displacement, filtered chest acceleration and spirometer flow.
   Flow is negative during inspiration and positive during expiration.
-  The film and editable-scene links open the combined demonstration and model.
+  The card links to the film. The editable Blender source lives in the repository.
   The local-analysis card shows a measurement moving directly from the user's
   smartphone to their home PC. Both devices and the one-way arrow remain
   visible in the still diagram. The planned sync uses no cloud service. A

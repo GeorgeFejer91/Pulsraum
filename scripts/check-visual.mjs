@@ -36,16 +36,46 @@ async function checkValidationBreath(drawing) {
       clock.currentTime = ms;
       const avatar = position('.avatar-frames');
       return { tile: [-avatar.e / 186, -avatar.f / 248].map(Math.round),
-        caption: position('.validation-phase').f, shift: position('.validation-sweep').e };
+        shift: position('.validation-sweep').e };
     });
   });
   for (const [i, ms] of [0, 750, 1749, 1750, 3000, 4500].entries()) {
     const tile = Math.floor(ms * 12 / 1000) % 54;
     assert.deepEqual(samples[i].tile.map(v => v || 0), [tile % 9, Math.floor(tile / 9)],
       'The worn instruments and avatar must advance through the rendered breathing cycle');
-    assert.equal(samples[i].caption, tile < 21 ? 0 : -40, 'The caption must switch at the airflow reversal');
     assert.ok(Math.abs(samples[i].shift + 160 * (ms % 4500) / 4500) < .01,
       'The phone must receive samples on the same clock as the avatar');
+  }
+  // Measure the actual rendered silhouettes at their inline display size.
+  const poses = await drawing.evaluate(async svg => {
+    const image = new Image();
+    image.src = svg.querySelector('.avatar-frames').href.baseVal;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = 186;
+    canvas.height = 248;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const tileW = image.width / 9, tileH = image.height / 6;
+    return [0, 10, 21, 35, 53].map(tile => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, tile % 9 * tileW, Math.floor(tile / 9) * tileH, tileW, tileH,
+        0, 0, canvas.width, canvas.height);
+      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      function edge(y, fromRight = false) {
+        for (let step = 0; step < canvas.width; step++) {
+          const x = fromRight ? canvas.width - 1 - step : step;
+          if (pixels[4 * (y * canvas.width + x) + 3] > 32) return x;
+        }
+        throw Error(`Missing silhouette at row ${y}`);
+      }
+      return { chest: edge(170), spirometerArm: edge(140), phoneArm: edge(180, true) };
+    });
+  });
+  const [rest, rising, full, falling, finish] = poses;
+  for (const part of Object.keys(rest)) {
+    assert.ok(rest[part] - full[part] >= 5 && rising[part] < rest[part] &&
+      falling[part] > full[part] && Math.abs(finish[part] - rest[part]) <= 1,
+    `${part} must visibly travel with the breath and return at the loop boundary: ${poses.map(p => p[part])}`);
   }
 }
 
@@ -663,6 +693,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
       'https://www.vernier.com/product/go-direct-spirometer/');
     if (width === 1440 && mode === 'default') {
+      assert.equal(await page.locator('a[href$=".blend"]').count(), 0);
+      assert.equal(await stages.nth(2).locator('.validation-phone text').count(), 4);
       const film = stages.nth(2).getByRole('link', { name: 'Atemsimulation ansehen' });
       assert.equal(await film.count(), 1, 'The synchronized film must be available from the validation card');
       const video = await page.request.get(new URL(await film.getAttribute('href'), url).href);
