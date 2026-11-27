@@ -342,8 +342,8 @@ async function checkLayout(page) {
     if (Math.abs(brand.left - leadingEdge) > 1) issues.push('The brand must start at the leading header inset');
     if (matchMedia('(min-width: 52rem) and (pointer: fine)').matches) {
       if (Math.abs(brand.top - headerRect.top - parseFloat(padding.paddingTop)) > 1) issues.push('The sidebar must start at the top inset');
-      for (const button of header.querySelectorAll('button:not([hidden])')) {
-        if (Math.abs(button.getBoundingClientRect().left - leadingEdge) > 1) issues.push('Sidebar controls must share the leading inset');
+      for (const control of header.querySelectorAll('.menu-switch:not([hidden])')) {
+        if (Math.abs(control.getBoundingClientRect().left - leadingEdge) > 1) issues.push('Sidebar controls must share the leading inset');
       }
       for (const link of navigation.querySelectorAll('a')) {
         const text = document.createRange();
@@ -352,13 +352,13 @@ async function checkLayout(page) {
         if (Math.abs(text.getClientRects()[0].left - inset) > 1) issues.push('Sidebar link labels must start at their leading inset');
       }
     } else {
-      const theme = header.querySelector('.theme-toggle:not([hidden])')?.getBoundingClientRect();
+      const theme = header.querySelector('.header-brand .menu-switch:not([hidden])')?.getBoundingClientRect();
       if (theme && theme.top < brand.bottom && Math.abs(headerRect.right - parseFloat(padding.paddingRight) - theme.right) > 1) {
         issues.push('The mobile theme control must reach the trailing header inset when beside the brand');
       }
     }
     if (navigation.scrollWidth > navigation.clientWidth + 1) issues.push('Navigation horizontal overflow');
-    for (const element of navigation.querySelectorAll('a, button:not([hidden])')) {
+    for (const element of header.querySelectorAll('nav a, .menu-switch:not([hidden])')) {
       if (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1) {
         issues.push(`Navigation label overflows: ${element.textContent.trim()}`);
       }
@@ -668,7 +668,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     if (mode === 'large-text') {
       await page.evaluate(() => {
-        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status, .milestone-phase')];
+        const elements = [...document.querySelectorAll('a, button, p, h1, h2, h3, figcaption, .milestone-status, .milestone-phase, .menu-switch')];
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
@@ -829,23 +829,33 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     const prefix = `${screenshots}/${name}-${width}x${height}-${mode}`;
     await page.screenshot({ path: `${prefix}.png`, fullPage: true });
-    const language = navigation.getByRole('button', { name: 'English', exact: true });
+    const language = navigation.getByRole('switch', { name: 'Website auf Englisch', checked: false });
+    const theme = page.getByRole('switch', { name: 'Dunkelmodus', checked: mode === 'dark' });
     if (mode === 'no-js') {
-      assert.equal(await language.isVisible(), false);
+      assert.equal(await page.getByRole('switch').count(), 0);
     } else {
-      assert.ok(await language.isVisible(), 'The menu must offer the English version');
-      const target = await language.boundingBox();
-      assert.ok(target.width >= 44 && target.height >= 44, 'Language switch needs a full touch target');
+      assert.equal(await language.count(), 1, 'The menu must expose a language switch with German selected');
+      assert.equal(await theme.count(), 1, 'The theme switch must reflect the system theme');
+      for (const control of [language, theme]) {
+        const target = await control.boundingBox();
+        assert.ok(target.width >= 44 && target.height >= 44, 'Each switch needs a full touch target');
+      }
+      const languageLabels = navigation.locator('.menu-switch-track [data-measure]');
+      assert.deepEqual(await languageLabels.allTextContents(), ['DE', 'EN']);
+      assert.deepEqual(await languageLabels.evaluateAll(labels => labels.map(label => label.dataset.measuredLines)), ['1', '1']);
+      const [deLabel, enLabel] = await Promise.all((await languageLabels.all()).map(label => label.boundingBox()));
+      assert.ok(deLabel.x + deLabel.width + 4 <= enLabel.x, 'DE and EN need clear space between their letters');
       if (phone) await language.tap();
-      else await language.press('Enter');
+      else await language.press('Space');
       assert.equal(await page.locator('html').getAttribute('lang'), 'en');
       assert.equal(await pauseOptions.count(), 0, 'The English site must omit animation pause options');
       assert.match(await page.title(), /Open biosensing/i);
       assert.deepEqual(await sections.allTextContents(), ['Pulsraum', 'Foundations', 'Project timeline', 'Team']);
       const englishMenu = page.getByRole('navigation', { name: 'Main navigation' });
-      const german = englishMenu.getByRole('button', { name: 'Deutsch', exact: true });
-      assert.equal(await german.getAttribute('lang'), 'de');
-      if (!phone) assert.equal(await german.evaluate(button => button.matches(':focus-visible')), true);
+      const german = englishMenu.getByRole('switch', { name: 'Website in English', checked: true });
+      assert.ok(await german.isVisible(), 'The switch must show English as selected');
+      assert.ok(await page.getByRole('switch', { name: 'Dark mode', checked: mode === 'dark' }).isVisible());
+      if (!phone) assert.equal(await german.evaluate(control => control.matches(':focus-visible')), true);
       const timeline = englishMenu.getByRole('link', { name: 'Project timeline' });
       assert.equal(await timeline.getAttribute('href'), '#projektverlauf');
       const englishStages = page.getByRole('region', { name: 'Project timeline' }).getByRole('listitem');
@@ -875,18 +885,22 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.screenshot({ path: `${prefix}-en.png`, fullPage: true });
       await page.reload({ waitUntil: 'networkidle' });
       assert.ok(await german.isVisible(), 'The language choice must survive a reload');
-      await german.press('Enter');
+      if (phone) await german.tap();
+      else await german.press('Space');
       assert.equal(await page.locator('html').getAttribute('lang'), 'de');
       assert.ok(await language.isVisible());
       assert.equal(await page.getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).count(), 1);
     }
     if (mode === 'dark') {
-      const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
-      assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
-      await toggle.press('Enter');
+      if (phone) await theme.tap();
+      else await theme.press('Space');
       assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
       await page.reload({ waitUntil: 'networkidle' });
-      assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+      const light = page.getByRole('switch', { name: 'Dunkelmodus', checked: false });
+      assert.ok(await light.isVisible(), 'The theme choice must survive a reload');
+      if (phone) await light.tap();
+      else await light.press('Space');
+      assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     }
     assert.deepEqual(failed, [], 'Website resources and scripts must load locally without errors');
     console.log(`${name} ${width}×${height} ${mode}: passed`);

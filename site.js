@@ -3,7 +3,7 @@ import { prepare, measureLineStats, measureNaturalWidth, setLocale } from './ass
 // The document remains readable without JS. Measurements only let text regions grow.
 const root = document.documentElement;
 const navigation = document.querySelector('.site-header nav');
-const languageToggle = navigation.querySelector('.language-toggle');
+const languageToggle = navigation.querySelector('#language-toggle');
 const languageKey = 'pulsraum.language';
 const hero = document.querySelector('.hero');
 const map = hero.querySelector('.idea-map');
@@ -44,6 +44,7 @@ for (const attribute of [null, 'aria-label', 'title', 'content', 'lang', 'alt', 
 
 function applyLanguage(language) {
   root.lang = language;
+  languageToggle.checked = language === 'en';
   setLocale(language);
   for (const translation of translations) {
     const { element, attribute } = translation;
@@ -143,8 +144,8 @@ cloudNodes.forEach(node => observer.observe(node));
 observer.observe(map);
 observer.observe(hero);
 observer.observe(navigation);
-languageToggle.addEventListener('click', () => {
-  const language = root.lang === 'de' ? 'en' : 'de';
+languageToggle.addEventListener('change', () => {
+  const language = languageToggle.checked ? 'en' : 'de';
   applyLanguage(language);
   measure();
   try {
@@ -153,7 +154,7 @@ languageToggle.addEventListener('click', () => {
     // The selected language still applies to the current page.
   }
 });
-languageToggle.hidden = false;
+languageToggle.closest('label').hidden = false;
 measure();
 
 const signalPanel = details.querySelector('.signal-panel');

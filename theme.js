@@ -16,7 +16,7 @@
     const theme = preference ?? (systemTheme.matches ? 'dark' : 'light');
     root.dataset.theme = theme;
     if (toggle) {
-      toggle.setAttribute('aria-pressed', String(theme === 'dark'));
+      toggle.checked = theme === 'dark';
       themeColor.content = getComputedStyle(root).backgroundColor;
     }
   }
@@ -26,9 +26,9 @@
     toggle = document.getElementById('theme-toggle');
     themeColor = document.querySelector('meta[name="theme-color"]');
     applyTheme();
-    toggle.hidden = false;
-    toggle.addEventListener('click', () => {
-      preference = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    toggle.closest('label').hidden = false;
+    toggle.addEventListener('change', () => {
+      preference = toggle.checked ? 'dark' : 'light';
       applyTheme();
       try {
         localStorage.setItem(storageKey, preference);

@@ -30,8 +30,11 @@ checklist and do not close the overall goal before its acceptance criteria pass.
 
 Current website update:
 
-- [x] Offer English and German in the main menu. The rendered suite checks both
-  directions, saved preferences, section labels and links on desktop and phone.
+- [x] Use matching switches for theme in the header and language in the main
+  menu. The sun and moon select light and dark. DE and EN select the page
+  language. The rendered suite
+  checks the selected states, labeled switches, keyboard and touch operation,
+  reflow, and persistence across reloads.
 - [x] Organize the site as Auf einen Blick, Grundlagen, Projektverlauf, and Team.
   The first two of five milestones are complete according to the project owner.
   The remaining milestones describe planned validation, local analysis, and
