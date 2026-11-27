@@ -62,7 +62,8 @@ have visible boundaries and stack in reading order on narrow screens. Review
 type, wrapping, spacing, signal labels and colors, link and button labels,
 keyboard focus, and the visibility of all milestone descriptions and statuses.
 Check navigation and theme switching by keyboard and verify the mobile menu
-with touch.
+with touch. Check the sidebar's top and leading anchors and the phone header's
+opposing edge anchors. Check the bottom menu's narrow grid and wider row.
 
 Compare rendered outer insets and peer gaps in foundation and team cards,
 including the shorter card in a stretched row. Check both axes of each timeline

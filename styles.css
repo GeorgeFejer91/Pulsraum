@@ -489,7 +489,6 @@ img.portrait {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  text-align: center;
   min-block-size: 44px;
   min-inline-size: 44px;
   max-inline-size: 100%;
@@ -555,9 +554,6 @@ img.portrait {
     grid-template-columns: clamp(11.5rem, 16vw, 14.5rem) minmax(0, 1fr);
   }
   .site-header {
-    display: flex;
-    flex-direction: column;
-    justify-content: safe center;
     position: sticky;
     inset-block-start: 0;
     z-index: 2;
@@ -572,7 +568,7 @@ img.portrait {
   }
   .header-brand {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: .5rem;
   }
   .site-header nav {
@@ -583,7 +579,7 @@ img.portrait {
   }
   .site-header nav a { padding-inline: 8px; }
   .site-header nav a:hover { background: var(--tint); }
-  .language-toggle { justify-self: center; margin-block-start: 8px; }
+  .language-toggle { justify-self: start; margin-block-start: 8px; }
 }
 
 @media (width < 52rem), (pointer: coarse), (pointer: none) {
@@ -596,7 +592,7 @@ img.portrait {
     padding: .375rem var(--page-gutter);
     border-block-end: 1px solid var(--rule);
   }
-  .header-brand { justify-content: space-evenly; }
+  .header-brand { justify-content: space-between; }
   .site-header nav {
     position: fixed;
     inset-inline: 0;
@@ -604,7 +600,7 @@ img.portrait {
     z-index: 2;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: space-between;
     gap: 0 8px;
     max-block-size: 50vh;
     max-block-size: 50dvh;

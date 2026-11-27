@@ -136,11 +136,15 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   A link in the footer opens GitHub for participation.
 
 Apply the [accordion stretch geometry](skills/uncodixfy-pretext/references/accordion-stretch.md)
-throughout the site. Center content groups on both axes within their boxes.
+to content boxes. Center content groups on both axes within their boxes.
 In stretched cards, share extra height equally above, between and below peer
 groups. For the affiliation row, equalize the visible gaps from the card edges
 and between the two full logos. Center each logo on its own row when they wrap.
 Center milestone copy and art within their cells below the corner markers.
+Menu bars use edge anchors. On desktop, start the sidebar at the top and align
+the brand, controls and link text to the leading side. On phones, use opposite
+ends of the header for the brand and theme control and keep the navigation at
+the bottom. Its narrow grid centers labels within their own cells.
 Let boxes grow with their contents and preserve reading order on narrow screens.
 When the main column has room, place the overview map beside the introduction
 or selected detail, lay out the three foundation cards in one row, and pair

@@ -34,6 +34,12 @@ together. A paragraph may keep a reading edge inside a centered text block.
 Reserve space for explicit corner or edge anchors, then center the remaining
 content in the available region.
 
+Menu bars and navigation rails are an exception to accordion centering. Preserve
+their established edge anchors, compact item groups and label alignment as the
+viewport grows. A sidebar can start at the top with a common leading edge for
+its links. A mobile bar can pin actions to opposite ends or center labels in
+individual cells. Keep each control's icon and label aligned within its target.
+
 ```css
 .action { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; text-align: center; }
 .action > svg { display: block; flex: none; }

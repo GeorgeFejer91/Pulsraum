@@ -325,6 +325,29 @@ async function checkLayout(page) {
       issues.push('Page horizontal overflow');
     }
     const navigation = document.querySelector('.site-header nav');
+    const header = navigation.parentElement;
+    const brand = header.querySelector('.wordmark').getBoundingClientRect();
+    const headerRect = header.getBoundingClientRect();
+    const padding = getComputedStyle(header);
+    const leadingEdge = headerRect.left + parseFloat(padding.paddingLeft);
+    if (Math.abs(brand.left - leadingEdge) > 1) issues.push('The brand must start at the leading header inset');
+    if (matchMedia('(min-width: 52rem) and (pointer: fine)').matches) {
+      if (Math.abs(brand.top - headerRect.top - parseFloat(padding.paddingTop)) > 1) issues.push('The sidebar must start at the top inset');
+      for (const button of header.querySelectorAll('button:not([hidden])')) {
+        if (Math.abs(button.getBoundingClientRect().left - leadingEdge) > 1) issues.push('Sidebar controls must share the leading inset');
+      }
+      for (const link of navigation.querySelectorAll('a')) {
+        const text = document.createRange();
+        text.selectNodeContents(link.querySelector('span'));
+        const inset = link.getBoundingClientRect().left + parseFloat(getComputedStyle(link).paddingLeft);
+        if (Math.abs(text.getClientRects()[0].left - inset) > 1) issues.push('Sidebar link labels must start at their leading inset');
+      }
+    } else {
+      const theme = header.querySelector('.theme-toggle:not([hidden])')?.getBoundingClientRect();
+      if (theme && theme.top < brand.bottom && Math.abs(headerRect.right - parseFloat(padding.paddingRight) - theme.right) > 1) {
+        issues.push('The mobile theme control must reach the trailing header inset when beside the brand');
+      }
+    }
     if (navigation.scrollWidth > navigation.clientWidth + 1) issues.push('Navigation horizontal overflow');
     for (const element of navigation.querySelectorAll('a, button:not([hidden])')) {
       if (element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1) {

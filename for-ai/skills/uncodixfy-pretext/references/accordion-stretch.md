@@ -4,6 +4,11 @@ Use accordion stretch spacing for the visual units in the requested surface. A c
 
 Read [pretext.md](pretext.md) for the text API and font parity requirements. Pretext measures text; CSS Grid and Flexbox place the controls.
 
+Exclude menu bars and navigation rails from the equal-gap checks below. Verify
+their edge anchors and label alignment at each breakpoint, including after
+resizing or switching languages. Keep keyboard focus visible and touch targets
+reachable when the bar wraps.
+
 ## Geometry contract
 
 1. Define the panel's supported minimum dimensions and name its anchors: usually header at the top, actions at the bottom, and ordered control groups between them. Group a label with its input so stretch never separates a pair. Keep DOM reading and keyboard order aligned with visual order.
