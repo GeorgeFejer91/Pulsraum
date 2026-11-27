@@ -454,6 +454,28 @@ img.portrait {
   filter: brightness(0) invert(1);
 }
 
+.person-with-projects { grid-column: 1 / -1; }
+.box-grid > .person-with-projects > p, .person-projects {
+  width: 100%;
+  max-width: 64ch;
+}
+.person-with-projects > p, .person-projects li { text-align: start; }
+.person-websites {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--card-space);
+}
+.person-projects h4 { margin: 0; }
+.person-projects ul {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--card-space);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .site-footer {
   display: flex;
   align-items: center;

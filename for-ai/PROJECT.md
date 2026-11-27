@@ -145,6 +145,8 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   institute wordmark with the page language and the university's German mark
   in both languages. Keep the marks legible against the profile in both themes.
   Alex Cuthbertson’s card uses his supplied portrait and links to Zen Specs.
+  Daniel Artamendi’s card spans the team grid and includes his biography,
+  professional links and three selected projects in both languages.
   A link in the footer opens GitHub for participation.
 
 Apply the [accordion stretch geometry](skills/uncodixfy-pretext/references/accordion-stretch.md)
