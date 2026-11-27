@@ -352,7 +352,7 @@
 .person { container-type: inline-size; }
 .portrait {
   display: block;
-  width: clamp(3.5rem, 7vw, 5rem);
+  width: min(12rem, 65cqw);
   height: auto;
   aspect-ratio: 1;
   object-fit: cover;
