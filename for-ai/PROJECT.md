@@ -106,7 +106,9 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   abdomen, phone, mouth airflow and graph cursor together. The cursor draws
   the blue rising trace as particles enter the mouth and the ochre falling
   trace as they leave. The phone waves use the active segment's color.
-  The validation card places a translucent breathing adult with both sensors
+  The validation card illustrates the planned recording session. Both phone
+  screens identify the three traces by device name alone.
+  The card places a translucent breathing adult with both sensors
   on the left and an enlarged view of the same phone on the right.
   The editable scene in `assets/models/polar-h10-worn.blend` contains the
   worn underbust band, rigid H10 pod and upright Vernier spirometer. The

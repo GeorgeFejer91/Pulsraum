@@ -290,8 +290,8 @@
             <div class="milestone-layout">
               <div>
                 <h3 class="box-title" data-measure data-en="Validate smartphone breathing measurements">Smartphone-Atemmessung validieren</h3>
-                <p data-measure><span data-en="We plan to compare the breathing movements recorded by a smartphone with accelerometer data recorded at the same time by the Polar H10. Our">Wir wollen die vom Smartphone erfassten Atembewegungen mit parallel aufgezeichneten Beschleunigungsdaten des Polar H10 vergleichen. Der bereits vorhandene</span> <a href="https://www.vernier.com/product/go-direct-spirometer/" data-en="Vernier Go Direct Spirometer">Go Direct Spirometer von Vernier</a> <span data-en="provides reference measurements of airflow and breathing volume.">liefert Vergleichswerte für Atemfluss und Atemvolumen.</span></p>
-                <a class="inline-link" href="assets/illustrations/polar-h10-worn.mp4"><span data-measure data-en="Watch the breathing simulation">Atemsimulation ansehen</span></a>
+                <p data-measure><span data-en="During each breath, we plan to compare the movement of the phone on the upper abdomen with chest acceleration measured by the Polar H10. Our">Wir wollen bei jedem Atemzug die Bewegung des Smartphones am Oberbauch mit der Beschleunigung vergleichen, die der Polar H10 am Brustkorb erfasst. Unser</span> <a href="https://www.vernier.com/product/go-direct-spirometer/" data-en="Vernier Go Direct Spirometer">Go Direct Spirometer von Vernier</a> <span data-en="will measure airflow and volume at the same time for reference.">soll gleichzeitig Atemfluss und Atemvolumen als Referenz messen.</span></p>
+                <a class="inline-link" href="assets/illustrations/polar-h10-worn.mp4"><span data-measure data-en="Watch the animation">Animation ansehen</span></a>
               </div>
               <svg class="milestone-figure validation-phone" viewBox="0 0 420 264" role="img" aria-labelledby="validation-figure" aria-describedby="validation-description">
                 <title id="validation-figure" data-en="One breath on the body and on the phone">Ein Atemzug am Körper und auf dem Smartphone</title>
@@ -312,33 +312,34 @@
                   <rect class="device-shell" x="213" y="14" width="197" height="241" rx="20"/>
                   <rect class="device-face" x="218" y="19" width="187" height="231" rx="16"/>
                   <path class="detail" d="M292 241h39"/>
-                  <text class="phone-heading" x="232" y="43">Simulation</text>
-                  <path class="guide" d="M232 50h160m-160 39h160m-160 60h160m-160 60h160"/>
-                  <g class="signal-resp">
-                    <text class="plot-label" x="232" y="69">Smartphone</text>
-                    <g clip-path="url(#validation-screen-traces)">
-                      <g class="trace validation-sweep">
-                        <use href="#validation-wave-0"/><use href="#validation-wave-0" x="160"/>
+                  <g transform="translate(0 -12)">
+                    <path class="guide" d="M232 89h160m-160 60h160m-160 60h160"/>
+                    <g class="signal-resp">
+                      <text class="plot-label" x="232" y="69">Smartphone</text>
+                      <g clip-path="url(#validation-screen-traces)">
+                        <g class="trace validation-sweep">
+                          <use href="#validation-wave-0"/><use href="#validation-wave-0" x="160"/>
+                        </g>
                       </g>
                     </g>
-                  </g>
-                  <g class="polar-stream">
-                    <text class="plot-label" x="232" y="129" data-en="Polar H10 · acceleration">Polar H10 · Beschl.</text>
-                    <g clip-path="url(#validation-screen-traces)">
-                      <g class="trace validation-sweep" stroke-dasharray="5 3">
-                        <use href="#validation-wave-1"/><use href="#validation-wave-1" x="160"/>
+                    <g class="polar-stream">
+                      <text class="plot-label" x="232" y="129">Polar H10</text>
+                      <g clip-path="url(#validation-screen-traces)">
+                        <g class="trace validation-sweep" stroke-dasharray="5 3">
+                          <use href="#validation-wave-1"/><use href="#validation-wave-1" x="160"/>
+                        </g>
                       </g>
                     </g>
-                  </g>
-                  <g class="flow-stream">
-                    <text class="plot-label" x="232" y="189" data-en="Spirometer · flow">Spirometer · Fluss</text>
-                    <g clip-path="url(#validation-screen-traces)">
-                      <g class="trace validation-sweep" stroke-dasharray="1 3.5">
-                        <use href="#validation-wave-2"/><use href="#validation-wave-2" x="160"/>
+                    <g class="flow-stream">
+                      <text class="plot-label" x="232" y="189">Spirometer</text>
+                      <g clip-path="url(#validation-screen-traces)">
+                        <g class="trace validation-sweep" stroke-dasharray="1 3.5">
+                          <use href="#validation-wave-2"/><use href="#validation-wave-2" x="160"/>
+                        </g>
                       </g>
                     </g>
+                    <path class="validation-now" d="M392 75v146"/>
                   </g>
-                  <path class="validation-now" d="M392 75v146"/>
                 </g>
               </svg>
             </div>

@@ -694,8 +694,9 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       'https://www.vernier.com/product/go-direct-spirometer/');
     if (width === 1440 && mode === 'default') {
       assert.equal(await page.locator('a[href$=".blend"]').count(), 0);
-      assert.equal(await stages.nth(2).locator('.validation-phone text').count(), 4);
-      const film = stages.nth(2).getByRole('link', { name: 'Atemsimulation ansehen' });
+      assert.deepEqual(await stages.nth(2).locator('.validation-phone text').allTextContents(),
+        ['Smartphone', 'Polar H10', 'Spirometer']);
+      const film = stages.nth(2).getByRole('link', { name: 'Animation ansehen', exact: true });
       assert.equal(await film.count(), 1, 'The synchronized film must be available from the validation card');
       const video = await page.request.get(new URL(await film.getAttribute('href'), url).href);
       assert.equal(video.status(), 200);

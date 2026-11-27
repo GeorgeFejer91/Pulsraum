@@ -813,7 +813,6 @@ img.portrait {
   transform: translate(calc(-186px * mod(var(--tile), 9)), calc(-248px * round(down, calc(var(--tile) / 9), 1)));
 }
 .validation-sweep { transform: translateX(calc(-160px * var(--validation-frame) / 54)); }
-.validation-phone .phone-heading { font-size: 13px; fill: var(--muted); }
 .validation-phone .plot-label { fill: currentColor; font-weight: 600; }
 .validation-now { stroke: var(--muted); stroke-width: .9; opacity: .55; }
 .h10-light rect {
