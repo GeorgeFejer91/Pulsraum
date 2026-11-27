@@ -400,6 +400,78 @@ async function checkNavigation(page, phone) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
+async function checkOverviewAutoplay(browser) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  try {
+    const start = new Date('2026-01-01T12:00:00Z');
+    await page.clock.install({ time: start });
+    await page.clock.pauseAt(new Date(+start + 1000));
+    await page.goto(url);
+    await page.locator('.hero.in-view').waitFor();
+    const hero = page.locator('.hero');
+    const title = hero.locator('h1');
+    const details = hero.locator('.overview-details');
+    const selection = () => hero.locator('button[aria-expanded="true"]').getAttribute('aria-controls', { timeout: 1000 });
+    const intro = await title.boundingBox();
+    const introScroll = await page.evaluate(() => window.scrollY);
+    await hero.screenshot({ path: `${screenshots}/overview-intro.png` });
+    await page.clock.runFor(14999);
+    assert.ok(await details.isHidden(), 'The introduction must have a full 15 seconds');
+    await page.clock.runFor(1);
+    assert.equal(await selection(), 'anwendungen');
+    assert.equal(await page.evaluate(() => document.activeElement.tagName), 'BODY', 'Autoplay must preserve focus');
+    assert.equal(await page.evaluate(() => window.scrollY), introScroll, 'Autoplay must preserve scroll position');
+    const turnWithTopic = await hero.locator('.map-wheel').evaluate(wheel => getComputedStyle(wheel).getPropertyValue('--turn'));
+    assert.notEqual(turnWithTopic, '0deg', 'Autoplay must turn the wheel');
+    await title.evaluate(async heading => {
+      const [morph] = heading.getAnimations();
+      if (!morph) throw Error('The same title must animate into the reading position');
+      morph.pause();
+      await morph.ready;
+      morph.currentTime = morph.effect.getTiming().duration / 2;
+    });
+    const mid = await title.boundingBox();
+    await hero.screenshot({ path: `${screenshots}/overview-morph.png` });
+    await title.evaluate(heading => heading.getAnimations()[0].finish());
+    const compact = await title.boundingBox();
+    assert.ok(intro.width > mid.width && mid.width > compact.width &&
+      intro.y > mid.y && mid.y > compact.y, 'The title must move and shrink through an intermediate frame');
+    await details.evaluate(panel => Promise.all(panel.getAnimations().map(animation => animation.finished)));
+    await hero.screenshot({ path: `${screenshots}/overview-autoplay.png` });
+
+    for (const id of ['lokale-daten', 'kreatives-biofeedback', 'herzsignal', 'atemsignal', 'anwendungen']) {
+      await page.clock.runFor(15000);
+      assert.equal(await selection(), id, 'Autoplay must visit the spokes in order and wrap around');
+    }
+
+    await page.clock.runFor(14000);
+    const ecg = await hero.locator('button.signal-ecg .map-icon').boundingBox();
+    await page.mouse.click(ecg.x + ecg.width / 2, ecg.y + ecg.height / 2);
+    assert.equal(await selection(), 'herzsignal', 'Clicking a topic must select it immediately');
+    await page.clock.runFor(14999);
+    assert.equal(await selection(), 'herzsignal', 'A click must give the new topic a full 15 seconds');
+    await page.clock.runFor(1);
+    assert.equal(await selection(), 'atemsignal');
+
+    await hero.locator('button[aria-expanded="true"]').press('Enter');
+    assert.ok(await details.isHidden(), 'The selected topic must remain dismissible');
+    assert.equal(await title.evaluate(heading => heading.getAnimations().length), 1, 'The title must also morph back');
+    await hero.locator('button.signal-ecg').press('Enter');
+    await page.clock.runFor(15000);
+    assert.equal(await selection(), 'herzsignal', 'Autoplay must preserve a topic with keyboard focus inside it');
+    await page.keyboard.press('Escape');
+    assert.ok(await details.isHidden());
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.runFor(30000);
+    assert.ok(await details.isHidden(), 'Reduced motion must disable automatic topic changes');
+    assert.equal(await title.evaluate(heading => heading.getAnimations().length), 0);
+    console.log('chromium desktop overview autoplay and title morph: passed');
+  } finally {
+    await page.close();
+  }
+}
+
 async function checkPage(browser, name, width, height, mode = 'default') {
   const phone = width <= 844;
   const page = await browser.newPage({
@@ -816,6 +888,7 @@ await mkdir(screenshots, { recursive: true });
 try {
   const browser = await chromium.launch();
   try {
+    await checkOverviewAutoplay(browser);
     await checkPage(browser, 'chromium', 320, 568);
     await checkPage(browser, 'chromium', 390, 640);
     await checkPage(browser, 'chromium', 390, 932);

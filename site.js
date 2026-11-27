@@ -8,6 +8,7 @@ const languageKey = 'pulsraum.language';
 const hero = document.querySelector('.hero');
 const map = hero.querySelector('.idea-map');
 const details = hero.querySelector('.overview-details');
+const title = hero.querySelector('h1');
 const closeTopic = details.querySelector('button.close-topic');
 // Without enhancement these same nodes are ordinary links to the complete text.
 const cloudNodes = [...map.querySelectorAll('a')].map(link => {
@@ -61,7 +62,7 @@ applyLanguage(initialLanguage);
 
 await document.fonts.ready;
 const cache = new WeakMap();
-const spokeAngles = { anwendungen: 0, atemsignal: -72, 'lokale-daten': 72, herzsignal: -144, 'kreatives-biofeedback': 144 };
+const spokeAngles = { anwendungen: 0, 'lokale-daten': 72, 'kreatives-biofeedback': 144, herzsignal: -144, atemsignal: -72 };
 let selected;
 let turn = 0;
 const elements = [...document.querySelectorAll('[data-measure]')];
@@ -159,6 +160,25 @@ const signalPanel = details.querySelector('.signal-panel');
 const signalRows = [...signalPanel.querySelectorAll('.signal-figure')];
 const articles = [...details.querySelectorAll(':scope > article')];
 const heart = map.querySelector('.signal-ecg .organ-motion');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const spokes = Object.keys(spokeAngles).map(id => cloudNodes.find(node => node.getAttribute('aria-controls') === id));
+let titleMorph;
+let detailReveal;
+let topicTimer;
+
+function scheduleNextTopic() {
+  clearTimeout(topicTimer);
+  if (reducedMotion.matches || document.hidden || !hero.classList.contains('in-view')) return;
+  topicTimer = setTimeout(() => {
+    const focus = document.activeElement;
+    // Keep the current topic while someone is using its links or keyboard controls.
+    if (details.contains(focus) || picker.contains(focus) || (map.contains(focus) && focus.matches(':focus-visible'))) {
+      scheduleNextTopic();
+      return;
+    }
+    showTopic(spokes[(spokes.indexOf(selected) + 1) % spokes.length]);
+  }, 15000);
+}
 
 function alignSignalClocks() {
   for (const row of signalRows) {
@@ -171,8 +191,11 @@ function alignSignalClocks() {
   }
 }
 
-function showTopic(button, focusDetail = false) {
+function showTopic(button, { focus = false, scroll = focus } = {}) {
   const previous = selected;
+  const start = previous !== button && !reducedMotion.matches &&
+    title.getBoundingClientRect();
+  if (start) titleMorph?.cancel();
   selected = button;
   const id = button?.getAttribute('aria-controls');
   select.value = id ?? '';
@@ -186,23 +209,47 @@ function showTopic(button, focusDetail = false) {
   for (const signal of signalRows) signal.hidden = !!row && signal !== row;
 
   measure();
+  if (start) {
+    const end = title.getBoundingClientRect();
+    // Interpolate the painted title between its old and new layout positions.
+    const x = start.x + start.width / 2 - (end.x + end.width / 2);
+    const y = start.y - end.y;
+    const scale = start.width / end.width;
+    if (Math.abs(x) > .5 || Math.abs(y) > .5 || Math.abs(scale - 1) > .005) {
+      titleMorph = title.animate([
+        { transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: 'center top' },
+        { transform: 'none', transformOrigin: 'center top' },
+      ], { duration: 620, easing: 'ease-in-out' });
+      if (button) {
+        detailReveal?.cancel();
+        // Let the title clear the detail panel before its contents appear.
+        detailReveal = details.animate([
+          { opacity: 0 }, { opacity: 0, offset: .7 }, { opacity: 1 },
+        ], { duration: 620 });
+      }
+    }
+  }
   if (button) {
     alignSignalClocks();
-    if (focusDetail) {
+    if (focus) {
       const heading = target.querySelector('h2');
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
-      details.scrollIntoView({ block: 'nearest', behavior: 'instant' });
     }
-  } else if (previous && focusDetail) previous.focus();
+    if (scroll) details.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  } else if (previous && focus) previous.focus();
+  scheduleNextTopic();
 }
 for (const node of cloudNodes) {
-  node.addEventListener('click', () => showTopic(selected === node ? null : node, true));
+  node.addEventListener('click', event => {
+    const button = selected === node ? null : node;
+    showTopic(button, { focus: !button || event.detail === 0, scroll: true });
+  });
 }
-select.addEventListener('change', () => showTopic(cloudNodes.find(node => node.getAttribute('aria-controls') === select.value), true));
-closeTopic.addEventListener('click', () => showTopic(null, true));
+select.addEventListener('change', () => showTopic(cloudNodes.find(node => node.getAttribute('aria-controls') === select.value), { focus: true }));
+closeTopic.addEventListener('click', () => showTopic(null, { focus: true }));
 hero.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && selected) { event.preventDefault(); showTopic(null, true); }
+  if (event.key === 'Escape' && selected) { event.preventDefault(); showTopic(null, { focus: true }); }
 });
 function openLinkedTopic() {
   const target = document.getElementById(location.hash.slice(1));
@@ -214,6 +261,14 @@ function openLinkedTopic() {
 hero.classList.add('interactive-map');
 openLinkedTopic();
 window.addEventListener('hashchange', openLinkedTopic);
+document.addEventListener('visibilitychange', scheduleNextTopic);
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) {
+    titleMorph?.cancel();
+    detailReveal?.cancel();
+  }
+  scheduleNextTopic();
+});
 
 function createBreathAnimation(rig) {
   const plot = rig.querySelector('.breath-plot');
@@ -346,7 +401,6 @@ if ('IntersectionObserver' in window) {
   const rig = document.querySelector('.breathing-rig');
   const figure = rig.ownerSVGElement;
   const breath = createBreathAnimation(rig);
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   animateMapEcg(reducedMotion).catch(() => {
     // The original curved connection remains visible if the sample asset is unavailable.
   });
@@ -360,6 +414,7 @@ if ('IntersectionObserver' in window) {
   const drawings = new IntersectionObserver(entries => {
     for (const entry of entries) {
       entry.target.classList.toggle('in-view', entry.isIntersecting);
+      if (entry.target === hero) scheduleNextTopic();
       if (entry.target === figure) syncBreathPlayback();
     }
   });

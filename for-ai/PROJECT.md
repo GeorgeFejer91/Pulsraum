@@ -63,6 +63,10 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   software suite on both desktop and phone. Open source, breathing, local data,
   ECG and creative biofeedback sit inside one dashed circle. Choosing a node
   turns the cloud toward its inline explanation while the labels stay upright.
+  The visible overview advances through the five spokes every 15 seconds
+  and starts a fresh countdown after a manual selection. It preserves keyboard
+  focus and scroll position, and honors reduced motion. On desktop, the title
+  moves and scales into place as the explanation appears.
   The heart and lungs animate inside their nodes. Each reveals its own trace.
   The hub shows both stacked traces. The close control or Escape
   returns focus to the selected node. With enlarged text, a labeled picker
