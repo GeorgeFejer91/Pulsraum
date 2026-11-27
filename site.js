@@ -5,6 +5,32 @@ const root = document.documentElement;
 const navigation = document.querySelector('.site-header nav');
 const languageToggle = navigation.querySelector('.language-toggle');
 const languageKey = 'pulsraum.language';
+const hero = document.querySelector('.hero');
+const map = hero.querySelector('.idea-map');
+const details = hero.querySelector('.overview-details');
+const closeTopic = details.querySelector('button.close-topic');
+// Without enhancement these same nodes are ordinary links to the complete text.
+const cloudNodes = [...map.querySelectorAll('a')].map(link => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = link.className;
+  button.setAttribute('aria-controls', link.hash.slice(1));
+  button.setAttribute('aria-expanded', 'false');
+  button.append(...link.childNodes);
+  link.replaceWith(button);
+  return button;
+});
+const picker = hero.querySelector('.topic-picker');
+const select = picker.querySelector('select');
+const overviewOption = new Option('Übersicht', '');
+overviewOption.dataset.en = 'Overview';
+select.add(overviewOption);
+for (const node of cloudNodes) {
+  const label = node.querySelector('[data-measure]');
+  const option = new Option(label.textContent, node.getAttribute('aria-controls'));
+  if (label.dataset.en) option.dataset.en = label.dataset.en;
+  select.add(option);
+}
 const translations = [];
 // The German text is the source for the static page and for switching back.
 for (const attribute of [null, 'aria-label', 'title', 'content', 'lang', 'alt', 'href', 'src']) {
@@ -36,9 +62,9 @@ applyLanguage(initialLanguage);
 await document.fonts.ready;
 const cache = new WeakMap();
 const elements = [...document.querySelectorAll('[data-measure]')];
-const cloudNodes = [...document.querySelectorAll('.idea-node, .map-hub')];
 function measure() {
   const navHeight = navigation.offsetHeight;
+  const compact = cloudNodes.some(node => parseFloat(getComputedStyle(node).lineHeight) * 13 > map.clientWidth);
   const measurements = new Map();
   for (const element of elements) {
     const css = getComputedStyle(element);
@@ -70,15 +96,16 @@ function measure() {
     const labels = [...node.querySelectorAll('[data-measure]')].map(el => measurements.get(el));
     const width = Math.max(icon, ...labels.map(label => label?.width ?? 0));
     const height = labels.reduce((sum, label) => sum + (label?.height ?? 0), 0);
-    const labelMargin = parseFloat(getComputedStyle(node.lastElementChild).marginTop);
-    const halfGap = (node.clientHeight - icon) / 2;
+    const clearance = Math.max(0, map.clientWidth * .27 - icon - height);
     return {
-      x: Math.max(0, Math.min(icon * .33, (node.clientWidth - width) / 2 - 1)),
-      up: Math.max(0, Math.min(icon * .24, halfGap - 2)),
-      down: Math.max(0, Math.min(icon * .24, halfGap - height - labelMargin - 2)),
+      x: Math.min(icon * .22, Math.max(3, (map.clientWidth * .32 - width) / 2)),
+      up: Math.min(icon * .18, Math.max(4, clearance / 2)),
+      down: Math.min(icon * .18, Math.max(4, clearance / 2)),
     };
   });
   // Commit after all layout reads. Animation frames never enter this pass.
+  map.classList.toggle('compact-labels', compact);
+  picker.hidden = !compact;
   root.style.setProperty('--navigation-block-size', `${navHeight}px`);
   for (const [element, size] of measurements) {
     element.style.minHeight = `${size.height}px`;
@@ -99,6 +126,7 @@ const observer = new ResizeObserver(() => {
 });
 elements.forEach(element => observer.observe(element));
 cloudNodes.forEach(node => observer.observe(node));
+observer.observe(map);
 observer.observe(navigation);
 languageToggle.addEventListener('click', () => {
   const language = root.lang === 'de' ? 'en' : 'de';
@@ -112,6 +140,77 @@ languageToggle.addEventListener('click', () => {
 });
 languageToggle.hidden = false;
 measure();
+
+const signalPanel = details.querySelector('.signal-panel');
+const signalRows = [...signalPanel.querySelectorAll('.signal-figure')];
+const articles = [...details.querySelectorAll(':scope > article')];
+const heart = map.querySelector('.signal-ecg .organ-motion');
+const wideOverview = matchMedia('(min-width: 68rem)');
+const spokeAngles = { anwendungen: 0, atemsignal: -72, 'lokale-daten': 72, herzsignal: -144, 'kreatives-biofeedback': 144 };
+let selected;
+let turn = 0;
+
+function alignSignalClocks() {
+  for (const row of signalRows) {
+    const source = map.querySelector(row.classList.contains('signal-resp') ?
+      '.signal-resp .organ-motion' : '.signal-ecg .organ-motion').getAnimations()[0];
+    const plot = row.querySelector('.signal-trace').getAnimations()[0];
+    if (!source || !plot) continue;
+    if (source.startTime != null && source.playState === 'running') plot.startTime = source.startTime;
+    else if (source.currentTime != null) plot.currentTime = source.currentTime;
+  }
+}
+document.getElementById('pause-map').addEventListener('change', () => requestAnimationFrame(alignSignalClocks));
+
+function showTopic(button, focusDetail = false) {
+  const previous = selected;
+  selected = button;
+  const id = button?.getAttribute('aria-controls');
+  select.value = id ?? '';
+  const target = id && document.getElementById(id);
+  const row = target?.closest('.signal-figure');
+  hero.classList.toggle('is-reading', !!button);
+  details.hidden = !button;
+  closeTopic.hidden = !button;
+  for (const node of cloudNodes) node.setAttribute('aria-expanded', String(node === button));
+  for (const article of articles) article.hidden = article !== (row ? signalPanel : target);
+  for (const signal of signalRows) signal.hidden = !!row && signal !== row;
+
+  // Turn the selected spoke toward the reading area by the shorter route.
+  const facing = wideOverview.matches ? -72 : 144;
+  const destination = id in spokeAngles ? facing - spokeAngles[id] : 0;
+  turn = destination + 360 * Math.round((turn - destination) / 360);
+  map.style.setProperty('--turn', turn + 'deg');
+  if (button) {
+    measure();
+    alignSignalClocks();
+    if (focusDetail) {
+      const heading = target.querySelector('h2');
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      details.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    }
+  } else if (previous && focusDetail) previous.focus();
+}
+for (const node of cloudNodes) {
+  node.addEventListener('click', () => showTopic(selected === node ? null : node, true));
+}
+select.addEventListener('change', () => showTopic(cloudNodes.find(node => node.getAttribute('aria-controls') === select.value), true));
+closeTopic.addEventListener('click', () => showTopic(null, true));
+hero.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && selected) { event.preventDefault(); showTopic(null, true); }
+});
+function openLinkedTopic() {
+  const target = document.getElementById(location.hash.slice(1));
+  showTopic(cloudNodes.find(node => {
+    const panel = document.getElementById(node.getAttribute('aria-controls'));
+    return panel === target || (panel.matches('.signal-figure') && panel.contains(target));
+  }));
+}
+hero.classList.add('interactive-map');
+openLinkedTopic();
+wideOverview.addEventListener('change', () => { if (selected) showTopic(selected); });
+window.addEventListener('hashchange', openLinkedTopic);
 
 function createBreathAnimation(rig) {
   const plot = rig.querySelector('.breath-plot');
@@ -175,7 +274,7 @@ async function animateMapEcg(reducedMotion) {
 
   function draw() {
     if (!clock) {
-      clock = trace.getAnimations()[0];
+      clock = heart.getAnimations()[0];
       cycleMs = clock?.effect.getTiming().duration;
     }
     const time = clock?.currentTime;

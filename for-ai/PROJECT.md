@@ -61,7 +61,13 @@ nodes in the overview and separate boxes for foundations, milestones and people.
 
 - **Auf einen Blick** connects five illustrated concepts to the planned open
   software suite on both desktop and phone. Open source, breathing, local data,
-  ECG and creative biofeedback each link to the relevant explanation or signal.
+  ECG and creative biofeedback sit inside one dashed circle. Choosing a node
+  turns the cloud toward its inline explanation while the labels stay upright.
+  The heart and lungs animate inside their nodes. Each reveals its own trace.
+  The hub shows both stacked traces. The close control or Escape
+  returns focus to the selected node. With enlarged text, a labeled picker
+  complements the pictograms. Native fragment links reveal the same topics
+  when JavaScript is disabled.
   The SVG symbols in `assets/illustrations/overview-icons.svg` were traced from
   `artwork/overview-pictograms.png`. The whole map expands and contracts in
   time with the breathing trace, while all five nodes and the central suite

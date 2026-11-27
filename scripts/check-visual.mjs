@@ -165,6 +165,7 @@ async function checkMapMotion(map) {
         const frame = figure.getBoundingClientRect();
         for (const part of node.querySelectorAll('[data-measure], .map-icon')) {
           const r = part.getBoundingClientRect();
+          if (!r.width || !r.height) continue;
           if (r.left < frame.left - 1 || r.right > frame.right + 1 ||
               r.top < frame.top - 1 || r.bottom > frame.bottom + 1) throw Error('Floating labels and icons must fit inside the map');
         }
@@ -182,7 +183,7 @@ async function checkMapMotion(map) {
     if (Math.abs(breath.startTime - lungs.startTime) > 1 || breath.effect.getTiming().duration !== lungs.effect.getTiming().duration) {
       throw Error('The whole map and lungs must share the breathing cycle');
     }
-    const ecg = trace.getAnimations()[0];
+    const ecg = figure.querySelector('.signal-ecg .organ-motion').getAnimations()[0];
     const breathStart = breath.startTime, ecgStart = ecg.startTime;
     breath.pause();
     ecg.pause();
@@ -282,19 +283,24 @@ async function checkLayout(page) {
     const hub = map.querySelector('.map-hub');
     const hubRect = hub.querySelector('.map-icon').getBoundingClientRect();
     if (!hub.querySelector('use[href$="#suite"]')?.getBBox().width) issues.push('The suite pictogram must render');
+    const ring = map.querySelector('circle.map-ring');
+    const rim = ring.getBoundingClientRect();
+    if (Math.abs(rim.width - rim.height) > 1 || getComputedStyle(ring).strokeDasharray === 'none') {
+      issues.push('One circular dashed perimeter must enclose the project nodes');
+    }
     const boxes = [hub.getBoundingClientRect()];
     for (const [i, node] of nodes.entries()) {
-      if (!document.getElementById(node.hash.slice(1))) issues.push('Missing concept link destination');
+      if (!document.getElementById(node.getAttribute('aria-controls') ?? node.hash.slice(1))) issues.push('Missing concept link destination');
       const use = node.querySelector('use');
       if (!use?.getAttribute('href').endsWith('#' + expectedIcons[i]) || !use.getBBox().height) {
         issues.push('Each concept needs its own visible SVG symbol');
       }
       const box = node.getBoundingClientRect();
-      const label = node.querySelector('span');
-      if (label.scrollWidth > label.clientWidth + 1 || box.width < 44 || box.height < 44) {
+      const label = node.querySelector('[data-measure]');
+      if ((!map.classList.contains('compact-labels') && label.scrollWidth > label.clientWidth + 1) || box.width < 44 || box.height < 44) {
         issues.push('Each concept needs a readable label and a full touch target');
       }
-      if (boxes.some(b => box.left < b.right && box.right > b.left && box.top < b.bottom && box.bottom > b.top)) {
+      if (boxes.some(b => box.left < b.right - 1 && box.right > b.left + 1 && box.top < b.bottom - 1 && box.bottom > b.top + 1)) {
         issues.push('The suite and its five concepts must remain distinct');
       }
       boxes.push(box);
@@ -303,13 +309,16 @@ async function checkLayout(page) {
       const start = path.getPointAtLength(0).matrixTransform(path.getScreenCTM());
       const end = path.getPointAtLength(path.getTotalLength()).matrixTransform(path.getScreenCTM());
       const icon = node.querySelector('.map-icon').getBoundingClientRect();
+      if (Math.hypot(centeredX(icon) - centeredX(rim), centeredY(icon) - centeredY(rim)) + icon.width / 2 > rim.width / 2 + 1)
+        issues.push('Every node must sit inside the perimeter');
       if (Math.hypot(start.x - icon.x - icon.width / 2, start.y - icon.y - icon.height / 2) > 4 ||
           Math.hypot(end.x - hubRect.x - hubRect.width / 2, end.y - hubRect.y - hubRect.height / 2) > 1) {
         issues.push('Each branch must connect its concept to the central software suite');
       }
     }
     const frame = map.getBoundingClientRect();
-    const items = [...map.querySelectorAll('.map-icon, [data-measure]')].map(el => el.getBoundingClientRect());
+    const visibleParts = map.classList.contains('compact-labels') ? '.map-icon' : '.map-icon, [data-measure]';
+    const items = [...map.querySelectorAll(visibleParts)].map(el => el.getBoundingClientRect()).filter(r => r.width && r.height);
     for (const [i, item] of items.entries()) {
       if (item.left < frame.left - 1 || item.right > frame.right + 1 || item.bottom > frame.bottom + 1 ||
           items.slice(0, i).some(b => item.left < b.right - 1 && item.right > b.left + 1 &&
@@ -460,11 +469,43 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
       'https://ieeexplore.ieee.org/document/6747332');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
+    if (mode !== 'no-js') {
+      await page.locator('html[data-text-measurement="ready"]').waitFor({ state: 'attached' });
+      if (name === 'chromium') await page.keyboard.press('Tab');
+      else await page.locator('.skip-link').focus();
+      assert.equal(await page.locator('.skip-link:focus-visible').count(), 1);
+    }
+    const map = page.locator('.idea-map');
+    const details = page.locator('.overview-details');
+    const hub = map.locator('.map-hub');
+    if (mode !== 'no-js') {
+      await page.locator('html[data-text-measurement="ready"]').waitFor({ state: 'attached' });
+      assert.ok(await details.isHidden());
+      for (const node of await map.locator('.idea-node').all()) {
+        await node.press('Enter');
+        const target = page.locator('#' + await node.getAttribute('aria-controls'));
+        assert.ok(await target.isVisible());
+        assert.equal(await node.getAttribute('aria-expanded'), 'true');
+        assert.equal(await details.locator(':scope > article:visible').count(), 1);
+        if (await target.evaluate(el => el.matches('.signal-figure'))) assert.equal(await details.locator('.signal-figure:visible').count(), 1);
+        assert.ok(await target.locator('h2').evaluate(el => el === document.activeElement));
+      }
+      await page.keyboard.press('Escape');
+      assert.ok(await details.isHidden());
+      assert.ok(await map.locator('.idea-node.map-creative').evaluate(el => el === document.activeElement));
+      await hub.press('Space');
+    } else {
+      assert.ok(await details.isHidden());
+      await map.locator('.idea-node.signal-ecg').click();
+      assert.ok(await page.locator('#herzsignal').isVisible());
+      assert.ok(await page.locator('#atemsignal').isHidden());
+      await hub.click();
+    }
     const signalPanel = page.locator('#projekt .signal-panel');
     assert.equal(await signalPanel.count(), 1, 'Both time series belong together');
     const signals = signalPanel.locator('.signal-figure');
     assert.equal(await signals.count(), 2);
-    assert.deepEqual(await signals.getByRole('heading').allTextContents(), ['Atemsignal', 'EKG']);
+    assert.deepEqual(await signals.locator('h2').allTextContents(), ['Atemsignal', 'EKG']);
     assert.deepEqual(await signals.locator('figcaption p').allTextContents(), ['Atembewegung per Smartphone', 'Herzsignal vom Polar H10']);
     assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simuliert · 15 Atemzüge/min', 'Simuliert · 72 Schläge/min']);
     assert.equal(await signalPanel.locator('input, button').count(), 0);
@@ -472,7 +513,6 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.ok(breathingPlot.y + breathingPlot.height <= ecgPlot.y && Math.abs(breathingPlot.x - ecgPlot.x) < 1 &&
       Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
-    const map = page.locator('.idea-map');
     const wave = map.locator('.map-ecg-wave');
     const mapPause = page.getByRole('checkbox', { name: 'Bewegung der Karte pausieren' });
     assert.equal(await mapPause.isVisible(), false);
@@ -480,14 +520,19 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await map.evaluate(el => el.getAnimations({ subtree: true }).length), 0);
     assert.ok(await wave.isHidden());
     for (const figure of await signals.all()) {
-      assert.ok(await figure.locator('figcaption .signal-organ').isVisible());
+      const channel = await figure.evaluate(el => el.classList.contains('signal-resp') ? 'signal-resp' : 'signal-ecg');
+      const organ = map.locator('.' + channel + ' .organ-motion');
+      assert.ok(await organ.isVisible());
       const strip = figure.locator('.signal-trace');
       assert.ok(await strip.evaluate(g => g.getBBox().width >= 880 && g.getBBox().height > 40),
         'A full simulated trace must load even with motion or JavaScript disabled');
       assert.equal(await strip.evaluate(g => g.getAnimations().length), 0);
-      assert.equal(await figure.locator('.signal-organ').evaluate(svg => svg.getAnimations({ subtree: true }).length), 0);
+      assert.equal(await organ.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0);
     }
-    if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'reduce' });
+    if (mode === 'no-js') {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await details.locator('.fallback-close').click();
+    } else await details.locator('button.close-topic').press('Enter');
     const pause = milestones.getByRole('checkbox', { name: 'Animationen pausieren' });
     assert.equal(await pause.isVisible(), false);
     const stages = milestones.getByRole('listitem');
@@ -530,12 +575,12 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         const sizes = elements.map(element => Number.parseFloat(getComputedStyle(element).fontSize));
         elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; });
       });
-    }
-    if (mode !== 'no-js') {
-      await page.locator('html[data-text-measurement="ready"]').waitFor({ state: 'attached' });
-      if (name === 'chromium') await page.keyboard.press('Tab');
-      else await page.locator('.skip-link').focus();
-      assert.equal(await page.locator('.skip-link:focus-visible').count(), 1);
+      const picker = page.getByRole('combobox', { name: 'Thema auswählen' });
+      await picker.waitFor({ state: 'visible' });
+      await picker.selectOption('atemsignal');
+      assert.ok(await page.locator('#atemsignal').isVisible());
+      assert.ok(await page.locator('#herzsignal').isHidden());
+      await details.locator('button.close-topic').press('Enter');
     }
     await checkNavigation(page, phone);
     if (mode === 'default' && (width === 1440 || (name === 'webkit' && width === 390))) {
@@ -546,6 +591,22 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.waitForFunction(() => getComputedStyle(document.documentElement).scrollBehavior === 'smooth');
       await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await wave.waitFor({ state: 'visible' });
+      const ecgNode = map.locator('button.signal-ecg');
+      const icon = await ecgNode.locator('.map-icon').boundingBox();
+      await page.mouse.click(icon.x + icon.width / 2, icon.y + icon.height / 2);
+      assert.ok(await page.locator('#herzsignal').isVisible());
+      assert.ok(await page.locator('#atemsignal').isHidden());
+      await map.locator('.map-wheel').evaluate(async wheel => {
+        await Promise.all(wheel.getAnimations().map(a => a.finished));
+        const matrix = new DOMMatrix(getComputedStyle(wheel).transform);
+        if (Math.abs(matrix.b) < .1) throw Error('Choosing ECG must turn the cloud toward its detail');
+        const node = wheel.querySelector('button.signal-ecg');
+        const labelRotation = parseFloat(getComputedStyle(node).rotate) * Math.PI / 180;
+        if (Math.cos(Math.atan2(matrix.b, matrix.a) + labelRotation) < .999)
+          throw Error('The node labels must remain upright as the cloud turns');
+      });
+      await details.locator('button.close-topic').press('Enter');
+      await hub.press('Enter');
       await mapPause.press('Space');
       assert.ok(await mapPause.isChecked());
       await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
@@ -569,12 +630,13 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         await figure.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         const strip = await figure.locator('.signal-trace').elementHandle();
         await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', strip);
-        const organ = figure.locator('.organ-motion');
+        const channel = await figure.evaluate(el => el.classList.contains('signal-resp') ? 'signal-resp' : 'signal-ecg');
+        const organ = map.locator('.' + channel + ' .organ-motion');
         await page.waitForFunction(g => g.getAnimations()[0]?.playState === 'running', await organ.elementHandle());
         const expandedAt = await figure.evaluate(el => el.classList.contains('signal-resp') ? .082 : .0316);
         const organWidths = await organ.evaluate(async (g, peak) => {
           const animation = g.getAnimations()[0];
-          const trace = g.closest('figure').querySelector('.signal-trace').getAnimations()[0];
+          const trace = document.querySelector('.signal-figure.' + (g.closest('.signal-resp') ? 'signal-resp' : 'signal-ecg') + ' .signal-trace').getAnimations()[0];
           if (Math.abs(animation.startTime - trace.startTime) > 1 || animation.effect.getTiming().duration !== trace.effect.getTiming().duration)
             throw Error('The organ and trace must share their playback timing');
           animation.pause();
@@ -602,15 +664,20 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         };
         const copies = figure.locator('.signal-trace use');
         assert.equal(await copies.first().getAttribute('href'), await copies.last().getAttribute('href'));
+        const plotOffset = copy => copy.evaluate(el => {
+          const r = el.getBoundingClientRect(), plot = el.closest('.signal-drawing').getBoundingClientRect();
+          return { x: r.x - plot.x, y: r.y - plot.y };
+        });
         await seek(0);
-        const start = await copies.first().boundingBox();
+        const start = await plotOffset(copies.first());
         await seek(0.25);
-        assert.ok((await copies.first().boundingBox()).x < start.x - 10, 'Samples must scroll left');
+        assert.ok((await plotOffset(copies.first())).x < start.x - 10, 'Samples must scroll left');
         await seek(1);
-        const end = await copies.last().boundingBox();
+        const end = await plotOffset(copies.last());
         assert.ok(Math.abs(end.x - start.x) < 0.5 && Math.abs(end.y - start.y) < 0.5,
           'The second copy must align with the first at the loop boundary');
       }
+      await details.locator('button.close-topic').press('Enter');
       await pause.waitFor({ state: 'visible' });
       await pause.press('Space');
       assert.equal(await pause.isChecked(), true);
@@ -701,7 +768,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await englishStages.getByRole('checkbox', { name: 'Planned', checked: false }).count(), 3);
       assert.equal(await page.getByRole('link', { name: 'Vernier Go Direct Spirometer' }).count(), 1);
       assert.match(await page.locator('#h10-figure').textContent(), /ECG/);
-      assert.deepEqual(await signals.getByRole('heading').allTextContents(), ['Breathing signal', 'ECG']);
+      assert.deepEqual(await signals.locator('h2').allTextContents(), ['Breathing signal', 'ECG']);
       assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simulated · 15 breaths/min', 'Simulated · 72 beats/min']);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
@@ -711,11 +778,12 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await institute.getAttribute('title'), 'Max Planck Institute for Human Development');
       assert.equal(await affiliations.getByRole('link', { name: 'University of Konstanz' })
         .getAttribute('href'), 'https://www.uni-konstanz.de/en/');
-      const creative = page.locator('.idea-map').getByRole('link', { name: 'Creative biofeedback' });
-      assert.equal(await creative.getAttribute('href'), '#kreatives-biofeedback');
+      const creative = page.locator('.idea-map').getByRole('button', { name: 'Creative biofeedback' });
+      assert.equal(await creative.getAttribute('aria-controls'), 'kreatives-biofeedback');
       if (phone) await creative.tap();
       else await creative.press('Enter');
-      assert.equal(new URL(page.url()).hash, '#kreatives-biofeedback');
+      assert.equal(await creative.getAttribute('aria-expanded'), 'true');
+      assert.ok(await page.locator('#kreatives-biofeedback').isVisible());
       assert.equal(await page.locator('#kreatives-biofeedback h2').innerText(), 'Creative biofeedback');
       await page.evaluate(() => window.scrollTo(0, 0));
       await checkLayout(page);
