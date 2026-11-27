@@ -545,7 +545,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const card = await stage.boundingBox();
       const mark = await status.boundingBox();
       const heading = await stage.getByRole('heading').boundingBox();
-      assert.ok(mark.width >= 32 && mark.height >= 32 && mark.y > card.y &&
+      assert.ok(mark.width >= 44 && mark.height >= 44 && mark.y > card.y &&
         mark.y + mark.height <= heading.y && mark.x + mark.width < card.x + card.width &&
         mark.x > card.x + card.width / 2, 'Each card needs a large status checkbox at the upper right');
       assert.equal(await stage.getByRole('img', { name: /.+/ }).count(), 1,

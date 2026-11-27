@@ -88,7 +88,8 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Pulsraum builds on. Each box links to its associated paper or software.
 - **Projektverlauf** presents the five milestones in an ordered list. Each card
   shows its number at the top left and its labeled progress checkbox at the
-  top right. Completed milestones are checked and planned milestones are empty.
+  top right. At the default text size, the checkbox is at least 44 CSS pixels
+  square. Completed milestones are checked and planned milestones are empty.
   Visitors can read these statuses in either language. Keep the
   distinction between completed prototypes and planned measurement validation.
   Each card illustrates its step with one inline SVG. Entering the viewport

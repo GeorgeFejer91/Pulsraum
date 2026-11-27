@@ -668,9 +668,9 @@ img.portrait {
   align-items: center;
   gap: .625rem;
   max-width: 100%;
-  color: var(--muted);
-  font-size: .875rem;
-  font-weight: 600;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 700;
   text-align: end;
   overflow-wrap: anywhere;
 }
@@ -679,10 +679,10 @@ img.portrait {
   flex: none;
   display: grid;
   place-items: center;
-  width: clamp(2.25rem, 3.4vw, 2.875rem);
+  width: clamp(2.75rem, 4vw, 3.5rem);
   aspect-ratio: 1;
   margin: 0;
-  border: 2px solid var(--muted);
+  border: 3px solid var(--ink);
   border-radius: .2rem;
   opacity: 1;
 }
@@ -692,10 +692,10 @@ img.portrait {
 }
 .milestone-status input:checked::after {
   content: "";
-  width: 54%;
+  width: 58%;
   height: 30%;
-  border-left: .2rem solid var(--box-paper);
-  border-bottom: .2rem solid var(--box-paper);
+  border-left: .25rem solid var(--box-paper);
+  border-bottom: .25rem solid var(--box-paper);
   transform: translateY(-12%) rotate(-45deg);
 }
 
