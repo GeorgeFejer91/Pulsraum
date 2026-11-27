@@ -61,6 +61,9 @@ applyLanguage(initialLanguage);
 
 await document.fonts.ready;
 const cache = new WeakMap();
+const spokeAngles = { anwendungen: 0, atemsignal: -72, 'lokale-daten': 72, herzsignal: -144, 'kreatives-biofeedback': 144 };
+let selected;
+let turn = 0;
 const elements = [...document.querySelectorAll('[data-measure]')];
 function measure() {
   const navHeight = navigation.offsetHeight;
@@ -103,7 +106,17 @@ function measure() {
       down: Math.min(icon * .18, Math.max(4, clearance / 2)),
     };
   });
+  // The CSS layout decides where the selected spoke faces, including after reflow.
+  const id = selected?.getAttribute('aria-controls');
+  const facing = Number(getComputedStyle(hero).getPropertyValue('--topic-facing'));
+  const destination = id in spokeAngles ? facing - spokeAngles[id] : 0;
+  const nextTurn = destination + 360 * Math.round((turn - destination) / 360);
+
   // Commit after all layout reads. Animation frames never enter this pass.
+  if (turn !== nextTurn) {
+    turn = nextTurn;
+    map.style.setProperty('--turn', turn + 'deg');
+  }
   map.classList.toggle('compact-labels', compact);
   picker.hidden = !compact;
   root.style.setProperty('--navigation-block-size', `${navHeight}px`);
@@ -127,6 +140,7 @@ const observer = new ResizeObserver(() => {
 elements.forEach(element => observer.observe(element));
 cloudNodes.forEach(node => observer.observe(node));
 observer.observe(map);
+observer.observe(hero);
 observer.observe(navigation);
 languageToggle.addEventListener('click', () => {
   const language = root.lang === 'de' ? 'en' : 'de';
@@ -145,10 +159,6 @@ const signalPanel = details.querySelector('.signal-panel');
 const signalRows = [...signalPanel.querySelectorAll('.signal-figure')];
 const articles = [...details.querySelectorAll(':scope > article')];
 const heart = map.querySelector('.signal-ecg .organ-motion');
-const wideOverview = matchMedia('(min-width: 68rem)');
-const spokeAngles = { anwendungen: 0, atemsignal: -72, 'lokale-daten': 72, herzsignal: -144, 'kreatives-biofeedback': 144 };
-let selected;
-let turn = 0;
 
 function alignSignalClocks() {
   for (const row of signalRows) {
@@ -175,13 +185,8 @@ function showTopic(button, focusDetail = false) {
   for (const article of articles) article.hidden = article !== (row ? signalPanel : target);
   for (const signal of signalRows) signal.hidden = !!row && signal !== row;
 
-  // Turn the selected spoke toward the reading area by the shorter route.
-  const facing = wideOverview.matches ? -72 : 144;
-  const destination = id in spokeAngles ? facing - spokeAngles[id] : 0;
-  turn = destination + 360 * Math.round((turn - destination) / 360);
-  map.style.setProperty('--turn', turn + 'deg');
+  measure();
   if (button) {
-    measure();
     alignSignalClocks();
     if (focusDetail) {
       const heading = target.querySelector('h2');
@@ -208,7 +213,6 @@ function openLinkedTopic() {
 }
 hero.classList.add('interactive-map');
 openLinkedTopic();
-wideOverview.addEventListener('change', () => { if (selected) showTopic(selected); });
 window.addEventListener('hashchange', openLinkedTopic);
 
 function createBreathAnimation(rig) {

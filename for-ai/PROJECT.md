@@ -139,6 +139,10 @@ groups. For the affiliation row, equalize the visible gaps from the card edges
 and between the two full logos. Center each logo on its own row when they wrap.
 Center milestone copy and art within their cells below the corner markers.
 Let boxes grow with their contents and preserve reading order on narrow screens.
+When the main column has room, place the overview map beside the introduction
+or selected detail, lay out the three foundation cards in one row, and pair
+milestone text with its illustration. Keep the map proportional on short
+landscape screens and let open details grow in the page flow.
 
 ## Architecture and ownership
 
@@ -146,7 +150,7 @@ The site uses static HTML and CSS with locally served JavaScript. The build scri
 
 Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here.
 
-The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. German is the default and the JavaScript-free version. The menu switches the whole page between German and English and remembers the selection when browser storage is available. Keep both versions aligned and avoid em dashes in project copy.
+The visual direction uses warm light surfaces, deep green type, compact document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. German is the default and the JavaScript-free version. The menu switches the whole page between German and English and remembers the selection when browser storage is available. Keep both versions aligned and avoid em dashes in project copy.
 
 The main navigation stays visible as a left sidebar on wide screens with a mouse or trackpad and as a bottom menu on phones and narrow screens. Native anchor links scroll smoothly when the visitor allows motion. The bottom menu leaves room to reach the footer and its links. This layout shipped in `f1a6ab7` and passed the live Brave, Chromium, and WebKit checks. [Pages deployment](https://github.com/GeorgeFejer91/Pulsraum/actions/runs/45833362433)
 

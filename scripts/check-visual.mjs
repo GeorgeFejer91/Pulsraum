@@ -424,6 +424,23 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.ok(response?.ok(), 'Website must load successfully');
     const sections = page.locator('main > section > div:first-child :is(h1, h2)');
     assert.deepEqual(await sections.allTextContents(), ['Pulsraum', 'Grundlagen', 'Projektverlauf', 'Team']);
+    if (mode === 'default' && [844, 900].includes(width)) {
+      const heading = await page.locator('.hero-heading').boundingBox();
+      const map = await page.locator('.idea-map').boundingBox();
+      assert.ok(heading.x + heading.width <= map.x, 'The overview should use available width on tablet and small desktop');
+      if (phone) {
+        const menu = await page.locator('.site-header nav').boundingBox();
+        const lastNode = await page.locator('.idea-node, .map-hub').evaluateAll(nodes =>
+          Math.max(...nodes.map(node => node.getBoundingClientRect().bottom)));
+        assert.ok(lastNode <= menu.y, 'All overview topics should clear the bottom menu in landscape');
+      }
+      const foundations = await page.locator('.building-blocks .knowledge-box').evaluateAll(cards =>
+        cards.map(card => card.getBoundingClientRect().top));
+      assert.equal(new Set(foundations).size, 1, 'The three foundation cards should fill a single row');
+      const copy = await page.locator('.milestone-layout > div').first().boundingBox();
+      const art = await page.locator('.milestone-figure').first().boundingBox();
+      assert.ok(copy.x + copy.width <= art.x, 'Milestone illustrations should sit beside the text at this width');
+    }
     const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' });
     assert.deepEqual(await navigation.getByRole('link').allTextContents(), ['Auf einen Blick', 'Grundlagen', 'Projektverlauf', 'Team']);
     assert.equal(await page.getByRole('contentinfo').getByRole('link', { name: 'Auf GitHub mitmachen' }).getAttribute('href'),
@@ -804,6 +821,7 @@ try {
     await checkPage(browser, 'chromium', 390, 932);
     await checkPage(browser, 'chromium', 480, 800);
     await checkPage(browser, 'chromium', 844, 390);
+    await checkPage(browser, 'chromium', 900, 900);
     await checkPage(browser, 'chromium', 1440, 900);
     await checkPage(browser, 'chromium', 390, 844, 'spacing');
     await checkPage(browser, 'chromium', 390, 844, 'large-text');
