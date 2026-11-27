@@ -883,6 +883,15 @@ main { container: content / inline-size; }
 .validation-sweep { transform: translateX(calc(-160px * var(--validation-frame) / 54)); }
 .validation-phone .plot-label { fill: currentColor; font-weight: 600; }
 .validation-now { stroke: var(--muted); stroke-width: .9; opacity: .55; }
+@property --h10-pose { syntax: '<integer>'; inherits: true; initial-value: 0; }
+.h10-transfer { --h10-travel: calc((1 - cos(var(--h10-pose) * 3.75deg)) / 2); }
+.h10-belt-frames { transform: translateY(calc(-140px * var(--h10-pose))); }
+/* Follow the pod projection used by scripts/generate-belt.py. */
+.h10-light {
+  transform-origin: 240px 138px;
+  transform: translate(calc(-8px * var(--h10-travel)), calc(22px * var(--h10-travel)))
+             scale(calc(1 + .07 * var(--h10-travel)));
+}
 .h10-light rect {
   fill: color-mix(in srgb, currentColor 76%, white);
   stroke: none;
@@ -968,7 +977,8 @@ main { container: content / inline-size; }
   }
   .in-view .metric-values { animation: show-metrics var(--analysis-period) ease-out infinite; }
   .validation-phone.in-view { animation: validation-breath 4.5s linear infinite; }
-  .in-view .pod-breath { animation: h10-breath 4s ease-in-out infinite; }
+  .h10-transfer.in-view { animation: expand-h10 2s steps(48) infinite alternate; }
+  .in-view .pod-breath { opacity: var(--h10-travel); }
   .in-view .pod-beat { animation: h10-beat 3.8s linear infinite; }
   .in-view .sleep-breath {
     transform-origin: 69px 96px;
@@ -1018,11 +1028,7 @@ main { container: content / inline-size; }
   64%, 96% { opacity: 1; }
 }
 @keyframes validation-breath { from { --validation-frame: 0; } to { --validation-frame: 54; } }
-/* Follow the two respiratory crests crossed by the comparison cursor. */
-@keyframes h10-breath {
-  0%, 47%, 85%, 100% { opacity: 0; }
-  33%, 61% { opacity: 1; }
-}
+@keyframes expand-h10 { from { --h10-pose: 0; } to { --h10-pose: 48; } }
 /* The R peaks lie at 27.1% and 75.4% of the ECG path's drawn length. */
 @keyframes h10-beat {
   0%, 22%, 39%, 70%, 87%, 100% { opacity: 0; }

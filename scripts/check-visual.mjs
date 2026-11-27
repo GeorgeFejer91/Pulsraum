@@ -26,6 +26,46 @@ server.listen(0, '127.0.0.1');
 await once(server, 'listening');
 const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.address().port}/`;
 
+async function checkBluetoothBelt(drawing) {
+  const poses = [];
+  for (const ms of [0, 1000, 2000, 3000, 4000]) {
+    await drawing.evaluate(async (svg, ms) => {
+      for (const animation of svg.getAnimations({ subtree: true })) {
+        animation.pause();
+        await animation.ready;
+        animation.currentTime = ms;
+      }
+    }, ms);
+    const frame = await drawing.screenshot();
+    poses.push(await drawing.evaluate(async (_, png) => {
+      const image = new Image();
+      image.src = 'data:image/png;base64,' + png;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 144;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, 320, 144);
+      // Only the belt is dark in this region of the light-theme panel.
+      const { data } = ctx.getImageData(2, 35, 119, 64);
+      let left = 119, right = -1, podBottom = -1;
+      for (let i = 0; i < data.length; i += 4) {
+        if (Math.max(data[i], data[i + 1], data[i + 2]) >= 75) continue;
+        const x = (i / 4) % 119;
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        if (x >= 39 && x < 59) podBottom = Math.floor(i / 4 / 119);
+      }
+      return { width: right - left, podBottom };
+    }, frame.toString('base64')));
+  }
+  const [rest, rising, full, falling, end] = poses;
+  assert.ok(rest.width > 85 && rising.width > rest.width + 4 && full.width > rising.width + 4);
+  assert.ok(falling.width < full.width - 4 && falling.width > end.width + 4);
+  assert.ok(full.podBottom >= rest.podBottom + 3 && Math.abs(end.podBottom - rest.podBottom) <= 1);
+  assert.ok(Math.abs(end.width - rest.width) <= 1, 'The strap must return to its resting width');
+}
+
 async function checkValidationBreath(drawing) {
   const samples = await drawing.evaluate(async svg => {
     const [clock] = svg.getAnimations();
@@ -925,6 +965,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
             return currentIteration >= 2 && progress > 0;
           });
         }, await drawing.elementHandle());
+        if (await drawing.evaluate(svg => svg.matches('.h10-transfer'))) await checkBluetoothBelt(drawing);
         if (await drawing.locator('.breathing-rig').count()) await checkBreathingPhases(drawing);
         if (await drawing.evaluate(svg => svg.matches('.validation-phone'))) await checkValidationBreath(drawing);
       }

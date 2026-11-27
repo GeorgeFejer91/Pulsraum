@@ -115,6 +115,9 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Each card illustrates its step with one inline SVG. Entering the viewport
   starts a continuous loop when the visitor allows motion.
   Reduced motion and JavaScript-free views show the complete still diagram.
+  In the Bluetooth ECG card the Polar H10 strap widens and its pod moves
+  forward over two seconds, then returns over two seconds. The pod tint
+  follows this breath and the lettering pulses with the ECG trace.
   In the smartphone breathing diagram, the plotted breath samples drive the
   abdomen, phone, mouth airflow and graph cursor together. The cursor draws
   the blue rising trace as particles enter the mouth and the ochre falling

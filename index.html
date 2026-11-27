@@ -254,22 +254,30 @@
                 <h3 class="box-title" data-measure data-en="Connect the Polar H10 via Bluetooth">Polar H10 per Bluetooth anbinden</h3>
                 <p data-measure data-en="The Polar H10 chest strap connects to the browser via Bluetooth, making ECG and heart rate data available to web apps.">Die Bluetooth-Anbindung verbindet den EKG-Brustgurt Polar H10 mit dem Browser und stellt EKG- und Herzfrequenzdaten für Web-Apps bereit.</p>
               </div>
-              <svg class="milestone-figure" viewBox="0 0 320 144" role="img" aria-labelledby="h10-figure">
-                <title id="h10-figure" data-en="The Polar H10 sends the ECG signal to the browser via Bluetooth. In the illustration, the sensor turns blue with each breath and its lettering flashes red at each ECG peak.">Vom Polar H10 gelangt das EKG per Bluetooth in den Browser. In der Grafik färbt sich der Sensor im Atemrhythmus blau. Der Schriftzug pulsiert bei den EKG-Spitzen rot.</title>
+              <svg class="milestone-figure h10-transfer" viewBox="0 0 320 144" role="img" aria-labelledby="h10-figure">
+                <title id="h10-figure" data-en="The Polar H10 sends an ECG to the browser via Bluetooth. The strap expands and the pod moves forward on inhalation. Both return on exhalation. The lettering flashes red at each ECG peak.">Der Polar H10 sendet das EKG per Bluetooth an den Browser. Beim Einatmen weitet sich der Gurt und der Sensor bewegt sich nach vorn. Beim Ausatmen gehen beide zurück. Der Schriftzug pulsiert bei den EKG-Spitzen rot.</title>
                 <defs>
+                  <clipPath id="h10-belt-frame"><rect width="344" height="140"/></clipPath>
+                  <g id="h10-belt" clip-path="url(#h10-belt-frame)">
+                    <image class="h10-belt-frames" href="assets/illustrations/polar-h10-breathing.webp" width="344" height="6860"/>
+                  </g>
                   <clipPath id="h10-pod-contour">
                     <path d="M109 123C110 91 133 59 168 60c32 0 119 9 143 12 35 5 60 31 64 68 4 40-19 72-55 76-19 3-144-11-164-15-32-7-50-42-47-78Z"/>
                   </clipPath>
-                  <mask id="h10-pod-whites" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="221">
-                    <use href="#h10-artwork" clip-path="url(#h10-pod-contour)"/>
+                  <mask id="h10-pod-whites" maskUnits="userSpaceOnUse" x="0" y="0" width="344" height="140">
+                    <use href="#h10-belt"/>
                   </mask>
                 </defs>
                 <g class="device">
-                  <g transform="translate(7 49) scale(.198)">
-                    <image id="h10-artwork" href="assets/illustrations/polar-h10.webp" width="560" height="221"/>
-                    <g class="h10-light" mask="url(#h10-pod-whites)">
-                      <rect class="pod-breath signal-resp" x="107" y="58" width="272" height="162"/>
-                      <rect class="pod-beat signal-ecg" x="143" y="104" width="188" height="83"/>
+                  <g transform="translate(0 45) scale(.355)">
+                    <use href="#h10-belt"/>
+                    <g mask="url(#h10-pod-whites)">
+                      <g transform="translate(32 11) scale(.5)">
+                        <g class="h10-light" clip-path="url(#h10-pod-contour)">
+                          <rect class="pod-breath signal-resp" x="107" y="58" width="272" height="162"/>
+                          <rect class="pod-beat signal-ecg" x="143" y="104" width="188" height="83"/>
+                        </g>
+                      </g>
                     </g>
                   </g>
                   <path class="detail" stroke-dasharray="2 5" d="M121 72h17m21 0h19"/>
