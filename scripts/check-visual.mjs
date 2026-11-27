@@ -7,10 +7,10 @@ import { chromium, webkit } from 'playwright';
 
 const site = process.argv[2] ?? '.';
 const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
-const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
+const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', mp4: 'video/mp4', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|(?:signals|overview-icons)\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|polar-h10-worn\.mp4|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|(?:signals|overview-icons)\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -512,6 +512,14 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     }
     assert.equal(await stages.nth(2).getByRole('link', { name: 'Go Direct Spirometer von Vernier' }).getAttribute('href'),
       'https://www.vernier.com/product/go-direct-spirometer/');
+    if (width === 1440 && mode === 'default') {
+      const film = stages.nth(2).getByRole('link', { name: 'Brustgurt am Körper ansehen (3D-Animation)' });
+      assert.equal(await film.count(), 1, 'The worn strap animation must be available from the validation card');
+      const video = await page.request.get(new URL(await film.getAttribute('href'), url).href);
+      assert.equal(video.status(), 200);
+      assert.match(video.headers()['content-type'], /^video\/mp4/);
+      assert.equal((await video.body()).toString('ascii', 4, 8), 'ftyp');
+    }
     if (mode === 'dark') assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     if (mode === 'spacing') {
       await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-block-end: 2em !important; }' });

@@ -26,3 +26,7 @@ The institutional logos in assets/team/mpib-de.svg, assets/team/mpib-en.svg
 and assets/team/universitaet-konstanz.svg are excluded from the MIT grant.
 The artwork comes from the respective institutions at
 https://www.mpib-berlin.mpg.de/ and https://www.uni-konstanz.de/.
+
+The human mesh in assets/models/polar-h10-worn.blend derives from the MakeHuman
+Community hm08 base mesh and bundled morphs, released under CC0 1.0.
+https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md

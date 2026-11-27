@@ -100,6 +100,11 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   the two-second exhale. Its rigid sensor pod moves toward the viewer as the
   chest rises and recedes as the chest settles. Regenerate its frame
   strip with `python scripts/generate-belt.py`.
+  The card also links a separate 3D film of the strap on a translucent adult
+  torso. In `assets/models/polar-h10-worn.blend` the chest-wall shape key
+  drives the fitted underbust band and its rigid sternal pod. Frames 1–108 at
+  24 fps illustrate one upright breath with a longer expiration. The scene
+  contains its anatomical sources and product dimensions.
   The WebP atlas uses the Blender camera `Webansicht · Messkopf und Griff`,
   frames 1 to 95 at every other frame, in four rows of twelve 256 × 300 px
   tiles. Hide the Bluetooth/receiver collection for this export.
