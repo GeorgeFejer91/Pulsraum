@@ -140,21 +140,36 @@ async function checkMapMotion(map) {
     const breath = figure.getAnimations()[0];
     const lungs = document.querySelector('.signal-resp .organ-motion').getAnimations()[0];
     const nodes = [...figure.querySelectorAll('.idea-node, .map-hub')];
-    const drifts = nodes.map(node => node.getAnimations()[0]);
-    if (drifts.length !== 6 || drifts.some(a => a?.playState !== 'running') ||
-        new Set(drifts.map(a => a.effect.getTiming().duration)).size !== 6) throw Error('All six cloud nodes must drift independently');
-    for (const drift of drifts) {
-      const start = drift.startTime;
-      drift.pause();
-      await drift.ready;
-      const duration = drift.effect.getTiming().duration;
-      drift.currentTime = duration + drift.effect.getTiming().delay;
-      const target = drift.effect.target;
-      const x = new DOMMatrix(getComputedStyle(target).transform).e;
-      drift.currentTime += duration / 2;
-      if (x - new DOMMatrix(getComputedStyle(target).transform).e < 4) throw Error('Each node must visibly move');
-      drift.startTime = start;
+    const periods = new Set();
+    for (const node of nodes) {
+      const axes = ['drift-across', 'drift-vertically'].map(name => node.getAnimations().find(a => a.animationName === name));
+      if (axes.some(a => a?.playState !== 'running')) throw Error('Each node needs two running drift axes');
+      const starts = axes.map(a => a.startTime);
+      periods.add(axes[0].effect.getTiming().duration);
+      axes.forEach(a => a.pause());
+      await Promise.all(axes.map(a => a.ready));
+      const positions = [0, .5].map(phase => {
+        for (const a of axes) {
+          const { duration, delay } = a.effect.getTiming();
+          a.currentTime = duration * (1 + phase) + delay;
+        }
+        const frame = figure.getBoundingClientRect();
+        for (const part of node.querySelectorAll('[data-measure], .map-icon')) {
+          const r = part.getBoundingClientRect();
+          if (r.left < frame.left - 1 || r.right > frame.right + 1 ||
+              r.top < frame.top - 1 || r.bottom > frame.bottom + 1) throw Error('Floating labels and icons must fit inside the map');
+        }
+        const css = getComputedStyle(node);
+        return { x: new DOMMatrix(css.transform).e, y: parseFloat(css.translate.split(' ')[1]) || 0 };
+      });
+      const [a, b] = positions;
+      const radius = node.querySelector('.map-icon').clientWidth / 2;
+      if (a.x - b.x < 3 || b.y - a.y < 8 || positions.some(p => Math.hypot(p.x, p.y) >= radius)) {
+        throw Error('Each node must visibly float on both axes and stay connected to its spoke');
+      }
+      axes.forEach((animation, i) => { animation.startTime = starts[i]; });
     }
+    if (periods.size !== 6) throw Error('All six nodes must float at independent speeds');
     if (Math.abs(breath.startTime - lungs.startTime) > 1 || breath.effect.getTiming().duration !== lungs.effect.getTiming().duration) {
       throw Error('The whole map and lungs must share the breathing cycle');
     }
@@ -178,17 +193,25 @@ async function checkMapMotion(map) {
       const samples = Array.from(svg.getElementById('ecg').points);
       const peak = samples.filter(p => p.x > 440 && p.x < 520).reduce((a, b) => a.y < b.y ? a : b);
       const length = curve.getTotalLength();
-      function offsetAt(fraction) {
-        const point = wave.points.getItem(Math.round((wave.points.length - 1) * fraction));
-        const base = curve.getPointAtLength(length * fraction);
-        const matrix = curve.getScreenCTM();
-        return Math.hypot((point.x - base.x) * matrix.a, (point.y - base.y) * matrix.d);
+      const links = curve.ownerSVGElement;
+      const sx = links.clientWidth / links.viewBox.baseVal.width;
+      const sy = links.clientHeight / links.viewBox.baseVal.height;
+      function hasPeakAt(fraction) {
+        const distance = length * fraction;
+        const base = curve.getPointAtLength(distance);
+        const before = curve.getPointAtLength(distance - .5), after = curve.getPointAtLength(distance + .5);
+        const dx = (after.x - before.x) * sx, dy = (after.y - before.y) * sy;
+        const amplitude = (66 - peak.y) * .32 / Math.hypot(dx, dy);
+        const x = (base.x * sx - wave.offsetLeft + dy * amplitude) * wave.width / wave.clientWidth;
+        const y = (base.y * sy - wave.offsetTop - dx * amplitude) * wave.height / wave.clientHeight;
+        const pixels = wave.getContext('2d').getImageData(Math.round(x) - 2, Math.round(y) - 2, 5, 5).data;
+        return pixels.some((value, i) => i % 4 === 3 && value > 60);
       }
       for (const fraction of [.3, .7]) {
         // A sample takes a quarter of the eight-beat loop to cross the whole spoke.
         ecg.currentTime = ecg.effect.getTiming().duration * ((peak.x - 440) / 880 + fraction / 4);
         await paint();
-        if (offsetAt(fraction) < 12 || offsetAt(fraction - .075) > offsetAt(fraction) * .65) {
+        if (!hasPeakAt(fraction) || hasPeakAt(fraction - .075)) {
           throw Error('The sampled R peak must travel from ECG toward the hub on the original curve');
         }
       }
@@ -406,7 +429,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await mapPause.isVisible(), false);
     assert.equal(await map.evaluate(el => el.getAnimations().length), 0);
     assert.equal(await map.evaluate(el => el.getAnimations({ subtree: true }).length), 0);
-    assert.equal(await wave.getAttribute('points'), null);
+    assert.ok(await wave.isHidden());
     for (const figure of await signals.all()) {
       assert.ok(await figure.locator('figcaption .signal-organ').isVisible());
       const strip = figure.locator('.signal-trace');
@@ -465,15 +488,15 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await page.waitForFunction(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
       await page.waitForFunction(() => getComputedStyle(document.documentElement).scrollBehavior === 'smooth');
       await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await page.waitForFunction(el => el.points.length > 0, await wave.elementHandle());
+      await wave.waitFor({ state: 'visible' });
       await mapPause.press('Space');
       assert.ok(await mapPause.isChecked());
       await map.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await wave.evaluate(async el => {
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        const held = el.getAttribute('points');
+        const held = el.toDataURL();
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        if (!held || el.getAttribute('points') !== held) throw Error('Pausing the map must hold the ECG in place');
+        if (el.hidden || el.toDataURL() !== held) throw Error('Pausing the map must hold the ECG in place');
       });
       await signals.first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await page.waitForFunction(el => [...el.querySelectorAll('.signal-trace, .organ-motion')].every(

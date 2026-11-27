@@ -47,9 +47,9 @@
           <path class="map-spoke signal-resp" d="M100 100C201 89 201 143 300 150"/>
           <path class="map-spoke map-data" d="M500 100C412 85 403 147 300 150"/>
           <path class="map-spoke signal-ecg" d="M100 250C134 224 133 150 300 150"/>
-          <polyline class="map-ecg-wave signal-ecg"/>
           <path class="map-spoke map-creative" d="M500 250C466 224 467 150 300 150"/>
         </svg>
+        <canvas class="map-ecg-wave signal-ecg" aria-hidden="true" hidden></canvas>
         <div class="map-hub">
           <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#suite"/></svg>
           <div class="hub-label">
@@ -91,40 +91,36 @@
         <article id="signale" class="signal-panel" aria-labelledby="respiration-title ecg-title">
           <figure class="signal-figure signal-resp">
             <figcaption>
-              <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
-                <g class="organ-motion">
-                  <use href="assets/illustrations/overview-icons.svg#lungs" width="48" height="48"/>
-                </g>
+              <svg class="signal-organ organ-motion" viewBox="0 0 48 48" aria-hidden="true">
+                <use href="assets/illustrations/overview-icons.svg#lungs" width="48" height="48"/>
               </svg>
               <h2 id="respiration-title" class="box-title" data-measure data-en="Breathing signal">Atemsignal</h2>
               <p data-measure data-en="Tracking breathing with a smartphone">Atembewegung per Smartphone</p>
             </figcaption>
-            <svg class="signal-drawing" viewBox="0 0 440 104" preserveAspectRatio="none" aria-hidden="true">
-              <path class="signal-baseline" d="M0 52H440"/>
-              <g class="signal-trace">
+            <div class="signal-drawing" aria-hidden="true">
+              <svg class="signal-trace" viewBox="0 0 1760 104" preserveAspectRatio="none">
+                <path class="signal-baseline" d="M0 52H1760"/>
                 <use href="assets/illustrations/signals.svg#respiration"/>
                 <use href="assets/illustrations/signals.svg#respiration" x="880"/>
-              </g>
-            </svg>
+              </svg>
+            </div>
             <p class="signal-rate" data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</p>
           </figure>
           <figure class="signal-figure signal-ecg">
             <figcaption>
-              <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
-                <g class="organ-motion">
-                  <use href="assets/illustrations/overview-icons.svg#heart" width="48" height="48"/>
-                </g>
+              <svg class="signal-organ organ-motion" viewBox="0 0 48 48" aria-hidden="true">
+                <use href="assets/illustrations/overview-icons.svg#heart" width="48" height="48"/>
               </svg>
               <h2 id="ecg-title" class="box-title" data-measure data-en="ECG">EKG</h2>
               <p data-measure data-en="Heart signal from the Polar H10">Herzsignal vom Polar H10</p>
             </figcaption>
-            <svg class="signal-drawing" viewBox="0 0 440 104" preserveAspectRatio="none" aria-hidden="true">
-              <path class="signal-baseline" d="M0 66H440"/>
-              <g class="signal-trace">
+            <div class="signal-drawing" aria-hidden="true">
+              <svg class="signal-trace" viewBox="0 0 1760 104" preserveAspectRatio="none">
+                <path class="signal-baseline" d="M0 66H1760"/>
                 <use href="assets/illustrations/signals.svg#ecg"/>
                 <use href="assets/illustrations/signals.svg#ecg" x="880"/>
-              </g>
-            </svg>
+              </svg>
+            </div>
             <p class="signal-rate" data-measure data-en="Simulated · 72 beats/min">Simuliert · 72 Schläge/min</p>
           </figure>
         </article>

@@ -36,12 +36,16 @@ applyLanguage(initialLanguage);
 await document.fonts.ready;
 const cache = new WeakMap();
 const elements = [...document.querySelectorAll('[data-measure]')];
+const cloudNodes = [...document.querySelectorAll('.idea-node, .map-hub')];
 function measure() {
-  root.style.setProperty('--navigation-block-size', `${navigation.offsetHeight}px`);
+  const navHeight = navigation.offsetHeight;
+  const measurements = new Map();
   for (const element of elements) {
-    const width = element.getBoundingClientRect().width;
-    if (width <= 0) continue;
     const css = getComputedStyle(element);
+    const padding = parseFloat(css.paddingLeft) + parseFloat(css.paddingRight);
+    // CSS layout widths stay stable as the cloud scales and the nodes drift.
+    const width = (parseFloat(css.width) || element.offsetWidth) - padding;
+    if (width <= 0 || !element.getClientRects().length) continue;
     const font = `${css.fontStyle} ${css.fontWeight} ${css.fontSize} ${css.fontFamily}`;
     const text = element.innerText;
     const spacing = Number.parseFloat(css.letterSpacing) || 0;
@@ -49,16 +53,43 @@ function measure() {
     const key = `${root.lang}|${font}|${spacing}|${whiteSpace}|${text}`;
     let entry = cache.get(element);
     if (entry?.key !== key) {
-      entry = { key, prepared: prepare(text, font, { letterSpacing: spacing, whiteSpace }) };
+      const prepared = prepare(text, font, { letterSpacing: spacing, whiteSpace });
+      entry = { key, prepared, natural: Math.round(measureNaturalWidth(prepared)) };
       cache.set(element, entry);
     }
     const stats = measureLineStats(entry.prepared, width);
     const lineHeight = Number.parseFloat(css.lineHeight);
-    // Natural flow and wrapping take priority; never shrink user-enlarged text.
-    element.style.minHeight = `${stats.lineCount * lineHeight}px`;
-    element.dataset.measuredLines = String(stats.lineCount);
-    element.dataset.measuredWidth = String(Math.round(measureNaturalWidth(entry.prepared)));
+    measurements.set(element, {
+      height: stats.lineCount * lineHeight, width: Math.max(width, stats.maxLineWidth) + padding,
+      lines: stats.lineCount, natural: entry.natural,
+    });
   }
+  // Reserve room for each wrapped label and keep the spoke endpoint inside its icon.
+  const travel = cloudNodes.map(node => {
+    const icon = parseFloat(getComputedStyle(node.querySelector('.map-icon')).width);
+    const labels = [...node.querySelectorAll('[data-measure]')].map(el => measurements.get(el));
+    const width = Math.max(icon, ...labels.map(label => label?.width ?? 0));
+    const height = labels.reduce((sum, label) => sum + (label?.height ?? 0), 0);
+    const labelMargin = parseFloat(getComputedStyle(node.lastElementChild).marginTop);
+    const halfGap = (node.clientHeight - icon) / 2;
+    return {
+      x: Math.max(0, Math.min(icon * .33, (node.clientWidth - width) / 2 - 1)),
+      up: Math.max(0, Math.min(icon * .24, halfGap - 2)),
+      down: Math.max(0, Math.min(icon * .24, halfGap - height - labelMargin - 2)),
+    };
+  });
+  // Commit after all layout reads. Animation frames never enter this pass.
+  root.style.setProperty('--navigation-block-size', `${navHeight}px`);
+  for (const [element, size] of measurements) {
+    element.style.minHeight = `${size.height}px`;
+    if (element.dataset.measuredLines !== String(size.lines)) element.dataset.measuredLines = size.lines;
+    if (element.dataset.measuredWidth !== String(size.natural)) element.dataset.measuredWidth = size.natural;
+  }
+  cloudNodes.forEach((node, i) => {
+    for (const [axis, distance] of Object.entries(travel[i])) {
+      node.style.setProperty(`--drift-${axis}`, `${distance.toFixed(1)}px`);
+    }
+  });
   root.dataset.textMeasurement = 'ready';
 }
 let frame;
@@ -67,6 +98,7 @@ const observer = new ResizeObserver(() => {
   frame = requestAnimationFrame(measure);
 });
 elements.forEach(element => observer.observe(element));
+cloudNodes.forEach(node => observer.observe(node));
 observer.observe(navigation);
 languageToggle.addEventListener('click', () => {
   const language = root.lang === 'de' ? 'en' : 'de';
@@ -105,10 +137,7 @@ function createBreathAnimation(rig) {
 
 // Sample the connector once per layout. Its normals are in screen pixels so a
 // heartbeat stays legible when the SVG viewBox stretches on a narrow phone.
-function mapEcgStations(curve) {
-  const svg = curve.ownerSVGElement;
-  const sx = svg.clientWidth / svg.viewBox.baseVal.width;
-  const sy = svg.clientHeight / svg.viewBox.baseVal.height;
+function mapEcgStations(curve, sx, sy, left, top) {
   const length = curve.getTotalLength();
   const positions = Array.from({ length: 241 }, (_, i) => curve.getPointAtLength(length * i / 240));
   return positions.map(({ x, y }, i) => {
@@ -117,12 +146,14 @@ function mapEcgStations(curve) {
     const dx = (after.x - before.x) * sx;
     const dy = (after.y - before.y) * sy;
     const tangent = Math.hypot(dx, dy);
-    return { x, y, fraction: i / 240, nx: dy / tangent / sx, ny: -dx / tangent / sy };
+    return { x: x * sx - left, y: y * sy - top, fraction: i / 240, nx: dy / tangent, ny: -dx / tangent };
   });
 }
 
 async function animateMapEcg(reducedMotion) {
   const wave = document.querySelector('.map-ecg-wave');
+  const ctx = wave.getContext('2d');
+  if (!ctx) return;
   const curve = document.querySelector('.map-spoke.signal-ecg');
   const trace = document.querySelector('.signal-figure.signal-ecg .signal-trace');
   const source = new URL(trace.querySelector('use').getAttribute('href'), document.baseURI);
@@ -131,22 +162,30 @@ async function animateMapEcg(reducedMotion) {
   const svg = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
   const samples = Array.from(svg.getElementById(source.hash.slice(1)).points, ({ x, y }) => ({ x, y }));
   const period = samples.at(-1).x;
-  const plot = trace.ownerSVGElement;
-  const rightEdge = plot.viewBox.baseVal.width;
-  const baseline = plot.querySelector('.signal-baseline').getPointAtLength(0).y;
+  const rightEdge = period / 2;
+  const baseline = trace.querySelector('.signal-baseline').getPointAtLength(0).y;
   const pause = document.getElementById('pause-map');
+  const gain = .32;
+  const gutter = 2 + Math.ceil(gain * Math.max(...samples.map(p => Math.abs(baseline - p.y))));
   let stations = [];
   let visible = false;
   let frame;
+  let clock;
+  let cycleMs;
 
   function draw() {
-    const phase = trace.getAnimations()[0]?.effect.getComputedTiming().progress;
-    if (phase != null && stations.length) {
+    if (!clock) {
+      clock = trace.getAnimations()[0];
+      cycleMs = clock?.effect.getTiming().duration;
+    }
+    const time = clock?.currentTime;
+    if (time != null && stations.length) {
       // The newest sample enters at the ECG node. At the hub the stream is
       // half a plot-window older. Traverse backwards in space, forwards in time.
-      const newest = rightEdge + phase * period;
+      const newest = rightEdge + ((time % cycleMs) / cycleMs) * period;
       let index = 0;
-      const points = new Array(stations.length);
+      ctx.clearRect(0, 0, wave.width, wave.height);
+      ctx.beginPath();
       for (let i = stations.length - 1; i >= 0; i--) {
         const station = stations[i];
         const t = (newest - station.fraction * rightEdge / 2) % period;
@@ -154,26 +193,49 @@ async function animateMapEcg(reducedMotion) {
         while (samples[index + 1].x < t) index++;
         const a = samples[index], b = samples[index + 1];
         const y = a.y + (b.y - a.y) * (t - a.x) / (b.x - a.x);
-        const amplitude = (baseline - y) * .32;
-        points[i] = `${(station.x + station.nx * amplitude).toFixed(2)},${(station.y + station.ny * amplitude).toFixed(2)}`;
+        const amplitude = (baseline - y) * gain;
+        ctx.lineTo(station.x + station.nx * amplitude, station.y + station.ny * amplitude);
       }
-      wave.setAttribute('points', points.join(' '));
+      ctx.stroke();
+      if (wave.hidden) wave.hidden = false;
     }
     if (!pause.checked) frame = requestAnimationFrame(draw);
   }
   function sync() {
     cancelAnimationFrame(frame);
-    if (reducedMotion.matches) wave.removeAttribute('points');
+    clock = undefined;
+    if (reducedMotion.matches) wave.hidden = true;
     else if (visible && !document.hidden) frame = requestAnimationFrame(draw);
   }
-  new ResizeObserver(() => {
-    stations = mapEcgStations(curve);
+  function setInk() {
+    ctx.strokeStyle = getComputedStyle(wave).color;
     sync();
-  }).observe(wave.ownerSVGElement);
+  }
+  const links = curve.ownerSVGElement;
+  function resize() {
+    const sx = links.clientWidth / links.viewBox.baseVal.width;
+    const sy = links.clientHeight / links.viewBox.baseVal.height;
+    if (!sx || !sy) return;
+    const bounds = curve.getBBox();
+    const left = Math.floor(bounds.x * sx) - gutter, top = Math.floor(bounds.y * sy) - gutter;
+    const width = Math.ceil((bounds.x + bounds.width) * sx) + gutter - left;
+    const height = Math.ceil((bounds.y + bounds.height) * sy) + gutter - top;
+    stations = mapEcgStations(curve, sx, sy, left, top);
+    Object.assign(wave.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
+    const ratio = Math.min(window.devicePixelRatio, 2);
+    wave.width = Math.round(width * ratio);
+    wave.height = Math.round(height * ratio);
+    ctx.setTransform(wave.width / width, 0, 0, wave.height / height, 0, 0);
+    ctx.lineWidth = 2;
+    ctx.lineCap = ctx.lineJoin = 'round';
+    setInk();
+  }
+  new ResizeObserver(resize).observe(links);
+  new MutationObserver(setInk).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     sync();
-  }).observe(wave.ownerSVGElement);
+  }).observe(links);
   reducedMotion.addEventListener('change', sync);
   pause.addEventListener('change', sync);
   document.addEventListener('visibilitychange', sync);
