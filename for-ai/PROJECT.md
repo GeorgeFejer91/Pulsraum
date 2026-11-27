@@ -30,11 +30,10 @@ checklist and do not close the overall goal before its acceptance criteria pass.
 
 Current website update:
 
-- [x] Use matching switches for theme in the header and language in the main
-  menu. The sun and moon select light and dark. DE and EN select the page
-  language. The rendered suite
-  checks the selected states, labeled switches, keyboard and touch operation,
-  reflow, and persistence across reloads.
+- [x] Center the matching theme and language switches below the menu links.
+  The sun and moon select light and dark. DE and EN select the page language.
+  The rendered suite checks placement, selected states, labels, keyboard and
+  touch operation, reflow, and persistence across reloads.
 - [x] Organize the site as Auf einen Blick, Grundlagen, Projektverlauf, and Team.
   The first two of five milestones are complete according to the project owner.
   The remaining milestones describe planned validation, local analysis, and
@@ -146,14 +145,16 @@ groups. For the affiliation row, equalize the visible gaps from the card edges
 and between the two full logos. Center each logo on its own row when they wrap.
 Center milestone copy and art within their cells below the corner markers.
 Menu bars use edge anchors. On desktop, start the sidebar at the top and align
-the brand, controls and link text to the leading side. On phones, use opposite
-ends of the header for the brand and theme control and keep the navigation at
-the bottom. Its narrow grid centers labels within their own cells.
+the brand and link text to the leading side. On phones, anchor the brand to the
+leading edge of the header and pin navigation to the bottom. The narrow grid
+centers link labels within their cells. Center the switch pair horizontally
+below the links at all viewport sizes.
 Let boxes grow with their contents and preserve reading order on narrow screens.
 When the main column has room, place the overview map beside the introduction
 or selected detail, lay out the three foundation cards in one row, and pair
-milestone text with its illustration. Keep the map proportional on short
-landscape screens and let open details grow in the page flow.
+milestone text with its illustration. On short landscape screens, use the
+measured bottom menu height to size the map and let open details grow in the
+page flow.
 
 ## Architecture and ownership
 

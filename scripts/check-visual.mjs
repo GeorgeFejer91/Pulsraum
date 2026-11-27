@@ -282,7 +282,9 @@ async function checkLayout(page) {
       }
       const box = node.getBoundingClientRect();
       const label = node.querySelector('[data-measure]');
-      if ((!map.classList.contains('compact-labels') && label.scrollWidth > label.clientWidth + 1) || box.width < 44 || box.height < 44) {
+      // A rotated 44px target can lose a fraction of a pixel in its bounding rect.
+      const touchTargetFits = box.width >= 43.99 && box.height >= 43.99;
+      if ((!map.classList.contains('compact-labels') && label.scrollWidth > label.clientWidth + 1) || !touchTargetFits) {
         issues.push('Each concept needs a readable label and a full touch target');
       }
       if (boxes.some(b => box.left < b.right - 1 && box.right > b.left + 1 && box.top < b.bottom - 1 && box.bottom > b.top + 1)) {
@@ -342,19 +344,25 @@ async function checkLayout(page) {
     if (Math.abs(brand.left - leadingEdge) > 1) issues.push('The brand must start at the leading header inset');
     if (matchMedia('(min-width: 52rem) and (pointer: fine)').matches) {
       if (Math.abs(brand.top - headerRect.top - parseFloat(padding.paddingTop)) > 1) issues.push('The sidebar must start at the top inset');
-      for (const control of header.querySelectorAll('.menu-switch:not([hidden])')) {
-        if (Math.abs(control.getBoundingClientRect().left - leadingEdge) > 1) issues.push('Sidebar controls must share the leading inset');
-      }
       for (const link of navigation.querySelectorAll('a')) {
         const text = document.createRange();
         text.selectNodeContents(link.querySelector('span'));
         const inset = link.getBoundingClientRect().left + parseFloat(getComputedStyle(link).paddingLeft);
         if (Math.abs(text.getClientRects()[0].left - inset) > 1) issues.push('Sidebar link labels must start at their leading inset');
       }
-    } else {
-      const theme = header.querySelector('.header-brand .menu-switch:not([hidden])')?.getBoundingClientRect();
-      if (theme && theme.top < brand.bottom && Math.abs(headerRect.right - parseFloat(padding.paddingRight) - theme.right) > 1) {
-        issues.push('The mobile theme control must reach the trailing header inset when beside the brand');
+    }
+    const switches = [...header.querySelectorAll('.menu-switch:not([hidden])')];
+    if (switches.length) {
+      const menu = navigation.getBoundingClientRect();
+      const [theme, language] = switches.map(control => control.getBoundingClientRect());
+      const links = [...navigation.querySelectorAll('a')].map(link => link.getBoundingClientRect());
+      if (switches.some(control => !navigation.contains(control)) ||
+          Math.min(theme.top, language.top) < Math.max(...links.map(link => link.bottom)) - 1) {
+        issues.push('The theme and language switches must sit below the menu links');
+      }
+      if (Math.abs(theme.top - language.top) > 1 || theme.right >= language.left ||
+          Math.abs(theme.left + language.right - menu.left - menu.right) > 2) {
+        issues.push('The switch pair must be centered side by side in the menu');
       }
     }
     if (navigation.scrollWidth > navigation.clientWidth + 1) issues.push('Navigation horizontal overflow');
@@ -830,7 +838,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     const prefix = `${screenshots}/${name}-${width}x${height}-${mode}`;
     await page.screenshot({ path: `${prefix}.png`, fullPage: true });
     const language = navigation.getByRole('switch', { name: 'Website auf Englisch', checked: false });
-    const theme = page.getByRole('switch', { name: 'Dunkelmodus', checked: mode === 'dark' });
+    const theme = navigation.getByRole('switch', { name: 'Dunkelmodus', checked: mode === 'dark' });
     if (mode === 'no-js') {
       assert.equal(await page.getByRole('switch').count(), 0);
     } else {
@@ -845,8 +853,16 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.deepEqual(await languageLabels.evaluateAll(labels => labels.map(label => label.dataset.measuredLines)), ['1', '1']);
       const [deLabel, enLabel] = await Promise.all((await languageLabels.all()).map(label => label.boundingBox()));
       assert.ok(deLabel.x + deLabel.width + 4 <= enLabel.x, 'DE and EN need clear space between their letters');
-      if (phone) await language.tap();
-      else await language.press('Space');
+      if (phone) {
+        await language.tap();
+      } else {
+        await navigation.getByRole('link', { name: 'Team' }).focus();
+        await page.keyboard.press('Tab');
+        assert.ok(await theme.evaluate(control => control.matches(':focus-visible')));
+        await page.keyboard.press('Tab');
+        assert.ok(await language.evaluate(control => control.matches(':focus-visible')));
+        await page.keyboard.press('Space');
+      }
       assert.equal(await page.locator('html').getAttribute('lang'), 'en');
       assert.equal(await pauseOptions.count(), 0, 'The English site must omit animation pause options');
       assert.match(await page.title(), /Open biosensing/i);
@@ -854,7 +870,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const englishMenu = page.getByRole('navigation', { name: 'Main navigation' });
       const german = englishMenu.getByRole('switch', { name: 'Website in English', checked: true });
       assert.ok(await german.isVisible(), 'The switch must show English as selected');
-      assert.ok(await page.getByRole('switch', { name: 'Dark mode', checked: mode === 'dark' }).isVisible());
+      assert.ok(await englishMenu.getByRole('switch', { name: 'Dark mode', checked: mode === 'dark' }).isVisible());
       if (!phone) assert.equal(await german.evaluate(control => control.matches(':focus-visible')), true);
       const timeline = englishMenu.getByRole('link', { name: 'Project timeline' });
       assert.equal(await timeline.getAttribute('href'), '#projektverlauf');
@@ -896,7 +912,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       else await theme.press('Space');
       assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
       await page.reload({ waitUntil: 'networkidle' });
-      const light = page.getByRole('switch', { name: 'Dunkelmodus', checked: false });
+      const light = navigation.getByRole('switch', { name: 'Dunkelmodus', checked: false });
       assert.ok(await light.isVisible(), 'The theme choice must survive a reload');
       if (phone) await light.tap();
       else await light.press('Space');

@@ -69,7 +69,8 @@ let turn = 0;
 const elements = [...document.querySelectorAll('[data-measure]')];
 function measure() {
   const navHeight = navigation.offsetHeight;
-  const compact = cloudNodes.some(node => parseFloat(getComputedStyle(node).lineHeight) * 13 > map.clientWidth);
+  // Short screens can leave less room for labels below the outer pictograms.
+  const compact = cloudNodes.some(node => parseFloat(getComputedStyle(node).lineHeight) * 15 > map.clientWidth);
   const measurements = new Map();
   for (const element of elements) {
     const css = getComputedStyle(element);

@@ -506,6 +506,15 @@ img.portrait {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.menu-switches { display: none; }
+.menu-switches:has(.menu-switch:not([hidden])) {
+  display: flex;
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  justify-content: center;
+  column-gap: .5rem;
+}
 .menu-switch:not([hidden]) {
   position: relative;
   display: grid;
@@ -607,11 +616,6 @@ img.portrait {
     border-inline-end: 1px solid var(--rule);
     background: var(--box-paper);
   }
-  .header-brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .5rem;
-  }
   .site-header nav {
     display: grid;
     margin-block-start: .75rem;
@@ -620,7 +624,7 @@ img.portrait {
   }
   .site-header nav a { padding-inline: 8px; }
   .site-header nav a:hover { background: var(--tint); }
-  .site-header nav .menu-switch { justify-self: start; margin-block-start: .5rem; }
+  .menu-switches { margin-block-start: .5rem; }
 }
 
 @media (width < 52rem), (pointer: coarse), (pointer: none) {
@@ -633,7 +637,6 @@ img.portrait {
     padding: .375rem var(--page-gutter);
     border-block-end: 1px solid var(--rule);
   }
-  .header-brand { justify-content: space-between; }
   .site-header nav {
     position: fixed;
     inset-inline: 0;
@@ -652,6 +655,13 @@ img.portrait {
     background: var(--paper);
   }
   .site-header nav a { font-size: .875rem; }
+  @media (max-height: 28rem) {
+    @container content (min-width: 42rem) {
+      .idea-map {
+        max-inline-size: max(14rem, calc(100svh - var(--navigation-block-size, 0px) - 4rem));
+      }
+    }
+  }
 }
 
 @media (width < 23rem) {
@@ -659,19 +669,6 @@ img.portrait {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     text-align: center;
-  }
-}
-
-@media (width < 30rem) {
-  .site-header nav:has(.menu-switch:not([hidden])) {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
-    text-align: center;
-  }
-  .site-header nav .menu-switch {
-    grid-column: 3;
-    grid-row: 1 / 3;
-    align-self: center;
   }
 }
 
