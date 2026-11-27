@@ -38,6 +38,10 @@ Current website update:
   The first two of five milestones are complete according to the project owner.
   The remaining milestones describe planned validation, local analysis, and
   home sleep measurement research.
+- [x] Align the four team profiles in a two-by-two grid with matching circular
+  portraits and an initials placeholder for Daniel. Local Chromium and WebKit
+  checks measured the golden-ratio portrait and spacing proportions and
+  verified the narrow single-column layout in both languages and themes.
 
 Use the most recent successful [Pages workflow run](https://github.com/GeorgeFejer91/Pulsraum/actions/workflows/pages.yml) and the live visual review to verify publication.
 
@@ -148,16 +152,20 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Dr. Alexandros Kastrinogiannis’s card includes his portrait, project role in
   psychophysiology and immersive research, Leipzig Max Planck affiliation,
   selected publications, and links to LinkedIn, ORCID and a Google Scholar
-  publication search. The three portrait cards fit on one row when the main column is
-  wide enough.
-  Daniel Artamendi’s card spans the team grid and includes his biography,
-  professional links and three selected projects in both languages.
+  publication search. Daniel Artamendi’s card uses a circular initials
+  placeholder and includes his biography, professional links and three
+  selected projects in both languages. The four profiles form two equal-width
+  columns above 680 CSS px and stack in reading order at narrower sizes.
+  Cards share the same height within each row. Portraits and names align at
+  the top. The card inset is 1.618 times the grid gap, and each portrait takes
+  up 38.2% of the card’s inner width.
   A link in the footer opens GitHub for participation.
 
 Apply the [accordion stretch geometry](skills/uncodixfy-pretext/references/accordion-stretch.md)
 to content boxes. Center content groups on both axes within their boxes.
 In stretched cards, share extra height equally above, between and below peer
-groups. For the affiliation row, equalize the visible gaps from the card edges
+groups. Anchor team profile contents at the top to align each row's portraits.
+For the affiliation row, equalize the visible gaps from the card edges
 and between the two full logos. Center each logo on its own row when they wrap.
 Center milestone copy and art within their cells below the corner markers.
 Menu bars use edge anchors. On desktop, start the sidebar at the top and align

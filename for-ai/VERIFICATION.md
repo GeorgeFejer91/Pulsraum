@@ -67,8 +67,10 @@ header's leading brand anchor. Check the bottom menu's narrow grid and wider
 row. Verify that the two switches sit below the links and are centered as a
 pair within the menu.
 
-Compare rendered outer insets and peer gaps in foundation and team cards,
-including the shorter card in a stretched row. Check both axes of each timeline
+Compare rendered outer insets and peer gaps in foundation cards, including the
+shorter card in a stretched row. Check both team columns and aligned rows,
+the single-column fallback, and the matching circular portrait frames and
+golden-ratio proportions. Check both axes of each timeline
 cell, and measure the affiliation artwork against the card edges in single-row
 and stacked layouts. Check both languages and themes. Allow for pixel rounding
 and measure from margin boxes when the visitor increases text spacing.

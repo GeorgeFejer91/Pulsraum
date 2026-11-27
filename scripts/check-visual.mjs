@@ -253,6 +253,46 @@ async function checkLayout(page) {
     const centeredX = rect => (rect.left + rect.right) / 2;
     const centeredY = rect => (rect.top + rect.bottom) / 2;
     const evenlySpaced = distances => Math.max(...distances) - Math.min(...distances) <= 1.5;
+    const team = document.querySelector('#team .box-grid');
+    const people = [...team.children];
+    const frames = people.map(card => card.getBoundingClientRect());
+    const columns = matchMedia('(max-width: 680px)').matches ? 1 : 2;
+    const gridGap = parseFloat(getComputedStyle(team).gap);
+    const close = (a, b) => Math.abs(a - b) <= 1;
+    if (people.length !== 4) issues.push('The team grid must contain four profiles');
+    for (const [i, frame] of frames.entries()) {
+      const rowStart = frames[i - i % columns];
+      const column = frames[i % columns];
+      if (!close(frame.width, frames[0].width) || !close(frame.left, column.left) ||
+          !close(frame.top, rowStart.top) || !close(frame.height, rowStart.height) ||
+          (i >= columns && !close(frame.top - frames[i - columns].bottom, gridGap)) ||
+          (i % columns && !close(frame.left - frames[i - 1].right, gridGap))) {
+        issues.push('Team cards must form evenly spaced, matching columns and aligned rows in reading order');
+        break;
+      }
+    }
+    for (const [i, card] of people.entries()) {
+      const frame = frames[i];
+      const name = card.querySelector('h3');
+      const portrait = card.querySelector('.portrait');
+      const inset = gridGap * (1 + Math.sqrt(5)) / 2;
+      const contentWidth = frame.width - 2 * (inset + card.clientLeft);
+      if (!portrait) {
+        issues.push(`Missing portrait or placeholder for ${name.textContent}`);
+        continue;
+      }
+      const photo = portrait.getBoundingClientRect();
+      const rowTitle = people[i - i % columns].querySelector('h3').getBoundingClientRect();
+      if (!close(centeredX(photo), centeredX(frame)) || !close(photo.top - frame.top - card.clientTop, inset) ||
+          !close(photo.width, contentWidth * (3 - Math.sqrt(5)) / 2) || !close(photo.width, photo.height) ||
+          !close(name.getBoundingClientRect().top, rowTitle.top)) {
+        issues.push(`Misaligned portrait or name for ${name.textContent}`);
+      }
+    }
+    const placeholder = team.querySelector('#daniel-artamendi')?.previousElementSibling;
+    if (!placeholder?.matches('.portrait[aria-hidden="true"]') || placeholder.textContent.trim() !== 'DA') {
+      issues.push('Daniel must have a visible initials placeholder with his name announced only once');
+    }
     for (const card of document.querySelectorAll('.box-grid > .knowledge-box')) {
       const frame = card.getBoundingClientRect();
       let previousBottom = frame.top + card.clientTop;
@@ -267,7 +307,9 @@ async function checkLayout(page) {
         }
       }
       gaps.push(frame.bottom - card.clientTop - previousBottom);
-      if (!evenlySpaced(gaps)) issues.push(`Uneven vertical gaps in ${card.querySelector('h3').textContent}: ${gaps}`);
+      if (!card.classList.contains('person') && !evenlySpaced(gaps)) {
+        issues.push(`Uneven vertical gaps in ${card.querySelector('h3').textContent}: ${gaps}`);
+      }
     }
     const logoRow = document.querySelector('.affiliation-logos');
     const edges = logoRow.closest('article').getBoundingClientRect();
