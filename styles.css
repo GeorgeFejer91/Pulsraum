@@ -454,6 +454,27 @@ img.portrait {
   filter: brightness(0) invert(1);
 }
 
+@container content (min-width: 62rem) {
+  #team .box-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container content (width < 62rem) {
+  .person-with-publications { grid-column: 1 / -1; }
+}
+.person-publications {
+  width: 100%;
+  max-width: 48ch;
+}
+.person-publications h4 {
+  margin: 0;
+  font-size: .9375rem;
+}
+.person-publications ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.person-publications .inline-link { font-weight: 400; }
+
 .person-with-projects { grid-column: 1 / -1; }
 .box-grid > .person-with-projects > p, .person-projects {
   width: 100%;

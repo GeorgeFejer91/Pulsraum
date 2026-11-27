@@ -594,6 +594,16 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       const bounds = await link.boundingBox();
       assert.ok(bounds.width >= 44 && bounds.height >= 44, `${name} needs a full touch target`);
     }
+    const kastrinogiannis = profiles.filter({ has: page.getByRole('heading', { name: 'Dr. Alexandros Kastrinogiannis' }) });
+    assert.equal(await kastrinogiannis.count(), 1, 'Alexandros Kastrinogiannis needs his own profile');
+    assert.equal(await kastrinogiannis.locator('.person-role').textContent(), 'Psychophysiologie und immersive Forschung');
+    assert.equal(await kastrinogiannis.locator('img.portrait').getAttribute('src'), 'assets/team/alexandros-kastrinogiannis.webp');
+    assert.ok(await kastrinogiannis.getByRole('link', { name: 'Max-Planck-Institut für Kognitions- und Neurowissenschaften' }).isVisible());
+    for (const name of ['Google Scholar-Suche', 'LinkedIn', 'ORCID', 'Dissertation zu Psychophysiologie und VR (2025)', 'Defensive Erstarrung und Herzrate (2026)', 'ARIADNE (2025)']) {
+      const link = kastrinogiannis.getByRole('link', { name, exact: true });
+      const bounds = await link.boundingBox();
+      assert.ok(bounds?.height >= 44, `${name} needs a full touch target`);
+    }
     for (const image of await page.locator('main img').all()) {
       await image.scrollIntoViewIfNeeded();
       assert.ok(await image.evaluate(element => element.complete && element.naturalWidth > 0), 'Published images must load');
@@ -915,6 +925,10 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.deepEqual(await signals.locator('h2').allTextContents(), ['Breathing signal', 'ECG']);
       assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simulated · 15 breaths/min', 'Simulated · 72 beats/min']);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
+      assert.equal(await kastrinogiannis.locator('.person-role').textContent(), 'Psychophysiology and immersive research');
+      assert.ok(await kastrinogiannis.getByRole('link', { name: 'Max Planck Institute for Human Cognitive and Brain Sciences' }).isVisible());
+      assert.ok(await kastrinogiannis.getByRole('link', { name: 'Google Scholar search' }).isVisible());
+      assert.ok(await kastrinogiannis.getByRole('link', { name: 'Dissertation on psychophysiology and VR (2025)' }).isVisible());
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
       assert.equal(await institute.locator('img').getAttribute('src'), 'assets/team/mpib-en.svg');
       await institute.locator('img').evaluate(image => image.decode());
