@@ -97,7 +97,8 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   solid blue. The Polar H10 above it uses ochre dashes and the spirometer to
   its right uses teal dots, with matching Bluetooth paths into the display.
   The Polar strap expands through the two-second inhale and contracts through
-  the two-second exhale. Its sensor face stays rigid. Regenerate its frame
+  the two-second exhale. Its rigid sensor pod moves toward the viewer as the
+  chest rises and recedes as the chest settles. Regenerate its frame
   strip with `python scripts/generate-belt.py`.
   The WebP atlas uses the Blender camera `Webansicht · Messkopf und Griff`,
   frames 1 to 95 at every other frame, in four rows of twelve 256 × 300 px

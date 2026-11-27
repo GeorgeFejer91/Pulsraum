@@ -901,7 +901,7 @@ img.portrait {
 @keyframes transmit-stream { to { stroke-dashoffset: calc(-1 * var(--dash-period)); } }
 @keyframes spirometer-row { from { transform: translateY(0); } to { transform: translateY(-1200px); } }
 /* Reversing the 49 poses plays exhalation on the same clock as the phase label. */
-@keyframes expand-strap { to { transform: translateY(-5952px); } }
+@keyframes expand-strap { to { transform: translateY(-6720px); } }
 @keyframes spirometer-column { from { transform: translateX(0); } to { transform: translateX(-3072px); } }
 @keyframes breath-label { 50%, 100% { transform: translateY(-25px); } }
 /* Follow the two respiratory crests crossed by the comparison cursor. */

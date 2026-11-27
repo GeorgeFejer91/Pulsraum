@@ -27,7 +27,7 @@ await once(server, 'listening');
 const url = process.env.PULSRAUM_VISUAL_URL ?? `http://127.0.0.1:${server.address().port}/`;
 
 async function checkValidationBelt(drawing) {
-  const widths = [];
+  const samples = [];
   for (const time of [0, 1000, 2000, 3000, 4000]) {
     await drawing.evaluate(async (svg, ms) => {
       for (const animation of svg.getAnimations({ subtree: true })) {
@@ -37,7 +37,7 @@ async function checkValidationBelt(drawing) {
       }
     }, time);
     const frame = await drawing.screenshot();
-    widths.push(await drawing.evaluate(async (svg, base64) => {
+    samples.push(await drawing.evaluate(async (svg, base64) => {
       const image = new Image();
       image.src = 'data:image/png;base64,' + base64;
       await image.decode();
@@ -47,21 +47,30 @@ async function checkValidationBelt(drawing) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(image, 0, 0, 380, 218);
       // Measure the silhouette above the phone, clear of the Bluetooth symbol.
-      const { data, width } = ctx.getImageData(30, 10, 170, 46);
+      const { data, width } = ctx.getImageData(30, 10, 170, 62);
       let left = width, right = -1;
+      let podBottom = -1;
       for (let i = 0; i < data.length; i += 4) {
         if (Math.max(data[i], data[i + 1], data[i + 2]) >= 100) continue;
         const x = (i / 4) % width;
         left = Math.min(left, x);
         right = Math.max(right, x);
+        // The central strip crosses the pod's lower rim in every phase.
+        if (x >= 66 && x <= 84) podBottom = Math.max(podBottom, Math.floor(i / 4 / width));
       }
-      return right - left;
+      return { width: right - left, podBottom };
     }, frame.toString('base64')));
   }
+  const widths = samples.map(sample => sample.width);
   const [rest, inhaling, full, exhaling, end] = widths;
   assert.ok(inhaling > rest + 4 && full > inhaling + 4 && exhaling < full - 4 &&
     exhaling > end + 4 && Math.abs(end - rest) <= 1,
   `Belt must expand on inhale and contract on exhale, observed widths ${widths}`);
+  const podEdges = samples.map(sample => sample.podBottom);
+  const [start, rising, peak, falling, finish] = podEdges;
+  assert.ok(rising > start && peak >= start + 4 && peak > rising &&
+    falling < peak && falling > finish && Math.abs(finish - start) <= 1,
+  `The front pod must advance on inhalation and return on exhalation, observed edges ${podEdges}`);
 }
 
 async function checkBreathingPhases(drawing) {
