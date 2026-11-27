@@ -115,8 +115,11 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Its 108 frames at 24 fps show a breath through external motion. Chest
   excursion and elbow movement are amplified for the inline figure. Both
   arms articulate at the shoulder and elbow while preserving their grips.
-  Inhalation lasts 1.75 s. The chest lifts and widens as blue tracers travel through
-  the mouthpiece and throat into both sides of the chest. One translucent
+  During the 1.75 s inhalation the breastbone moves forward and up, the
+  shoulders lift slightly and the lower ribs widen a little. The Blender
+  scene notes cite the motion-capture studies used for this illustration.
+  Blue tracers fade with distance beyond the lips into both sides of the chest
+  and regain opacity along the same path during expiration. One translucent
   material covers the whole avatar. A blue arrow points away from the abdomen.
   Expiration reverses the motion, with amber tracers and an amber arrow
   pointing back toward the abdomen. The inline figure uses 54 poses from this render,

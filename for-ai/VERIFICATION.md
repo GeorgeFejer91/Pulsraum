@@ -85,6 +85,11 @@ Run proportionate build, test, lint, type, runtime, visual, device, security,
 and compatibility checks for every affected boundary. Gate 2 applies in full
 for every repository change.
 
+For edits to the breathing avatar or airflow material, run
+`blender -b assets/models/polar-h10-worn.blend --python-exit-code 1 --python scripts/check-breathing-model.py`.
+This checks sternum, shoulder and lower-rib travel in the saved scene, along
+with tracer opacity at successive locations during both phases of the breath.
+
 ## Gate 4: publication and live visual verification
 
 1. Review status and diff. Stage the intended changes and preserve unrelated
