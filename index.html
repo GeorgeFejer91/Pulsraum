@@ -40,38 +40,60 @@
         <h1 id="overview-title" data-measure>Pulsraum</h1>
         <p class="lead" data-measure data-en="Open biosensing for health and creative approaches to managing stress.">Offene Biosensorik für Gesundheit und kreative Medien zur Stressregulation.</p>
       </div>
-      <div class="idea-map">
-        <svg class="map-branch branch-upper" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 50 C29 50 42 67 50 100"/>
-          <path class="signal-resp" d="M100 50 C69 50 59 68 50 100"/>
+      <figure class="idea-map" aria-label="Fünf Ideen für die offene Pulsraum-Software-Suite" data-en-aria-label="Five ideas for the Pulsraum open software suite">
+        <svg class="map-links" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true">
+          <path class="map-crosslinks" d="M100 250Q42 176 100 100Q163 26 300 50Q445 20 500 100Q555 164 500 250Q305 311 100 250Z"/>
+          <path class="map-spoke" d="M300 50V150"/>
+          <path class="map-spoke signal-resp" d="M100 100C201 89 201 143 300 150"/>
+          <path class="map-spoke map-data" d="M500 100C412 85 403 147 300 150"/>
+          <path class="map-spoke signal-ecg" d="M100 250C134 224 133 150 300 150"/>
+          <path class="map-spoke map-creative" d="M500 250C466 224 467 150 300 150"/>
         </svg>
-        <svg class="map-branch branch-lower" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 50 C34 50 39 30 50 0"/>
-          <path class="signal-ecg" d="M100 50 C72 50 57 30 50 0"/>
-        </svg>
-        <svg class="map-hub" viewBox="0 0 80 80" aria-hidden="true">
-          <circle class="hub-orbit" cx="40" cy="40" r="37"/>
-          <circle class="hub-core" cx="40" cy="40" r="26"/>
-          <path d="M19 40h11l5-9 8 19 6-12 3 2h9"/>
-        </svg>
-        <article class="idea-node" id="anwendungen">
-          <h2 class="box-title" data-measure data-en="What we’re building">Was Pulsraum vorhat</h2>
-          <p data-measure><span data-en="Pulsraum aims to make">Pulsraum soll</span> <span class="signal-ecg" data-en="ECG">EKG</span>, <span class="signal-resp" data-en="breathing measurements">Atemmessung</span> <span data-en="and personal biofeedback accessible in the browser using a smartphone and a Polar H10. We want to use these signals to guide breathing exercises and control games or visualizations.">und individuelles Biofeedback mit Smartphone und Polar H10 im Browser zugänglich machen. Damit wollen wir Atemübungen begleiten und Spiele oder Visualisierungen mit Körpersignalen steuern.</span></p>
+        <div class="map-hub">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#suite"/></svg>
+          <div class="hub-label">
+            <strong data-measure>Pulsraum</strong>
+            <span data-measure data-en="Open software suite">Offene Software-Suite</span>
+          </div>
+        </div>
+        <a class="idea-node map-source" href="#anwendungen">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#open-source"/></svg>
+          <span data-measure>Open Source</span>
+        </a>
+        <a class="idea-node signal-resp" href="#respiration-title">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#lungs"/></svg>
+          <span data-measure data-en="Breathing">Atmung</span>
+        </a>
+        <a class="idea-node map-data" href="#lokale-daten">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#local-data"/></svg>
+          <span data-measure data-en="On-device data">Lokale Daten</span>
+        </a>
+        <a class="idea-node signal-ecg" href="#ecg-title">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#heart"/></svg>
+          <span data-measure data-en="ECG">EKG</span>
+        </a>
+        <a class="idea-node map-creative" href="#kreatives-biofeedback">
+          <svg class="map-icon" viewBox="0 0 128 128" aria-hidden="true"><use href="assets/illustrations/overview-icons.svg#biofeedback"/></svg>
+          <span data-measure data-en="Creative biofeedback">Kreatives Biofeedback</span>
+        </a>
+      </figure>
+      <div class="overview-details">
+        <article id="anwendungen">
+          <h2 class="box-title" data-measure data-en="Open-source software">Offene Software</h2>
+          <p data-measure data-en="We plan to bring ECG, breathing measurements and biofeedback together in one open-source browser suite. A smartphone and a Polar H10 chest strap will supply the signals.">In einer offenen Software-Suite für den Browser wollen wir EKG, Atemmessung und Biofeedback zusammenbringen. Ein Smartphone und der Polar-H10-Brustgurt sollen die Signale liefern.</p>
           <a class="inline-link" href="https://github.com/GeorgeFejer91/Pulsraum"><span data-measure data-en="View project on GitHub">Projekt auf GitHub ansehen</span><span aria-hidden="true">↗</span></a>
         </article>
-        <article class="idea-node" id="lokale-daten">
+        <article id="lokale-daten">
           <h2 class="box-title" data-measure data-en="Your data stays on your device">Daten auf deinem Gerät</h2>
           <p data-measure data-en="Our goal is to let you process and store your health data on your own device. The open-source software is designed to work without tying you to a provider or sharing your data.">Pulsraum soll Gesundheitsdaten auf dem eigenen Gerät verarbeiten und speichern. Die offene Software soll dabei ohne Anbieterbindung oder Weitergabe der Daten auskommen.</p>
         </article>
         <article id="signale" class="signal-panel" aria-labelledby="respiration-title ecg-title">
-          <figure class="idea-node signal-figure signal-resp">
+          <figure class="signal-figure signal-resp">
             <figcaption>
               <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
                 <g class="organ-motion">
-                  <path class="organ-body" d="M19 10c-3-2-7 2-10 8C5 25 3 34 5 39c1 3 5 2 9 0l5-2c2-1 3-3 3-6V17c0-4-1-6-3-7ZM29 10c3-2 7 2 10 8 4 7 6 16 4 21-1 3-5 2-9 0l-5-2c-2-1-3-3-3-6V17c0-4 1-6 3-7Z"/>
-                  <path d="m24 17-8 9-4 8m4-8-6 2m14-11 8 9 4 8m-4-8 6 2"/>
+                  <use href="assets/illustrations/overview-icons.svg#lungs" width="48" height="48"/>
                 </g>
-                <path d="M24 5v12"/>
               </svg>
               <h2 id="respiration-title" class="box-title" data-measure data-en="Breathing signal">Atemsignal</h2>
               <p data-measure data-en="Tracking breathing with a smartphone">Atembewegung per Smartphone</p>
@@ -85,12 +107,11 @@
             </svg>
             <p class="signal-rate" data-measure data-en="Simulated · 15 breaths/min">Simuliert · 15 Atemzüge/min</p>
           </figure>
-          <figure class="idea-node signal-figure signal-ecg">
+          <figure class="signal-figure signal-ecg">
             <figcaption>
               <svg class="signal-organ" viewBox="0 0 48 48" aria-hidden="true">
                 <g class="organ-motion">
-                  <path class="organ-body" d="M24 39C20 36 6 26 6 17a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 9-14 19-18 22Z"/>
-                  <path d="M12 18c0-3 2-5 5-5"/>
+                  <use href="assets/illustrations/overview-icons.svg#heart" width="48" height="48"/>
                 </g>
               </svg>
               <h2 id="ecg-title" class="box-title" data-measure data-en="ECG">EKG</h2>
@@ -105,6 +126,10 @@
             </svg>
             <p class="signal-rate" data-measure data-en="Simulated · 72 beats/min">Simuliert · 72 Schläge/min</p>
           </figure>
+        </article>
+        <article id="kreatives-biofeedback">
+          <h2 class="box-title" data-measure data-en="Creative biofeedback">Kreatives Biofeedback</h2>
+          <p data-measure data-en="A shape on screen could grow and shrink with your breath during a breathing exercise. In a game, each heartbeat could move a character.">Bei einer Atemübung könnte eine Form auf dem Bildschirm mit deinem Atem wachsen und schrumpfen. In einem Spiel könnte jeder Herzschlag eine Figur bewegen.</p>
         </article>
       </div>
       <label class="motion-setting map-motion" hidden>

@@ -101,96 +101,134 @@
 
 .idea-map {
   position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(6.5rem, 15%, 12rem) minmax(0, 1fr);
-  grid-template-areas: "project branches-a signals" "data branches-b signals";
-  align-items: center;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(6, 1fr);
+  place-items: center;
+  min-height: clamp(22rem, 40vw, 27rem);
+  width: min(100%, 46rem);
+  margin-inline: auto;
 }
-.idea-node {
-  position: relative;
-  min-width: 0;
-  padding-block: clamp(1.25rem, 2.5vw, 2rem);
-}
-.idea-node p { color: var(--muted); }
-.idea-map > .idea-node { padding-inline-end: clamp(1.25rem, 2vw, 2rem); }
-#anwendungen { grid-area: project; }
-#lokale-daten { grid-area: data; padding-inline-start: clamp(0rem, 3vw, 3rem); --float-y: -3px; }
-.idea-node::before {
-  content: "";
+.map-links {
   position: absolute;
-  top: 50%;
-  left: 100%;
-  width: .5rem;
-  height: .5rem;
-  transform: translate(-50%, -50%);
-  border: 3px solid var(--paper);
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 0 0 0 1px currentColor;
-}
-.map-branch {
+  inset: 0;
+  z-index: -1;
   width: 100%;
   height: 100%;
-  min-height: 0;
-  contain: size;
-  overflow: visible;
-  color: var(--box-rule);
   fill: none;
   pointer-events: none;
 }
-.branch-upper { grid-area: branches-a; }
-.branch-lower { grid-area: branches-b; }
-.map-branch path { stroke: currentColor; stroke-width: 1.25; vector-effect: non-scaling-stroke; }
-.map-branch .signal-resp, .map-branch .signal-ecg { opacity: .65; }
-.map-hub {
-  grid-area: branches-a;
-  align-self: end;
-  justify-self: center;
-  z-index: 1;
-  width: clamp(3.75rem, 6vw, 5rem);
-  transform: translateY(50%);
-  fill: none;
+.map-links path {
   stroke: currentColor;
-  pointer-events: none;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
 }
-.hub-orbit { stroke: var(--box-rule); stroke-dasharray: 1 4; stroke-linecap: round; }
-.hub-core { fill: var(--paper); }
-.map-hub path { stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.map-spoke { opacity: .72; }
+.map-crosslinks {
+  color: var(--box-rule);
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+}
+.map-data { color: var(--validation-flow); }
+.map-creative { color: var(--validation-polar); }
+.map-source { grid-area: 1 / 2 / span 2; }
+.idea-node.signal-resp { grid-area: 2 / 1 / span 2; }
+.idea-node.map-data { grid-area: 2 / 3 / span 2; }
+.idea-node.signal-ecg { grid-area: 5 / 1 / span 2; }
+.idea-node.map-creative { grid-area: 5 / 3 / span 2; }
+.map-hub { grid-area: 3 / 2 / span 2; }
+.idea-node, .map-hub {
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-self: stretch;
+  align-items: start;
+  justify-items: center;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  text-decoration: none;
+  font-size: .9375rem;
+  line-height: 1.25;
+  font-weight: 600;
+}
+.idea-node > span, .hub-label { grid-row: 3; margin-top: .35rem; }
+.hub-label {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  /* The space below the hub is free for its label, even at large text sizes. */
+  height: 0;
+}
+.idea-node span, .map-hub :is(strong, span) {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: .2em;
+  background: var(--paper);
+  overflow-wrap: anywhere;
+}
+.idea-node:hover span, .idea-node:focus-visible span { text-decoration: underline; }
+.map-icon {
+  grid-row: 2;
+  display: block;
+  width: clamp(3.1rem, 6vw, 4.25rem);
+  height: auto;
+  padding: .66rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  fill: currentColor;
+  background: var(--paper);
+}
+.map-hub .map-icon {
+  width: clamp(3.75rem, 7vw, 5rem);
+  padding: .85rem;
+  color: var(--paper);
+  background: var(--ink);
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--box-rule);
+}
+.map-hub strong { font-size: 1.125rem; }
+.map-hub span { font-size: .8125rem; font-weight: 400; }
+.overview-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "source signals" "data signals" "creative signals";
+  gap: 1.5rem clamp(2rem, 6vw, 5rem);
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+#anwendungen { grid-area: source; }
+#lokale-daten { grid-area: data; }
+#kreatives-biofeedback { grid-area: creative; }
+.overview-details p { color: var(--muted); }
 .signal-panel {
   grid-area: signals;
   display: grid;
-  grid-template-rows: subgrid;
-  align-items: center;
-  align-self: stretch;
+  align-content: start;
+  gap: 2rem;
   min-width: 0;
 }
-.signal-panel .idea-node {
-  padding-inline-start: clamp(1.25rem, 2vw, 2rem);
-  --float-y: -2px;
-}
-.signal-panel .signal-ecg { --float-y: 3px; }
-.signal-panel .idea-node::before { left: 0; }
 .map-motion { font-size: .8125rem; }
 
-@media (max-width: 55rem) {
-  .idea-map {
-    display: block;
-    padding-inline-start: 2.25rem;
-    background: linear-gradient(to bottom, transparent 1rem, var(--box-rule) 2rem, var(--box-rule) 85%, transparent) 1rem 0 / 1px 100% no-repeat;
+@media (min-width: 78rem) {
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    align-items: center;
+    column-gap: 1rem;
   }
-  .map-branch { display: none; }
-  .map-hub {
-    display: block;
-    justify-self: start;
-    width: 2rem;
-    margin-inline-start: -2.25rem;
-    transform: none;
+  .hero .hero-heading { margin: 0; }
+  .hero .hero-heading h1 { font-size: clamp(4rem, 6.5vw, 6.75rem); }
+  .overview-details, .map-motion { grid-column: 1 / -1; }
+  .map-motion { justify-self: start; }
+}
+@media (max-width: 46rem) {
+  .idea-node { font-size: .875rem; }
+  .overview-details {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "source" "data" "signals" "creative";
   }
-  .signal-panel { display: block; }
-  .idea-map > .idea-node, #lokale-daten, .signal-panel .idea-node { padding-inline: 0; }
-  .idea-node { padding-block: .9rem 1.15rem; }
-  .idea-node::before, .signal-panel .idea-node::before { left: -1.25rem; top: 1.7rem; }
-  .map-motion { margin-inline-start: 2.25rem; }
 }
 .signal-figure figcaption {
   display: grid;
@@ -206,15 +244,7 @@
   grid-row: span 2;
   width: 3rem;
   height: 3rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.organ-body {
   fill: currentColor;
-  fill-opacity: .16;
 }
 .signal-drawing {
   display: block;
@@ -698,7 +728,7 @@ img.portrait {
     animation: float-node 9s ease-in-out infinite alternate;
   }
   .idea-map.in-view .idea-node:is(:hover, :focus-within),
-  .hero:has(#pause-map:checked) .idea-map :is(.idea-node, .signal-trace, .organ-motion) {
+  .hero:has(#pause-map:checked) :is(.idea-node, .signal-trace, .organ-motion) {
     animation-play-state: paused;
   }
   .motion-setting:not([hidden]) {

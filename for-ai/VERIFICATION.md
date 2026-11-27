@@ -49,8 +49,8 @@ Open the actual screenshots in `.for-ai-local/visual/` and review all four
 sections at desktop and phone sizes in light and dark themes. Check each
 [website layout rule](./PROJECT.md#website-layout) and the UI contract under
 [architecture and ownership](./PROJECT.md#architecture-and-ownership). Check
-the four unboxed overview nodes, their connected pulse or mobile rail, and
-their paused and reduced-motion states. Verify that each box in the remaining
+the five linked pictograms around the open software suite on desktop and phone,
+their destinations, and their paused and reduced-motion states. Verify that each box in the remaining
 sections has a single subject and a title, each team member has a separate
 profile with the confirmed details available for publication, and the boxes
 have visible boundaries and stack in reading order on narrow screens. Review

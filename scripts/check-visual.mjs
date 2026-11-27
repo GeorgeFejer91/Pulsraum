@@ -10,7 +10,7 @@ const screenshots = process.env.PULSRAUM_VISUAL_DIR ?? '.for-ai-local/visual';
 const contentTypes = { html: 'text/html', css: 'text/css', js: 'text/javascript', webp: 'image/webp', png: 'image/png', svg: 'image/svg+xml', blend: 'application/octet-stream' };
 const server = createServer(async (request, response) => {
   const pathname = request.url === '/' ? '/index.html' : request.url;
-  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|signals\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
+  if (!/^\/(?:index\.html|styles\.css|site\.js|theme\.js|assets\/pretext\/[\w/-]+\.js|assets\/models\/vernier-go-direct-spirometer\.blend|assets\/illustrations\/(?:polar-h10(?:-breathing)?\.webp|vernier-go-direct-spirometer\.svg|spirometer-airflow\.webp|(?:signals|overview-icons)\.svg)|assets\/team\/[\w-]+\.(?:webp|png|svg))$/.test(pathname)) {
     response.writeHead(404).end();
     return;
   }
@@ -137,34 +137,45 @@ async function checkLayout(page) {
     const issues = [];
     const map = document.querySelector('.idea-map');
     const nodes = [...map.querySelectorAll('.idea-node')];
-    if (nodes.length !== 4) issues.push('The overview needs four idea nodes');
-    const stacked = getComputedStyle(map).display === 'block';
-    const hub = map.querySelector('.map-hub').getBoundingClientRect();
-    const hubX = hub.left + hub.width / 2;
-    const hubY = hub.top + hub.height / 2;
-    const branches = map.querySelectorAll('.map-branch');
+    const expectedIcons = ['open-source', 'lungs', 'local-data', 'heart', 'biofeedback'];
+    const spokes = [...map.querySelectorAll('.map-spoke')];
+    if (nodes.length !== 5 || spokes.length !== 5) issues.push('Each of the five ideas needs its own spoke');
+    const hub = map.querySelector('.map-hub');
+    const hubRect = hub.querySelector('.map-icon').getBoundingClientRect();
+    if (!hub.querySelector('use[href$="#suite"]')?.getBBox().width) issues.push('The suite pictogram must render');
+    const boxes = [hub.getBoundingClientRect()];
     for (const [i, node] of nodes.entries()) {
-      const rect = node.getBoundingClientRect();
-      const css = getComputedStyle(node);
-      const pin = getComputedStyle(node, '::before');
-      const x = rect.x + parseFloat(pin.left);
-      const y = rect.y + parseFloat(pin.top);
-      const textFits = [...node.querySelectorAll('[data-measure]')].every(el => el.scrollWidth <= el.clientWidth + 1);
-      if (css.borderStyle !== 'none' || css.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
-          !node.querySelector('h2') || !textFits) {
-        issues.push('Each idea needs a readable, unboxed node');
+      if (!document.getElementById(node.hash.slice(1))) issues.push('Missing concept link destination');
+      const use = node.querySelector('use');
+      if (!use?.getAttribute('href').endsWith('#' + expectedIcons[i]) || !use.getBBox().height) {
+        issues.push('Each concept needs its own visible SVG symbol');
       }
-      if (stacked) {
-        if (Math.abs(hubX - x) > 1 || (i && nodes[i - 1].getBoundingClientRect().bottom > rect.top + 1)) {
-          issues.push('Narrow nodes must follow the hub in reading order along the rail');
-        }
-      } else {
-        const path = branches[i % 2].querySelectorAll('path')[i < 2 ? 0 : 1];
-        const start = path.getPointAtLength(0).matrixTransform(path.getScreenCTM());
-        const end = path.getPointAtLength(path.getTotalLength()).matrixTransform(path.getScreenCTM());
-        if (Math.hypot(start.x - x, start.y - y) > 4 || Math.hypot(end.x - hubX, end.y - hubY) > 1) {
-          issues.push('Each branch must meet its node and the central pulse');
-        }
+      const box = node.getBoundingClientRect();
+      const label = node.querySelector('span');
+      if (label.scrollWidth > label.clientWidth + 1 || box.width < 44 || box.height < 44) {
+        issues.push('Each concept needs a readable label and a full touch target');
+      }
+      if (boxes.some(b => box.left < b.right && box.right > b.left && box.top < b.bottom && box.bottom > b.top)) {
+        issues.push('The suite and its five concepts must remain distinct');
+      }
+      boxes.push(box);
+      const path = spokes[i];
+      if (!path) continue;
+      const start = path.getPointAtLength(0).matrixTransform(path.getScreenCTM());
+      const end = path.getPointAtLength(path.getTotalLength()).matrixTransform(path.getScreenCTM());
+      const icon = node.querySelector('.map-icon').getBoundingClientRect();
+      if (Math.hypot(start.x - icon.x - icon.width / 2, start.y - icon.y - icon.height / 2) > 4 ||
+          Math.hypot(end.x - hubRect.x - hubRect.width / 2, end.y - hubRect.y - hubRect.height / 2) > 1) {
+        issues.push('Each branch must connect its concept to the central software suite');
+      }
+    }
+    const frame = map.getBoundingClientRect();
+    const items = [...map.querySelectorAll('.map-icon, [data-measure]')].map(el => el.getBoundingClientRect());
+    for (const [i, item] of items.entries()) {
+      if (item.left < frame.left - 1 || item.right > frame.right + 1 || item.bottom > frame.bottom + 1 ||
+          items.slice(0, i).some(b => item.left < b.right - 1 && item.right > b.left + 1 &&
+            item.top < b.bottom - 1 && item.bottom > b.top + 1)) {
+        issues.push('Map labels and pictograms must fit without overlapping');
       }
     }
     for (const section of document.querySelectorAll('main > section:not(#projekt)')) {
@@ -322,7 +333,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.ok(breathingPlot.y + breathingPlot.height <= ecgPlot.y && Math.abs(breathingPlot.x - ecgPlot.x) < 1 &&
       Math.abs(breathingPlot.width - ecgPlot.width) < 1, 'Both plots must stack with aligned edges');
     if (mode === 'no-js') await page.emulateMedia({ reducedMotion: 'no-preference' });
-    const node = page.locator('#anwendungen');
+    const node = page.locator('.idea-map .map-source');
     const mapPause = page.getByRole('checkbox', { name: 'Bewegung der Karte pausieren' });
     assert.equal(await mapPause.isVisible(), false);
     assert.equal(await node.evaluate(el => el.getAnimations().length), 0);
@@ -388,8 +399,9 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       await mapPause.press('Space');
       assert.ok(await mapPause.isChecked());
       await signals.first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await page.waitForFunction(el => [el, ...el.querySelectorAll('.signal-trace, .organ-motion')].every(
+      await page.waitForFunction(el => [...el.querySelectorAll('.signal-trace, .organ-motion')].every(
         part => part.getAnimations()[0]?.playState === 'paused'), await signals.first().elementHandle());
+      assert.equal(await node.evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
       await mapPause.press('Space');
       assert.equal(await mapPause.isChecked(), false);
       for (const figure of await signals.all()) {
@@ -536,6 +548,13 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.equal(await institute.getAttribute('title'), 'Max Planck Institute for Human Development');
       assert.equal(await affiliations.getByRole('link', { name: 'University of Konstanz' })
         .getAttribute('href'), 'https://www.uni-konstanz.de/en/');
+      const creative = page.locator('.idea-map').getByRole('link', { name: 'Creative biofeedback' });
+      assert.equal(await creative.getAttribute('href'), '#kreatives-biofeedback');
+      if (phone) await creative.tap();
+      else await creative.press('Enter');
+      assert.equal(new URL(page.url()).hash, '#kreatives-biofeedback');
+      assert.equal(await page.locator('#kreatives-biofeedback h2').innerText(), 'Creative biofeedback');
+      await page.evaluate(() => window.scrollTo(0, 0));
       await checkLayout(page);
       await page.screenshot({ path: `${prefix}-en.png`, fullPage: true });
       await page.reload({ waitUntil: 'networkidle' });

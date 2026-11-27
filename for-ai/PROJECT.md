@@ -59,11 +59,12 @@ Add project-specific non-goals only after they prevent a plausible wrong turn.
 Keep supporting text, images, and links with their subject. Use connected
 nodes in the overview and separate boxes for foundations, milestones and people.
 
-- **Auf einen Blick** presents the project, example uses, local data processing,
-  and two scrolling NeuroKit2 simulations as four unboxed idea nodes. On wide
-  screens each node branches from a central pulse. Narrow layouts connect the
-  nodes along one vertical rail in reading order. Visible nodes float by up
-  to three pixels. One control pauses the map and both signals. The breathing trace
+- **Auf einen Blick** connects five illustrated concepts to the planned open
+  software suite on both desktop and phone. Open source, breathing, local data,
+  ECG and creative biofeedback each link to the relevant explanation or signal.
+  The SVG symbols in `assets/illustrations/overview-icons.svg` were traced from
+  `artwork/overview-pictograms.png`. Visible nodes float slightly. One control
+  pauses the map and both scrolling NeuroKit2 simulations. The breathing trace
   sits above the ECG. The lungs expand and contract with the breathing trace,
   and the heart pulses as each R peak arrives at the right edge. Each row
   shows its source and simulated rate. Reduced-motion and JavaScript-free
