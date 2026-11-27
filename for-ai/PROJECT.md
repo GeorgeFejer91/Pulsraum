@@ -117,6 +117,7 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   includes the institution's emblem and lettering. Use the German or English
   institute wordmark with the page language and the university's German mark
   in both languages. Keep the marks legible against the profile in both themes.
+  Alex Cuthbertson’s card uses his supplied portrait and links to Zen Specs.
   A link in the footer opens GitHub for participation.
 
 Apply the [accordion stretch geometry](skills/uncodixfy-pretext/references/accordion-stretch.md)
@@ -131,7 +132,7 @@ Let boxes grow with their contents and preserve reading order on narrow screens.
 
 The site uses static HTML and CSS with locally served JavaScript. The build script copies the pinned Pretext browser modules and license. The ordered milestone cards use native document flow and Pretext measurement for enlarged text. The Pages workflow stages only public website files and requires rendered verification of that artifact before deployment.
 
-Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here. George Fejer and Alex of Zen Specs are the proposed team; do not invent Alex's surname, degree or exact duties.
+Public copy describes planned measurement software, not an already validated medical device. Polar H10 is part of the core concept. Physiological processing in the planned applications stays on the receiving device. The page covers personal health, medical-reference comparison/validation, and creative/immersive biofeedback. Publish only the selected public project text; private grants, financial declarations, account data, unknown credentials and invented partner commitments do not belong here.
 
 The visual direction uses warm light surfaces, deep green type, generous document flow and four anchor-linked sections. The dark theme uses subdued green-black surfaces. The theme follows the system until a visitor chooses a mode, and the browser retains that choice when storage is available. Use blue for respiration and red for ECG in both themes, with text labels on the two signal traces. Native controls, visible keyboard focus, wrapping text and a usable no-JavaScript fallback are required. German is the default and the JavaScript-free version. The menu switches the whole page between German and English and remembers the selection when browser storage is available. Keep both versions aligned and avoid em dashes in project copy.
 
