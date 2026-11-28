@@ -272,7 +272,6 @@ main { container: content / inline-size; }
   gap: var(--box-gap);
 }
 .topic-team .portrait { width: 100%; }
-.topic-team .portrait-initial { font-size: .875rem; }
 .topic-person-name { display: block; }
 .signal-panel:has(.signal-figure[hidden]) .suite-profile,
 .hero:not(.interactive-map) .signal-panel:has(.signal-figure:target) .suite-profile { display: none; }
@@ -407,13 +406,6 @@ main { container: content / inline-size; }
   object-fit: cover;
   border: 1px solid var(--rule);
   border-radius: 50%;
-}
-.portrait-initial {
-  display: grid;
-  place-items: center;
-  background: var(--tint);
-  color: var(--muted);
-  font-size: clamp(1.5rem, 8cqi, 2.5rem);
 }
 .person .person-role {
   font-size: .9375rem;

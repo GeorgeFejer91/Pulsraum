@@ -318,7 +318,7 @@ async function checkLayout(page) {
       const inset = gridGap * (1 + Math.sqrt(5)) / 2;
       const contentWidth = frame.width - 2 * (inset + card.clientLeft);
       if (!portrait) {
-        issues.push(`Missing portrait or placeholder for ${name.textContent}`);
+        issues.push(`Missing portrait for ${name.textContent}`);
         continue;
       }
       const photo = portrait.getBoundingClientRect();
@@ -329,9 +329,10 @@ async function checkLayout(page) {
         issues.push(`Misaligned portrait or name for ${name.textContent}`);
       }
     }
-    const placeholder = team.querySelector('#daniel-artamendi')?.previousElementSibling;
-    if (!placeholder?.matches('.portrait[aria-hidden="true"]') || placeholder.textContent.trim() !== 'DA') {
-      issues.push('Daniel must have a visible initials placeholder with his name announced only once');
+    const danielPortrait = team.querySelector('#daniel-artamendi')?.previousElementSibling;
+    if (!danielPortrait?.matches('img.portrait[src="assets/team/daniel-artamendi.webp"][alt=""]') ||
+        !danielPortrait.complete || !danielPortrait.naturalWidth) {
+      issues.push('Daniel’s portrait must load and leave his name to the adjacent heading');
     }
     for (const card of document.querySelectorAll('.box-grid > .knowledge-box')) {
       const frame = card.getBoundingClientRect();
@@ -615,19 +616,22 @@ async function checkTopicTeam(details, topic, { english = false, measured = true
   const team = details.getByRole('list', { name: english ? 'Responsible team members' : 'Verantwortliche Teammitglieder' });
   assert.equal(await team.count(), 1, `${topic} must show its own team at the bottom`);
   assert.deepEqual(await team.locator('.topic-person-name:visible').allInnerTexts(), teams[topic]);
-  const rows = await team.locator('li:visible').evaluateAll(items => items.map(item => {
+  const rows = await team.locator('li:visible').evaluateAll((items, software) => items.map(item => {
     const portrait = item.querySelector('.portrait');
+    const name = item.querySelector('.topic-person-name').textContent;
+    const danielPortrait = document.querySelector('#daniel-artamendi')?.previousElementSibling;
     const bio = item.querySelector('p:last-child');
     const photo = portrait.getBoundingClientRect();
     const text = bio.getBoundingClientRect();
     return {
       sideBySide: photo.width > 0 && Math.abs(photo.width - photo.height) < 1 && photo.right < text.left,
-      avatar: portrait instanceof HTMLImageElement ? portrait.complete && portrait.naturalWidth > 0 : portrait.textContent === 'DA',
+      avatar: portrait.matches('img[alt=""]') && portrait.complete && portrait.naturalWidth > 0 &&
+        (name !== software || portrait.currentSrc === danielPortrait?.currentSrc),
       fits: bio.scrollWidth <= bio.clientWidth + 1 && bio.scrollHeight <= bio.clientHeight + 1,
       measured: Number(bio.dataset.measuredLines) > 0,
       translated: bio.textContent === bio.dataset.en,
     };
-  }));
+  }), software);
   assert.ok(rows.every(row => row.sideBySide && row.avatar && row.fits &&
     (!measured || row.measured) && row.translated === english), `${topic} must show readable, localized profiles beside portraits`);
 }

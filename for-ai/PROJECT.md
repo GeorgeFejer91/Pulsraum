@@ -39,7 +39,7 @@ Current website update:
   The remaining milestones describe planned validation, local analysis, and
   home sleep measurement research.
 - [x] Align the four team profiles in a two-by-two grid with matching circular
-  portraits and an initials placeholder for Daniel. Local Chromium and WebKit
+  portraits. Local Chromium and WebKit
   checks measured the golden-ratio portrait and spacing proportions and
   verified the narrow single-column layout in both languages and themes.
 - [x] Show the responsible team members below each overview topic and the hub.
@@ -81,7 +81,7 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Alexandros cover the science and signal processing, joined by Alex for
   hardware ergonomics on the breathing and ECG topics and by Daniel for
   creative biofeedback. The hub shows all four. The site reuses the Team
-  portraits and Daniel’s initials badge.
+  portraits.
   The heart and lungs animate inside their nodes. Each reveals its own trace.
   The hub shows both stacked traces. The close control or Escape
   returns focus to the selected node. With enlarged text, a labeled picker
@@ -164,8 +164,8 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Dr. Alexandros Kastrinogiannis’s card includes his portrait, project role in
   psychophysiology and immersive research, Leipzig Max Planck affiliation,
   selected publications, and links to LinkedIn, ORCID and a Google Scholar
-  publication search. Daniel Artamendi’s card uses a circular initials
-  placeholder and includes his biography, professional links and three
+  publication search. Daniel Artamendi’s card uses his supplied portrait
+  and includes his biography, professional links and three
   selected projects in both languages. The four profiles form two equal-width
   columns above 680 CSS px and stack in reading order at narrower sizes.
   Cards share the same height within each row. Portraits and names align at
