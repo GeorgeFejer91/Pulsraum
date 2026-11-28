@@ -515,7 +515,6 @@ a:is(:hover, :focus-visible) .link-icon,
 .publication-card, .person-projects li {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  justify-items: start;
   gap: .375rem;
   min-width: 0;
   padding: var(--box-gap);
@@ -524,6 +523,7 @@ a:is(:hover, :focus-visible) .link-icon,
   background: var(--paper);
   text-align: start;
 }
+.publication-card .inline-link, .person-projects .inline-link { justify-self: start; }
 .publication-card :is(h4, h5) {
   margin: 0;
   font-size: .9375rem;
@@ -734,10 +734,10 @@ a:is(:hover, :focus-visible) .link-icon,
     inset-inline: 0;
     inset-block-end: 0;
     z-index: 2;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, auto));
     justify-content: space-between;
-    gap: 0 8px;
+    column-gap: 4px;
     max-block-size: 50vh;
     max-block-size: 50dvh;
     overflow-y: auto;
@@ -758,7 +758,6 @@ a:is(:hover, :focus-visible) .link-icon,
 
 @media (width < 23rem) {
   .site-header nav {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     text-align: center;
   }

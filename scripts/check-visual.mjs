@@ -329,6 +329,16 @@ async function checkLayout(page) {
         issues.push(`Misaligned portrait or name for ${name.textContent}`);
       }
     }
+    for (const entry of team.querySelectorAll('.publication-card, .person-projects li')) {
+      const frame = entry.getBoundingClientRect();
+      for (const child of entry.children) {
+        const rect = child.getBoundingClientRect();
+        if (rect.left < frame.left || rect.right > frame.right + 1 ||
+            child.scrollWidth > child.clientWidth + 1) {
+          issues.push(`Team entry text overflows: ${child.textContent.trim()}`);
+        }
+      }
+    }
     const danielPortrait = team.querySelector('#daniel-artamendi')?.previousElementSibling;
     if (!danielPortrait?.matches('img.portrait[src="assets/team/daniel-artamendi.webp"][alt=""]') ||
         !danielPortrait.complete || !danielPortrait.naturalWidth) {
@@ -455,7 +465,8 @@ async function checkLayout(page) {
     const padding = getComputedStyle(header);
     const leadingEdge = headerRect.left + parseFloat(padding.paddingLeft);
     if (Math.abs(brand.left - leadingEdge) > 1) issues.push('The brand must start at the leading header inset');
-    if (matchMedia('(min-width: 52rem) and (pointer: fine)').matches) {
+    const sidebar = matchMedia('(min-width: 52rem) and (pointer: fine)').matches;
+    if (sidebar) {
       if (Math.abs(brand.top - headerRect.top - parseFloat(padding.paddingTop)) > 1) issues.push('The sidebar must start at the top inset');
       for (const link of navigation.querySelectorAll('a')) {
         const text = document.createRange();
@@ -469,6 +480,10 @@ async function checkLayout(page) {
       const menu = navigation.getBoundingClientRect();
       const [theme, language] = switches.map(control => control.getBoundingClientRect());
       const links = [...navigation.querySelectorAll('a')].map(link => link.getBoundingClientRect());
+      if (!sidebar && !matchMedia('(width < 23rem)').matches &&
+          links.some(link => Math.abs(link.top - links[0].top) > 1)) {
+        issues.push('The wide phone menu links must share a row');
+      }
       if (switches.some(control => !navigation.contains(control)) ||
           Math.min(theme.top, language.top) < Math.max(...links.map(link => link.bottom)) - 1) {
         issues.push('The theme and language switches must sit below the menu links');
