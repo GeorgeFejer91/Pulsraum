@@ -105,6 +105,7 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   Regenerate the checked-in paths with `python scripts/generate-signals.py`.
 - **Grundlagen** introduces the hardware, software, and published research that
   Pulsraum builds on. Each box links to its associated paper or software.
+  The SleepAp paper uses the same citation box as the Team publications.
 - **Projektverlauf** presents the five milestones in an ordered list. Each card
   shows its number at the top left and its labeled progress checkbox at the
   top right. At the default text size, the checkbox is at least 44 CSS pixels
@@ -155,6 +156,8 @@ nodes in the overview and separate boxes for foundations, milestones and people.
 - **Team** gives each member a separate profile box with available details
   confirmed for publication. George's card uses the portrait from his academic
   website and links to his website, Google Scholar, GitHub, LinkedIn, ORCID and X.
+  Use the same accessible SVG icon buttons for equivalent links on all four
+  cards. All hyperlinks have an icon or a wordmark and a hover and focus state.
   His card identifies the Max Planck Institute for Human Development and the
   University of Konstanz as his research affiliations. Each transparent SVG
   includes the institution's emblem and lettering. Use the German or English
@@ -162,11 +165,13 @@ nodes in the overview and separate boxes for foundations, milestones and people.
   in both languages. Keep the marks legible against the profile in both themes.
   Alex Cuthbertson’s card uses his supplied portrait and links to Zen Specs.
   Dr. Alexandros Kastrinogiannis’s card includes his portrait, project role in
-  psychophysiology and immersive research, Leipzig Max Planck affiliation,
-  selected publications, and links to LinkedIn, ORCID and a Google Scholar
-  publication search. Daniel Artamendi’s card uses his supplied portrait
-  and includes his biography, professional links and three
-  selected projects in both languages. The four profiles form two equal-width
+  psychophysiology and immersive research, the Leipzig Max Planck Institute’s
+  localized wordmark, and links to LinkedIn, ORCID and a Google Scholar
+  publication search. George’s two Viscereality papers and Alexandros’s
+  selected publications each get a bordered box with the title, citation and
+  linked DOI or repository URN. Daniel Artamendi’s card uses his supplied
+  portrait, links to his professional profiles and displays three project
+  boxes in both languages. The four profiles form two equal-width
   columns above 680 CSS px and stack in reading order at narrower sizes.
   Cards share the same height within each row. Portraits and names align at
   the top. The card inset is 1.618 times the grid gap, and each portrait takes

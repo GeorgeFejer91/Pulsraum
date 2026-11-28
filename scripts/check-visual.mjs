@@ -716,11 +716,42 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     assert.equal(await kastrinogiannis.count(), 1, 'Alexandros Kastrinogiannis needs his own profile');
     assert.equal(await kastrinogiannis.locator('.person-role').textContent(), 'Psychophysiologie und immersive Forschung');
     assert.equal(await kastrinogiannis.locator('img.portrait').getAttribute('src'), 'assets/team/alexandros-kastrinogiannis.webp');
-    assert.ok(await kastrinogiannis.getByRole('link', { name: 'Max-Planck-Institut für Kognitions- und Neurowissenschaften' }).isVisible());
-    for (const name of ['Google Scholar-Suche', 'LinkedIn', 'ORCID', 'Dissertation zu Psychophysiologie und VR (2025)', 'Defensive Erstarrung und Herzrate (2026)', 'ARIADNE (2025)']) {
-      const link = kastrinogiannis.getByRole('link', { name, exact: true });
+    const leipzig = kastrinogiannis.getByRole('link', { name: 'Max-Planck-Institut für Kognitions- und Neurowissenschaften' });
+    assert.equal(await leipzig.locator('img').getAttribute('src'), 'assets/team/mpi-cbs-de.svg');
+    assert.equal(await kastrinogiannis.getByRole('link', { name: 'Google Scholar-Suche' })
+      .locator('use').getAttribute('href'), '#link-scholar');
+    assert.deepEqual(await profiles.evaluateAll(cards => cards.map(card =>
+      [...card.querySelectorAll('.profile-links use')].map(icon => icon.getAttribute('href')))), [
+      ['#link-website', '#link-scholar', '#link-github', '#link-linkedin', '#link-orcid', '#link-x'],
+      ['#link-website'],
+      ['#link-scholar', '#link-linkedin', '#link-orcid'],
+      ['#link-website', '#link-linkedin', '#link-github'],
+    ]);
+    for (const link of await profiles.locator('.profile-links a, .publication-card a').all()) {
       const bounds = await link.boundingBox();
-      assert.ok(bounds?.height >= 44, `${name} needs a full touch target`);
+      assert.ok(bounds?.height >= 44 && bounds.width >= 44, 'Profile and publication links need full touch targets');
+    }
+    assert.deepEqual(await page.locator('a[href]').evaluateAll(links =>
+      links.filter(link => !link.querySelector('svg, img')).map(link => link.getAttribute('href'))), [],
+    'Every hyperlink needs an icon or institutional wordmark');
+    const publications = page.locator('.publication-card');
+    assert.deepEqual(await publications.locator('a').evaluateAll(links => links.map(link => link.href)), [
+      'https://doi.org/10.1109/JBHI.2014.2307913',
+      'https://doi.org/10.1145/3780045.3780061',
+      'https://doi.org/10.18420/muc2025-mci-ws11-174',
+      'https://doi.org/10.1111/psyp.70278',
+      'https://doi.org/10.1177/25152459241297674',
+      'https://nbn-resolving.org/urn:nbn:de:gbv:18-ediss-135173',
+    ]);
+    assert.equal(await publications.getByRole('heading').count(), await publications.count());
+    assert.equal(await publications.locator('.publication-meta').count(), await publications.count());
+    assert.deepEqual(await publications.locator('[data-measure]').evaluateAll(elements => elements
+      .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
+      .map(element => element.textContent)), [], 'Publication text must fit its card');
+    if (mode !== 'no-js') {
+      await page.locator('html[data-text-measurement="ready"]').waitFor({ state: 'attached' });
+      assert.equal(await publications.locator('[data-measured-lines]').count(),
+        await publications.locator('[data-measure]').count());
     }
     for (const image of await page.locator('#team img').all()) {
       await image.scrollIntoViewIfNeeded();
@@ -729,8 +760,8 @@ async function checkPage(browser, name, width, height, mode = 'default') {
     const buildingBlocks = page.getByRole('region', { name: 'Grundlagen' });
     assert.equal(await buildingBlocks.count(), 1, 'The project must include a named research section');
     assert.equal(await buildingBlocks.getByRole('article').count(), 3);
-    assert.equal(await buildingBlocks.getByRole('link', { name: /SleepAp/ }).getAttribute('href'),
-      'https://ieeexplore.ieee.org/document/6747332');
+    assert.equal(await buildingBlocks.getByRole('link', { name: 'DOI: 10.1109/JBHI.2014.2307913' }).getAttribute('href'),
+      'https://doi.org/10.1109/JBHI.2014.2307913');
     const milestones = page.getByRole('region', { name: 'Projektverlauf' });
     if (mode !== 'no-js') {
       await page.locator('html[data-text-measurement="ready"]').waitFor({ state: 'attached' });
@@ -817,7 +848,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
         mark.x > card.x + card.width / 2, 'Each card needs a large status checkbox at the upper right');
       assert.equal(await stage.getByRole('img', { name: /.+/ }).count(), 1,
         'Each milestone needs one named illustration');
-      const drawing = stage.locator('svg');
+      const drawing = stage.locator('.milestone-figure');
       assert.ok(await drawing.isVisible());
       assert.equal(await drawing.evaluate(svg => svg.getAnimations({ subtree: true }).length), 0,
         'Reduced motion must show a still illustration');
@@ -947,7 +978,7 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       }
       await details.locator('button.close-topic').press('Enter');
       for (const stage of await stages.all()) {
-        const drawing = stage.locator('svg');
+        const drawing = stage.locator('.milestone-figure');
         await drawing.evaluate(svg => svg.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await page.waitForFunction(svg => {
           const animations = svg.getAnimations({ subtree: true });
@@ -1053,9 +1084,11 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       assert.deepEqual(await signals.locator('.signal-rate').allTextContents(), ['Simulated · 15 breaths/min', 'Simulated · 72 beats/min']);
       assert.equal(await page.getByRole('link', { name: 'Research profile' }).count(), 1);
       assert.equal(await kastrinogiannis.locator('.person-role').textContent(), 'Psychophysiology and immersive research');
-      assert.ok(await kastrinogiannis.getByRole('link', { name: 'Max Planck Institute for Human Cognitive and Brain Sciences' }).isVisible());
+      const leipzigEnglish = kastrinogiannis.getByRole('link', { name: 'Max Planck Institute for Human Cognitive and Brain Sciences' });
+      assert.equal(await leipzigEnglish.locator('img').getAttribute('src'), 'assets/team/mpi-cbs-en.svg');
+      await leipzigEnglish.locator('img').evaluate(image => image.decode());
       assert.ok(await kastrinogiannis.getByRole('link', { name: 'Google Scholar search' }).isVisible());
-      assert.ok(await kastrinogiannis.getByRole('link', { name: 'Dissertation on psychophysiology and VR (2025)' }).isVisible());
+      assert.ok(await kastrinogiannis.getByText('Kastrinogiannis · Doctoral dissertation, University of Hamburg · 2025').isVisible());
       const institute = affiliations.getByRole('link', { name: 'Max Planck Institute for Human Development' });
       assert.equal(await institute.locator('img').getAttribute('src'), 'assets/team/mpib-en.svg');
       await institute.locator('img').evaluate(image => image.decode());
@@ -1092,6 +1125,23 @@ async function checkPage(browser, name, width, height, mode = 'default') {
       if (phone) await light.tap();
       else await light.press('Space');
       assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+    }
+    if (width === 1440) {
+      const link = kastrinogiannis.getByRole('link', { name: 'Google Scholar-Suche' });
+      const icon = link.locator('svg');
+      const rest = await icon.evaluate(svg => getComputedStyle(svg).color);
+      await link.hover();
+      assert.notEqual(await icon.evaluate(svg => getComputedStyle(svg).color), rest, 'Profile icons must respond to hover');
+      const paper = kastrinogiannis.getByRole('link', { name: 'DOI: 10.1111/psyp.70278' });
+      const card = paper.locator('..');
+      const background = await card.evaluate(box => getComputedStyle(box).backgroundColor);
+      await paper.hover();
+      assert.notEqual(await card.evaluate(box => getComputedStyle(box).backgroundColor), background,
+        'Publication cards must respond to link hover');
+      await link.focus();
+      await page.keyboard.press('Tab');
+      assert.equal(await kastrinogiannis.getByRole('link', { name: 'LinkedIn' })
+        .evaluate(anchor => anchor.matches(':focus-visible')), true, 'Profile links need a visible keyboard focus state');
     }
     assert.deepEqual(failed, [], 'Website resources and scripts must load locally without errors');
     console.log(`${name} ${width}×${height} ${mode}: passed`);
